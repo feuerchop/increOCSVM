@@ -9,3 +9,6 @@ How to use the lib goes here...
 
 ## Affiliation
 ...
+
+## Copyright
+Technische Universität München
