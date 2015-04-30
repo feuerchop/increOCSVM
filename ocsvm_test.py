@@ -40,19 +40,42 @@ def plot(predictor, X_train, X_test, X_outliers, grid_size, filename):
 if __name__ == "__main__":
 
     # Generate train data
-    X = 0.3 * np.random.randn(100, 2)
-    X_train = np.r_[X + 2, X - 2]
+    X = 0.3 * np.random.randn(20, 2)
+    X_train = np.r_[X + 2, X-2]
 
     # Generate some regular novel observations
-    X = 0.3 * np.random.randn(20, 2)
-    X_test = np.r_[X + 2, X - 2]
+    X = 0.3 * np.random.randn(5, 2)
+    X_test = np.r_[X + 2,X-2]
 
     # Generate some abnormal novel observations
-    X_outliers = np.random.uniform(low=-4, high=4, size=(20, 2))
+    X_outliers = np.random.uniform(low=-4, high=4, size=(5, 2))
 
     # Train the data
-    clf = ocsvm.OCSVM(kernel.Kernel.gaussian(0.1),nu=0.001, sigma=0.1)
+    clf = ocsvm.OCSVM(kernel.Kernel.gaussian(0.1),nu=0.07, sigma=0.1)
     predictor = clf.train(X_train)
 
+    # Plot the data
+
+    for x_i in X_train:
+
+        if predictor.predict(x_i) == 1.0:
+            plt.scatter(x_i[0],x_i[1],c="red")
+        else:
+            plt.scatter(x_i[0],x_i[1],c="blue")
+
+    for x_i in X_test:
+        if predictor.predict(x_i) == 1.0:
+            plt.scatter(x_i[0],x_i[1],c="red")
+        else:
+            plt.scatter(x_i[0],x_i[1],c="blue")
+
+    for x_i in X_outliers:
+        if predictor.predict(x_i) == 1.0:
+            plt.scatter(x_i[0],x_i[1],c="red")
+        else:
+            plt.scatter(x_i[0],x_i[1],c="blue")
+
     # Plot prediction
-    plot(predictor, X_train, X_test, X_outliers, 30, 'test.pdf')
+    plt.show()
+
+    # plot(predictor, X_train, X_test, X_outliers, 50, 'test.pdf')

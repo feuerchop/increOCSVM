@@ -32,7 +32,6 @@ class OCSVM(object):
 
         #compute error assuming non zero rho
         rho = numpy.sum([a_i * self._kernel(x_i,rho_x) for a_i, x_i in zip(sv_mult,sv)])
-
         return OCSVMPrediction(self._kernel, rho, sv_mult,sv)
 
     #compute Gram matrix
@@ -64,6 +63,9 @@ class OCSVM(object):
         h = cvxopt.matrix(numpy.vstack((h_1, h_2)))
 
         solution = cvxopt.solvers.qp(P, q, G, h, A, b)
+        print numpy.ravel(solution['x'])
+        print sum(numpy.ravel(solution['x']))
+        print "1/nu: "+ str(1/self._nu)
         return numpy.ravel(solution['x'])
 
 #SVM prediction
@@ -78,7 +80,9 @@ class OCSVMPrediction(object):
 
     #Returns SVM predicton given feature vector
     def predict(self, x):
+
         result = -1 * self._rho
         for w_i, x_i in zip(self._weights, self._sv):
             result += w_i * self._kernel(x_i, x)
+        print "------- predict " + str(x) + " with w*k(x_i,x) = " + str(result) + " => " + str(numpy.sign(result))
         return numpy.sign(result)
