@@ -83,3 +83,9 @@ class OCSVMPrediction(object):
             result += w_i * self._kernel(x_i, x)
         #print "------- predict " + str(x) + " with w*k(x_i,x) = " + str(result) + " => " + str(numpy.sign(result))
         return numpy.sign(result)
+
+    def decision_function(self, x):
+        result = -1 * self._rho
+        for w_i, x_i in zip(self._weights, self._sv):
+            result += w_i * self._kernel(x_i, x)
+        return result

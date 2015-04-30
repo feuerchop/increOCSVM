@@ -8,7 +8,7 @@ import ocsvm
 import kernel
 import itertools
 
-def plot(predictor, grid_size, filename):
+def plot(predictor, X_train, X_test, X_outliers, grid_size):
 
     y_min = -5
     y_max = 5
@@ -21,22 +21,20 @@ def plot(predictor, grid_size, filename):
     result = []
     for (i, j) in itertools.product(range(grid_size), range(grid_size)):
         point = np.array([xx[i, j], yy[i, j]]).reshape(1, 2)
-        result.append(predictor.predict(point))
+        result.append(predictor.decision_function(point))
 
     Z = np.array(result).reshape(xx.shape)
 
-    plt.contourf(xx, yy, Z, levels=[-1.5,0], colors='blue')
+    plt.contourf(xx, yy, Z, levels=np.linspace(Z.min(), 0, 7), cmap=plt.cm.Blues_r)
     plt.contour(xx, yy, Z, levels=[0], linewidths=2, colors='red')
-    plt.contour(xx, yy, Z, levels=[0,1.5], colors='orange')
-    '''
+    plt.contourf(xx, yy, Z, levels=[0, Z.max()], colors='orange')
+
     plt.scatter(X_train[:, 0], X_train[:, 1], c='white')
     plt.scatter(X_test[:, 0], X_test[:, 1], c='green')
     plt.scatter(X_outliers[:, 0], X_outliers[:, 1], c='red')
-    '''
+
     plt.xlim(x_min, x_max)
     plt.ylim(y_min, y_max)
-    plt.show()
-    plt.savefig(filename)
 
 if __name__ == "__main__":
 
@@ -56,26 +54,10 @@ if __name__ == "__main__":
     predictor = clf.train(X_train)
 
     # Plot the data
-    # plot(predictor, 100, 'test.pdf')
-    for x_i in X_train:
+    plot(predictor, X_train, X_test, X_outliers, 100)
 
-        if predictor.predict(x_i) == 1.0:
-            plt.scatter(x_i[0],x_i[1],c="red")
-        else:
-            plt.scatter(x_i[0],x_i[1],c="blue")
-
-    for x_i in X_test:
-        if predictor.predict(x_i) == 1.0:
-            plt.scatter(x_i[0],x_i[1],c="red")
-        else:
-            plt.scatter(x_i[0],x_i[1],c="blue")
-
-    for x_i in X_outliers:
-        if predictor.predict(x_i) == 1.0:
-            plt.scatter(x_i[0],x_i[1],c="red")
-        else:
-            plt.scatter(x_i[0],x_i[1],c="blue")
     plt.show()
+    plt.savefig('test.pdf')
     # Plot prediction
 
 
