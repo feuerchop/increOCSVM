@@ -7,6 +7,6 @@ import numpy.linalg as la
 class Kernel(object):
 
     @staticmethod
-    def gaussian(sigma):
+    def gaussian(c):
         return lambda x, y: \
-            np.exp(-np.sqrt(la.norm(x-y) ** 2 / (2 * sigma ** 2)))
+            np.exp(-(la.norm(x-y)) ** 2 / c)

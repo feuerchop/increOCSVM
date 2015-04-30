@@ -52,7 +52,7 @@ if __name__ == "__main__":
     X_outliers = np.random.uniform(low=-4, high=4, size=(5, 2))
 
     # Train the data
-    clf = ocsvm.OCSVM(kernel.Kernel.gaussian(0.1),nu=0.07, sigma=0.1)
+    clf = ocsvm.OCSVM(kernel.Kernel.gaussian(0.5),nu=0.2, c=0.1)
     predictor = clf.train(X_train)
 
     # Plot the data

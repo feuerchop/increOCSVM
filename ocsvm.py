@@ -7,10 +7,10 @@ import cvxopt.solvers
 class OCSVM(object):
 
     #Class constructor: kernel function & nu & sigma
-    def __init__(self, kernel, nu, sigma):
+    def __init__(self, kernel, nu, c):
         self._kernel = kernel
         self._nu = nu
-        self._sigma = sigma
+        self._c = c
 
     #returns trained SVM predictor given features (X) 
     def train(self, X):
@@ -45,8 +45,6 @@ class OCSVM(object):
 
     #compute Lagrangian multipliers
     def lagrangian_multipliers(self, X):
-
-        print len(X)
         n_samples, n_features = X.shape
         K = self.gram(X)
 
@@ -65,9 +63,6 @@ class OCSVM(object):
         h = cvxopt.matrix(numpy.vstack((h_1, h_2)))
 
         solution = cvxopt.solvers.qp(P, q, G, h, A, b)
-        print numpy.ravel(solution['x'])
-        print sum(numpy.ravel(solution['x']))
-        print "1/nu: "+ str(1/self._nu)
         return numpy.ravel(solution['x'])
 
 #SVM prediction
@@ -86,5 +81,5 @@ class OCSVMPrediction(object):
         result = -1 * self._rho
         for w_i, x_i in zip(self._weights, self._sv):
             result += w_i * self._kernel(x_i, x)
-        print "------- predict " + str(x) + " with w*k(x_i,x) = " + str(result) + " => " + str(numpy.sign(result))
+        #print "------- predict " + str(x) + " with w*k(x_i,x) = " + str(result) + " => " + str(numpy.sign(result))
         return numpy.sign(result)
