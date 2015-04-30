@@ -8,7 +8,7 @@ import ocsvm
 import kernel
 import itertools
 
-def plot(predictor, X_train, X_test, X_outliers, grid_size, filename):
+def plot(predictor, grid_size, filename):
 
     y_min = -5
     y_max = 5
@@ -28,10 +28,11 @@ def plot(predictor, X_train, X_test, X_outliers, grid_size, filename):
     plt.contourf(xx, yy, Z, levels=[-1.5,0], colors='blue')
     plt.contour(xx, yy, Z, levels=[0], linewidths=2, colors='red')
     plt.contour(xx, yy, Z, levels=[0,1.5], colors='orange')
-
+    '''
     plt.scatter(X_train[:, 0], X_train[:, 1], c='white')
     plt.scatter(X_test[:, 0], X_test[:, 1], c='green')
     plt.scatter(X_outliers[:, 0], X_outliers[:, 1], c='red')
+    '''
     plt.xlim(x_min, x_max)
     plt.ylim(y_min, y_max)
     plt.show()
@@ -55,7 +56,7 @@ if __name__ == "__main__":
     predictor = clf.train(X_train)
 
     # Plot the data
-
+    # plot(predictor, 100, 'test.pdf')
     for x_i in X_train:
 
         if predictor.predict(x_i) == 1.0:
@@ -74,8 +75,7 @@ if __name__ == "__main__":
             plt.scatter(x_i[0],x_i[1],c="red")
         else:
             plt.scatter(x_i[0],x_i[1],c="blue")
-
-    # Plot prediction
     plt.show()
+    # Plot prediction
 
-    # plot(predictor, X_train, X_test, X_outliers, 50, 'test.pdf')
+
