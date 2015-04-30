@@ -45,6 +45,8 @@ class OCSVM(object):
 
     #compute Lagrangian multipliers
     def lagrangian_multipliers(self, X):
+
+        print len(X)
         n_samples, n_features = X.shape
         K = self.gram(X)
 
@@ -57,7 +59,7 @@ class OCSVM(object):
         h_1 = cvxopt.matrix(numpy.zeros(n_samples))
 
         G_2 = cvxopt.matrix(numpy.diag(numpy.ones(n_samples)))
-        h_2 = cvxopt.matrix(numpy.ones(n_samples) * 1/self._nu)
+        h_2 = cvxopt.matrix(numpy.ones(n_samples) * 1/(self._nu*len(X)))
 
         G = cvxopt.matrix(numpy.vstack((G_1, G_2)))
         h = cvxopt.matrix(numpy.vstack((h_1, h_2)))
