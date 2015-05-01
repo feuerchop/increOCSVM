@@ -14,7 +14,6 @@ def plot(predictor, X_train, X_test, X_outliers, grid_size):
     y_max = 5
     x_min = -5
     x_max = 5
-    result = []
     xx, yy = np.meshgrid(np.linspace(x_min, x_max, grid_size),
                          np.linspace(y_min, y_max, grid_size),
                          indexing='ij')
@@ -39,22 +38,22 @@ def plot(predictor, X_train, X_test, X_outliers, grid_size):
 if __name__ == "__main__":
 
     # Generate train data
-    X = 0.3 * np.random.randn(20, 2)
+    X = 0.3 * np.random.randn(60, 2)
     X_train = np.r_[X + 2, X-2]
 
     # Generate some regular novel observations
-    X = 0.3 * np.random.randn(5, 2)
+    X = 0.3 * np.random.randn(15, 2)
     X_test = np.r_[X + 2,X-2]
 
     # Generate some abnormal novel observations
-    X_outliers = np.random.uniform(low=-4, high=4, size=(5, 2))
+    X_outliers = np.random.uniform(low=-4, high=4, size=(15, 2))
 
     # Train the data
-    clf = ocsvm.OCSVM(kernel.Kernel.gaussian(0.5),nu=0.2, c=0.1)
-    predictor = clf.train(X_train)
+    clf = ocsvm.OCSVM("rbf",nu=0.5, gamma=3.1625)
+    clf.train(X_train)
 
     # Plot the data
-    plot(predictor, X_train, X_test, X_outliers, 100)
+    plot(clf, X_train, X_test, X_outliers, 100)
 
     plt.show()
     plt.savefig('test.pdf')

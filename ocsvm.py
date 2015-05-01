@@ -1,56 +1,62 @@
 __author__ = 'LT'
 import numpy
 import cvxopt.solvers
+import kernel
+from time import gmtime, strftime
+from sklearn.metrics.pairwise import pairwise_kernels
 #print(__doc__)
 
 #Trains an SVM
 class OCSVM(object):
+    # define global variables
+    _rho = None
+    _alpha = None
+    _sv = None
+    _kernel = None
+    _nu = None
+    _gamma = None
 
     #Class constructor: kernel function & nu & sigma
-    def __init__(self, kernel, nu, c):
-        self._kernel = kernel
+    def __init__(self, metric, nu, gamma):
+        if metric == "rbf":
+            self._kernel = kernel.Kernel.gaussian(gamma)
         self._nu = nu
-        self._c = c
+        self._gamma = gamma
 
     #returns trained SVM predictor given features (X)
     # TODO: we need to store the key properties of model after training
     # Please check libsvm what they provide for output, e.g., I need to access to the sv_idx all the time
     def train(self, X):
-        lagrange_multipliers = self.lagrangian_multipliers(X)
-        return self.predictor(X, lagrange_multipliers)
+        # get lagrangian multiplier
+        alpha = self.alpha(X)
+        # defines necessary parameter for prediction
+        self.predictor(X, alpha)
 
     #returns SVM prediction with given X and langrange mutlipliers
-    def predictor(self, X, lagrange_multipliers):
-        sv_index = lagrange_multipliers > 1e-5
-        sv_mult = lagrange_multipliers[sv_index]
-        sv = X[sv_index]
+    def predictor(self, X, alpha):
+        # define support vector and weights/alpha
+        sv_index = alpha > 1e-5
+        self._alpha = alpha[sv_index]
+        self._sv = X[sv_index]
 
         #for computing rho we need an x_i with corresponding a_i < 1/nu and a > 0
         rho_x = 0
-        for a_i, x_i in zip(sv_mult,sv):
+        for a_i, x_i in zip(self._alpha, self._sv):
             if a_i > 0 and a_i < 1/self._nu:
                 rho_x = x_i
                 break
-
         #compute error assuming non zero rho
-        rho = numpy.sum([a_i * self._kernel(x_i,rho_x) for a_i, x_i in zip(sv_mult,sv)])
-        return OCSVMPrediction(self._kernel, rho, sv_mult,sv)
+        self._rho = numpy.sum([a_i * self._kernel(x_i,rho_x) for a_i, x_i in zip(self._alpha,self._sv)])
 
     #compute Gram matrix
-    # TODO: you can use built-in kernel functions in sklearn, i.e., pairwise_kernels
-    # As this might be more efficient than a double-for-loop
     def gram(self, X):
-        n_samples, n_features = X.shape
-        K = numpy.zeros((n_samples, n_samples))
-        for i in range(0, n_samples):
-            for j in range(0, n_samples):
-                K[i, j] = self._kernel(X[i], X[j])
-        return K
+        ## pairwise_kernels:
+        ## K(x, y) = exp(-gamma ||x-y||^2)
+        return pairwise_kernels(X, None, "rbf", gamma=self._gamma)
 
     #compute Lagrangian multipliers
     # TODO: I'd rather this part directly goes in train()
-    # TODO: using alpha=xxx instead of lagrangian_multipliers
-    def lagrangian_multipliers(self, X):
+    def alpha(self, X):
         n_samples, n_features = X.shape
         K = self.gram(X)
 
@@ -71,28 +77,19 @@ class OCSVM(object):
         solution = cvxopt.solvers.qp(P, q, G, h, A, b)
         return numpy.ravel(solution['x'])
 
-#SVM prediction
-
-# TODO: why we need two classes here?
-class OCSVMPrediction(object):
-    #Class constructor
-    def __init__(self, kernel, rho, weights, sv):
-        self._kernel = kernel
-        self._rho = rho
-        self._weights = weights
-        self._sv = sv
-
     #Returns SVM predicton given feature vector
     def predict(self, x):
-
         result = -1 * self._rho
-        for w_i, x_i in zip(self._weights, self._sv):
+        for w_i, x_i in zip(self._alpha, self._sv):
             result += w_i * self._kernel(x_i, x)
-        #print "------- predict " + str(x) + " with w*k(x_i,x) = " + str(result) + " => " + str(numpy.sign(result))
         return numpy.sign(result)
 
+    # Returns distance to boundary
+    # TODO: optimize, still slow with a greater number of grid points
     def decision_function(self, x):
         result = -1 * self._rho
-        for w_i, x_i in zip(self._weights, self._sv):
+        for w_i, x_i in zip(self._alpha, self._sv):
             result += w_i * self._kernel(x_i, x)
         return result
+
+
