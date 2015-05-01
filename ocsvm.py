@@ -12,7 +12,9 @@ class OCSVM(object):
         self._nu = nu
         self._c = c
 
-    #returns trained SVM predictor given features (X) 
+    #returns trained SVM predictor given features (X)
+    # TODO: we need to store the key properties of model after training
+    # Please check libsvm what they provide for output, e.g., I need to access to the sv_idx all the time
     def train(self, X):
         lagrange_multipliers = self.lagrangian_multipliers(X)
         return self.predictor(X, lagrange_multipliers)
@@ -35,6 +37,8 @@ class OCSVM(object):
         return OCSVMPrediction(self._kernel, rho, sv_mult,sv)
 
     #compute Gram matrix
+    # TODO: you can use built-in kernel functions in sklearn, i.e., pairwise_kernels
+    # As this might be more efficient than a double-for-loop
     def gram(self, X):
         n_samples, n_features = X.shape
         K = numpy.zeros((n_samples, n_samples))
@@ -44,6 +48,8 @@ class OCSVM(object):
         return K
 
     #compute Lagrangian multipliers
+    # TODO: I'd rather this part directly goes in train()
+    # TODO: using alpha=xxx instead of lagrangian_multipliers
     def lagrangian_multipliers(self, X):
         n_samples, n_features = X.shape
         K = self.gram(X)
@@ -67,6 +73,7 @@ class OCSVM(object):
 
 #SVM prediction
 
+# TODO: why we need two classes here?
 class OCSVMPrediction(object):
     #Class constructor
     def __init__(self, kernel, rho, weights, sv):
