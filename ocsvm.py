@@ -119,17 +119,26 @@ class OCSVM(object):
         grad_alpha_c = self.gram(x_c) + sum([a_i * self._kernel(x_i, x_c)
                         for a_i, x_i in zip(self._data.get_alpha(), self._data.get_X())]) \
                         + mu
-        print grad_alpha_c
 
-        while grad_alpha_c < 0 and alpha_c < self._data.get_C():
+        #while grad_alpha_c[0] < 0 and alpha_c[0] < self._data.get_C():
+        # just to test the loop
+        while True:
+
             #TODO: optimize Q because inverse is computationally extensive
-            Q = np.concatenate(
-                np.concatenate((0, self._data.get_alpha_s()), axis=1),
-                np.concatenate((np.transpose(self._data.get_alpha_s()),
-                                self.gram(self._data.get_Xs()) ), axis=0),
-                axis=0)
+            Q = - inv(np.concatenate(
+                    (np.concatenate(
+                        (np.ones(len(self._data.get_Xs())).reshape(len(self._data.get_Xs()),1),
+                        self.gram(self._data.get_Xs())), axis=1
+                    ),
+                    np.concatenate(
+                        ([[0]], np.ones(len(self._data.get_alpha_s())).
+                                    reshape(1,len(self._data.get_Xs()))), axis=1)
+                    ), axis=0))
 
-            beta = - inv(Q) * np.concatenate((alpha_c, pairwise_kernels(x_c, self._data.get_Xs())), axis=0)
+            beta = Q.dot(
+                    np.concatenate( (pairwise_kernels(self._data.get_Xs(), x_c), [[1]]), axis=0))
+            print beta
+            return True
             K_cs = pairwise_kernels(x_c, self._data.get_Xs())
             K_rs = pairwise_kernels(self._data.get_Xr(), self._data.get_Xs())
             gamma = np.concatenate(np.ones(len(self._data.get_Xr()) + 1),
@@ -148,6 +157,10 @@ class OCSVM(object):
             alpha_beta = np.divide(grad_alpha_I, beta)
             grad_alpha_c_S = np.absolute(alpha_beta).min() * cmp(np.absolute(alpha_beta).min(),0)
             grad_alpha_c = 0
+
+            break
+
+
 
 
 
