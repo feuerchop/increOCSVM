@@ -3,9 +3,12 @@ import numpy as np
 import cvxopt.solvers
 import kernel
 from time import gmtime, strftime
+from numpy.linalg import inv
 from sklearn.metrics.pairwise import pairwise_kernels
-#print(__doc__)
 import data
+
+#print(__doc__)
+
 #Trains an SVM
 class OCSVM(object):
     # define global variables
@@ -23,7 +26,7 @@ class OCSVM(object):
         self._data = data.Data()
 
     #returns trained SVM predictor given features (X)
-    # TODO: we need to store the key properties of model after training
+    #TODO: we need to store the key properties of model after training
     # Please check libsvm what they provide for output, e.g., I need to access to the sv_idx all the time
     def train(self, X):
         self._data.set_X(X)
@@ -85,7 +88,7 @@ class OCSVM(object):
         return np.sign(result)
 
     # Returns distance to boundary
-    # TODO: optimize, still slow with a greater number of grid points
+    #TODO: optimize, still slow with a greater number of grid points
     def decision_function(self, x):
         result = -1 * self._rho
         for w_i, x_i in zip(self._data.get_alpha_s(), self._data.get_Xs()):
@@ -95,38 +98,52 @@ class OCSVM(object):
 
     ### incremental
 
-    def increment(self, X_new):
-        Xs_1 = self._data.get_Xs()[0]
-        mu = 1 - sum([w_i * self._kernel(x_i, Xs_1)
+    def increment(self, x_c):
+        epsilon = 0.001
+         # calculate mu according to KKT-conditions
+        mu = 1 - sum([w_i * self._kernel(x_i, self._data.get_Xs()[0])
                          for w_i, x_i
                          in zip(self._data.get_alpha(), self._data.get_X())])
+        #calculate gradient of alpha (g_i)
         kernel_matrix = self.gram(self._data.get_X)
         grad_alpha = -  kernel_matrix.diagonal().reshape(len(self._data.get_X),1)\
                      +  self.gram(self._data.get_X) * self._data.get_alpha() \
                      + mu * np.ones(len(self._data.get_alpha()))
-
+        # set alpha of x_c zero
+        # calculate gradient of alpha_c
         alpha_c = 0
-        grad_alpha_c = self.gram(X_new) + sum([a_i * self._kernel(x_i, X_new)
+        grad_alpha_c = self.gram(x_c) + sum([a_i * self._kernel(x_i, x_c)
                         for a_i, x_i in zip(self._data.get_alpha(), self._data.get_X())]) \
                         + mu
-        while grad_alpha_c < 0 and alpha_c < self._data.get_C():
-            beta = - self.calculate_Q() *\
-                   np.concatenate((alpha_c, pairwise_kernels(x_c, self._data.get_Xs())), axis=0)
-            gamma_inc = 0
-            grad_alpha_c = self.calculate_grad_alpha_c(beta, gamma_inc, 0.0001)
 
-    def calculate_grad_alpha_c(self, beta, gamma_inc, epsilon,):
-        I_Splus = beta > epsilon
-        I_Sminus = beta < - epsilon
-        alpha_s = self._data.get_alpha_s()
-        abs_Xs = np.absolute(self._data.get_Xs())
-        grad_alpha_I = np.zeros(len(beta))
-        grad_alpha_I[I_Splus] = self._data.get_C() * np.ones(len(I_Splus)) - alpha_s[I_Splus]
-        grad_alpha_I[I_Sminus] = self._data.get_C() * np.ones(len(I_Sminus)) - alpha_s[I_Sminus]
-        alpha_beta = np.divide(grad_alpha_I, beta)
-        grad_alpha_c_S = np.absolute(alpha_beta).min() * cmp(np.absolute(alpha_beta).min(),0)
-        grad_alpha_c = 0
-        return grad_alpha_c
+        while grad_alpha_c < 0 and alpha_c < self._data.get_C():
+            #TODO: optimize Q because inverse is computationally extensive
+            Q = np.concatenate(
+                np.concatenate((0, self._data.get_alpha_s()), axis=1),
+                np.concatenate((np.transpose(self._data.get_alpha_s()),
+                                self.gram(self._data.get_Xs()) ), axis=0),
+                axis=0)
+
+            beta = - inv(Q) * np.concatenate((alpha_c, pairwise_kernels(x_c, self._data.get_Xs())), axis=0)
+            K_cs = pairwise_kernels(x_c, self._data.get_Xs())
+            K_rs = pairwise_kernels(self._data.get_Xr(), self._data.get_Xs())
+            gamma = np.concatenate(np.ones(len(self._data.get_Xr()) + 1),
+                                   np.concatenate(K_cs, K_rs, axis=0),
+                                   axis=1) * beta \
+                    + np.concatenate(pairwise_kernels(x_c,x_c), pairwise_kernels(x_c, self._data.get_Xr()), axis=0)
+
+            # accounting
+            I_Splus = beta > epsilon
+            I_Sminus = beta < - epsilon
+            alpha_s = self._data.get_alpha_s()
+            abs_Xs = np.absolute(self._data.get_Xs())
+            grad_alpha_I = np.zeros(len(beta))
+            grad_alpha_I[I_Splus] = self._data.get_C() * np.ones(len(I_Splus)) - alpha_s[I_Splus]
+            grad_alpha_I[I_Sminus] = self._data.get_C() * np.ones(len(I_Sminus)) - alpha_s[I_Sminus]
+            alpha_beta = np.divide(grad_alpha_I, beta)
+            grad_alpha_c_S = np.absolute(alpha_beta).min() * cmp(np.absolute(alpha_beta).min(),0)
+            grad_alpha_c = 0
+
 
 
 
