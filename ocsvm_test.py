@@ -35,8 +35,7 @@ def plot(predictor, X_train, X_test, X_outliers, grid_size):
     plt.xlim(x_min, x_max)
     plt.ylim(y_min, y_max)
 
-if __name__ == "__main__":
-
+def standardExample():
     # Generate train data
     X = 0.3 * np.random.randn(60, 2)
     X_train = np.r_[X + 2, X-2]
@@ -49,14 +48,56 @@ if __name__ == "__main__":
     X_outliers = np.random.uniform(low=-4, high=4, size=(15, 2))
 
     # Train the data
-    clf = ocsvm.OCSVM("rbf",nu=0.5, gamma=3.1625)
+    clf = ocsvm.OCSVM("rbf", nu=0.5, gamma=3.1625)
     clf.train(X_train)
 
     # Plot the data
-    plot(clf, X_train, X_test, X_outliers, 100)
+    #plot(clf, X_train, X_test, X_outliers, 100)
 
-    plt.show()
-    plt.savefig('test.pdf')
-    # Plot prediction
+    #plt.show()
+    #plt.savefig('test.pdf')
+
+    # new point
+    X = 0.3 * np.random.randn(1, 2)
+    X_new = np.r_[X + 2, X-2]
+    print X_new[0]
+
+def incrementExample():
+    # Generate train data
+    X = 0.3 * np.random.randn(5, 2)
+    X_train = np.r_[X + 2, X-2]
+    print "len x_train: %s" % len(X_train)
+
+    # Generate some regular novel observations
+    X = 0.3 * np.random.randn(5, 2)
+    X_test = np.r_[X + 2,X-2]
+
+    # Generate some abnormal novel observations
+    X_outliers = np.random.uniform(low=-4, high=4, size=(5, 2))
+
+    # Train the data
+    clf = ocsvm.OCSVM("rbf", nu=0.5, gamma=3.1625)
+    clf.train(X_train)
+
+    # Plot the data
+    #plot(clf, X_train, X_test, X_outliers, 100)
+
+    #plt.show()
+    #plt.savefig('test.pdf')
+
+    # new point
+    X = 0.3 * np.random.randn(1, 2)
+    X_new = np.r_[X + 2, X-2]
+
+    print "new point to increment"
+    print X_new[0]
+    clf.increment(X_new[0])
+
+
+
+if __name__ == "__main__":
+    incrementExample()
+
+
 
 

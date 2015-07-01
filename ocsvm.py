@@ -104,17 +104,22 @@ class OCSVM(object):
         mu = 1 - sum([w_i * self._kernel(x_i, self._data.get_Xs()[0])
                          for w_i, x_i
                          in zip(self._data.get_alpha(), self._data.get_X())])
+
         #calculate gradient of alpha (g_i)
-        kernel_matrix = self.gram(self._data.get_X)
-        grad_alpha = -  kernel_matrix.diagonal().reshape(len(self._data.get_X),1)\
-                     +  self.gram(self._data.get_X) * self._data.get_alpha() \
-                     + mu * np.ones(len(self._data.get_alpha()))
+        kernel_matrix = self.gram(self._data.get_X())
+
+        grad_alpha = - kernel_matrix.diagonal().reshape(len(self._data.get_X()),1) \
+                     + self.gram(self._data.get_X()).dot(np.transpose(self._data.get_alpha()))\
+                                .reshape(len(self._data.get_X()),1)\
+                     + mu * np.ones(len(self._data.get_alpha())).reshape(len(self._data.get_alpha()),1)
+
         # set alpha of x_c zero
         # calculate gradient of alpha_c
         alpha_c = 0
         grad_alpha_c = self.gram(x_c) + sum([a_i * self._kernel(x_i, x_c)
                         for a_i, x_i in zip(self._data.get_alpha(), self._data.get_X())]) \
                         + mu
+        print grad_alpha_c
 
         while grad_alpha_c < 0 and alpha_c < self._data.get_C():
             #TODO: optimize Q because inverse is computationally extensive
