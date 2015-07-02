@@ -53,10 +53,10 @@ class OCSVM(object):
         self._rho = np.sum([a_i * self._kernel(x_i,rho_x) for a_i, x_i in zip(alpha,sv)])
 
     #compute Gram matrix
-    def gram(self, X):
+    def gram(self, X, Y=None):
         ## pairwise_kernels:
         ## K(x, y) = exp(-gamma ||x-y||^2)
-        return pairwise_kernels(X, None, "rbf", gamma=self._gamma)
+        return pairwise_kernels(X, Y, "rbf", gamma=self._gamma)
 
     #compute Lagrangian multipliers
     # TODO: I'd rather this part directly goes in train()
@@ -132,28 +132,38 @@ class OCSVM(object):
                     ),
                     np.concatenate(
                         ([[0]], np.ones(len(self._data.get_alpha_s())).
-                                    reshape(1,len(self._data.get_Xs()))), axis=1)
+                                    reshape(1,len(self._data.get_alpha_s()))), axis=1)
                     ), axis=0))
 
             beta = Q.dot(
-                    np.concatenate( (pairwise_kernels(self._data.get_Xs(), x_c), [[1]]), axis=0))
-            print beta
-            return True
-            K_cs = pairwise_kernels(x_c, self._data.get_Xs())
-            K_rs = pairwise_kernels(self._data.get_Xr(), self._data.get_Xs())
-            gamma = np.concatenate(np.ones(len(self._data.get_Xr()) + 1),
-                                   np.concatenate(K_cs, K_rs, axis=0),
-                                   axis=1) * beta \
-                    + np.concatenate(pairwise_kernels(x_c,x_c), pairwise_kernels(x_c, self._data.get_Xr()), axis=0)
+                    np.concatenate( (self.gram(self._data.get_Xs(), x_c), [[1]]), axis=0))
+            K_cs = self.gram(x_c, self._data.get_Xs())
+
+
+            if len(self._data.get_Xr()) > 0:
+                K_rs = self.gram(self._data.get_Xr(), self._data.get_Xs())
+                gamma = np.concatenate(
+                            (np.concatenate(
+                                ([[1]],K_cs),axis=1),
+                             np.concatenate(
+                                 (np.ones(len(self._data.get_alpha_r())).
+                                    reshape(1,len(self._data.get_alpha_r())),
+                                  K_rs),axis=1)),
+                            axis=0).dot(beta) \
+                        + np.concatenate((self.gram(x_c),
+                                          self.gram(x_c, self._data.get_Xr())),axis=0)
+            else:
+                gamma = np.concatenate(([[1]],K_cs),axis=1).dot(beta) + self.gram(x_c)
 
             # accounting
             I_Splus = beta > epsilon
             I_Sminus = beta < - epsilon
-            alpha_s = self._data.get_alpha_s()
-            abs_Xs = np.absolute(self._data.get_Xs())
+
+            # possible weight updates
             grad_alpha_I = np.zeros(len(beta))
-            grad_alpha_I[I_Splus] = self._data.get_C() * np.ones(len(I_Splus)) - alpha_s[I_Splus]
-            grad_alpha_I[I_Sminus] = self._data.get_C() * np.ones(len(I_Sminus)) - alpha_s[I_Sminus]
+            grad_alpha_I[I_Splus] = self._data.get_C() * np.ones(len(I_Splus)) - self._data.get_alpha_s()[I_Splus]
+            grad_alpha_I[I_Sminus] = self._data.get_C() * np.ones(len(I_Sminus)) - self._data.get_alpha_s()[I_Sminus]
+
             alpha_beta = np.divide(grad_alpha_I, beta)
             grad_alpha_c_S = np.absolute(alpha_beta).min() * cmp(np.absolute(alpha_beta).min(),0)
             grad_alpha_c = 0
