@@ -123,7 +123,7 @@ class OCSVM(object):
         #while grad_alpha_c[0] < 0 and alpha_c[0] < self._data.get_C():
         # just to test the loop
         while True:
-
+            # calculate beta
             #TODO: optimize Q because inverse is computationally extensive
             Q = - inv(np.concatenate(
                     (np.concatenate(
@@ -137,6 +137,7 @@ class OCSVM(object):
 
             beta = Q.dot(
                     np.concatenate( (self.gram(self._data.get_Xs(), x_c), [[1]]), axis=0))
+            # calculate gamma
             K_cs = self.gram(x_c, self._data.get_Xs())
 
 
@@ -156,19 +157,34 @@ class OCSVM(object):
                 gamma = np.concatenate(([[1]],K_cs),axis=1).dot(beta) + self.gram(x_c)
 
             # accounting
-            I_Splus = beta > epsilon
-            I_Sminus = beta < - epsilon
+
+            #case 1: Some alpha_i in S reaches a bound
+
+            I_Splus = beta[1:] > epsilon
 
             # possible weight updates
-            grad_alpha_I = np.zeros(len(beta))
-            grad_alpha_I[I_Splus] = self._data.get_C() * np.ones(len(I_Splus)) - self._data.get_alpha_s()[I_Splus]
-            grad_alpha_I[I_Sminus] = self._data.get_C() * np.ones(len(I_Sminus)) - self._data.get_alpha_s()[I_Sminus]
-
-            alpha_beta = np.divide(grad_alpha_I, beta)
+            grad_alpha_I = - self._data.get_alpha_s().reshape(len(self._data.get_alpha_s()),1)
+            grad_alpha_I[I_Splus] += self._data.get_C()
+            alpha_beta = np.divide(grad_alpha_I, beta[1:])
             grad_alpha_c_S = np.absolute(alpha_beta).min() * cmp(np.absolute(alpha_beta).min(),0)
-            grad_alpha_c = 0
 
-            break
+            #case 2: Some g_i in R reaches zero
+            grad_alpha_c_R = 0
+            #case 3: g_c becomes zero
+            if gamma[0] > epsilon:
+                grad_alpha_c_g = np.divide(-grad_alpha_c, gamma[0])
+            else:
+                grad_alpha_c_g = None
+            #case 4
+            grad_alpha_c_alpha = self._data.get_C() - alpha_c
+
+            # get smallest gradient of alpha
+
+            grad_alpha_c_max = min(filter(None, [grad_alpha_c_S, grad_alpha_c_R,
+                                           grad_alpha_c_g, grad_alpha_c_alpha]))
+
+            alpha_c += grad_alpha_c_max
+
 
 
 
