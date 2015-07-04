@@ -7,6 +7,7 @@ import matplotlib.pyplot as plt
 import ocsvm
 import kernel
 import itertools
+import sys
 
 def plot(predictor, X_train, X_test, X_outliers, grid_size):
 
@@ -66,7 +67,7 @@ def incrementExample():
     # Generate train data
     X = 0.3 * np.random.randn(5, 2)
     X_train = np.r_[X + 2, X-2]
-    print "len x_train: %s" % len(X_train)
+
 
     # Generate some regular novel observations
     X = 0.3 * np.random.randn(5, 2)
@@ -77,23 +78,16 @@ def incrementExample():
 
     # Train the data
     clf = ocsvm.OCSVM("rbf", nu=0.5, gamma=3.1625)
-    clf.train(X_train)
+    clf.train(X_train[0:8])
 
     # Plot the data
-    #plot(clf, X_train, X_test, X_outliers, 100)
-
-    #plt.show()
+    plot(clf, X_train[0:9], X_test, X_outliers, 100)
+    print "point to increment"
+    clf.increment(X_train[9])
+    plt.figure()
+    plot(clf, X_train[0:10], X_test, X_outliers, 100)
+    plt.show()
     #plt.savefig('test.pdf')
-
-    # new point
-    X = 0.3 * np.random.randn(1, 2)
-    X_new = np.r_[X + 2, X-2]
-
-    print "new point to increment"
-    print X_new[0]
-    clf.increment(X_new[0])
-
-
 
 if __name__ == "__main__":
     incrementExample()

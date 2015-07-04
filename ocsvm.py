@@ -99,6 +99,7 @@ class OCSVM(object):
     ### incremental
 
     def increment(self, x_c):
+
         epsilon = 0.001
          # calculate mu according to KKT-conditions
         mu = 1 - sum([w_i * self._kernel(x_i, self._data.get_Xs()[0])
@@ -120,9 +121,9 @@ class OCSVM(object):
                         for a_i, x_i in zip(self._data.get_alpha(), self._data.get_X())]) \
                         + mu
 
-        #while grad_alpha_c[0] < 0 and alpha_c[0] < self._data.get_C():
+        while grad_alpha_c[0] < 0 and alpha_c < self._data.get_C():
         # just to test the loop
-        while True:
+        #while True:
             # calculate beta
             #TODO: optimize Q because inverse is computationally extensive
             Q = - inv(np.concatenate(
@@ -188,6 +189,7 @@ class OCSVM(object):
                 break
 
 
+            self._data.add(x_c, alpha_c)
 
 
 
