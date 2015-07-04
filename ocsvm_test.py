@@ -9,7 +9,7 @@ import kernel
 import itertools
 import sys
 
-def plot(predictor, X_train, X_test, X_outliers, grid_size):
+def plot(predictor, X_train, X_test, X_outliers, grid_size, incremental):
 
     y_min = -5
     y_max = 5
@@ -28,8 +28,10 @@ def plot(predictor, X_train, X_test, X_outliers, grid_size):
     plt.contourf(xx, yy, Z, levels=np.linspace(Z.min(), 0, 7), cmap=plt.cm.Blues_r)
     plt.contour(xx, yy, Z, levels=[0], linewidths=2, colors='red')
     plt.contourf(xx, yy, Z, levels=[0, Z.max()], colors='orange')
-
-    plt.scatter(X_train[:, 0], X_train[:, 1], c='white')
+    if incremental:
+        plt.scatter(X_train[:-1, 0], X_train[:-1, 1], c='white')
+        plt.scatter(X_train[-1:, 0], X_train[-1:, 1], c='yellow')
+    else: plt.scatter(X_train[:, 0], X_train[:, 1], c='white')
     plt.scatter(X_test[:, 0], X_test[:, 1], c='green')
     plt.scatter(X_outliers[:, 0], X_outliers[:, 1], c='red')
 
@@ -52,10 +54,11 @@ def standardExample():
     clf = ocsvm.OCSVM("rbf", nu=0.5, gamma=3.1625)
     clf.train(X_train)
 
-    # Plot the data
-    #plot(clf, X_train, X_test, X_outliers, 100)
 
-    #plt.show()
+    #Plot the data
+    plot(clf, X_train, X_test, X_outliers, 100, False)
+
+    plt.show()
     #plt.savefig('test.pdf')
 
     # new point
@@ -65,7 +68,7 @@ def standardExample():
 
 def incrementExample():
     # Generate train data
-    X = 0.3 * np.random.randn(5, 2)
+    X = 0.3 * np.random.randn(10, 2)
     X_train = np.r_[X + 2, X-2]
 
 
@@ -76,16 +79,21 @@ def incrementExample():
     # Generate some abnormal novel observations
     X_outliers = np.random.uniform(low=-4, high=4, size=(5, 2))
 
+    clf1 = ocsvm.OCSVM("rbf", nu=0.5, gamma=3.1625)
+    clf1.train(X_train)
+    plot(clf1, X_train, X_test, X_outliers, 100, False)
+
     # Train the data
     clf = ocsvm.OCSVM("rbf", nu=0.5, gamma=3.1625)
-    clf.train(X_train[0:8])
+    clf.train(X_train[:-1])
 
     # Plot the data
-    plot(clf, X_train[0:9], X_test, X_outliers, 100)
-    print "point to increment"
-    clf.increment(X_train[9])
     plt.figure()
-    plot(clf, X_train[0:10], X_test, X_outliers, 100)
+    plot(clf, X_train[:-1], X_test, X_outliers, 100, False)
+    print "point to increment"
+    clf.increment(X_train[-1:])
+    plt.figure()
+    plot(clf, X_train, X_test, X_outliers, 100, True)
     plt.show()
     #plt.savefig('test.pdf')
 

@@ -88,13 +88,8 @@ class OCSVM(object):
         return np.sign(result)
 
     # Returns distance to boundary
-    #TODO: optimize, still slow with a greater number of grid points
     def decision_function(self, x):
-        result = -1 * self._rho
-        for w_i, x_i in zip(self._data.get_alpha_s(), self._data.get_Xs()):
-            result += w_i * self._kernel(x_i, x)
-        return result
-
+        return -1 * self._rho + self._data.get_alpha_s().dot(self.gram(self._data.get_Xs(),x))
 
     ### incremental
 
