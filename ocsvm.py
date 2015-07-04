@@ -182,8 +182,10 @@ class OCSVM(object):
 
             grad_alpha_c_max = min(filter(None, [grad_alpha_c_S, grad_alpha_c_R,
                                            grad_alpha_c_g, grad_alpha_c_alpha]))
-
             alpha_c += grad_alpha_c_max
+            self._data.update_alpha_s(beta*grad_alpha_c_max)
+            if not grad_alpha_c_S == grad_alpha_c_max and not grad_alpha_c_R == grad_alpha_c_max:
+                break
 
 
 
