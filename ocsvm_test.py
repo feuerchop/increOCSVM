@@ -81,20 +81,20 @@ def incrementExample():
 
     clf1 = ocsvm.OCSVM("rbf", nu=0.5, gamma=3.1625)
     clf1.train(X_train)
-    plot(clf1, X_train, X_test, X_outliers, 100, False)
+    #plot(clf1, X_train, X_test, X_outliers, 100, False)
 
     # Train the data
     clf = ocsvm.OCSVM("rbf", nu=0.5, gamma=3.1625)
     clf.train(X_train[:-1])
 
-    # Plot the data
-    plt.figure()
-    plot(clf, X_train[:-1], X_test, X_outliers, 100, False)
+    #Plot the data
+    #plt.figure()
+    #plot(clf, X_train[:-1], X_test, X_outliers, 100, False)
     print "point to increment"
     clf.increment(X_train[-1:])
-    plt.figure()
-    plot(clf, X_train, X_test, X_outliers, 100, True)
-    plt.show()
+    #plt.figure()
+    #plot(clf, X_train, X_test, X_outliers, 100, True)
+    #plt.show()
     #plt.savefig('test.pdf')
 
 if __name__ == "__main__":

@@ -4,6 +4,7 @@ import cvxopt.solvers
 import kernel
 from time import gmtime, strftime
 from numpy.linalg import inv
+from numpy import concatenate as cat
 from sklearn.metrics.pairwise import pairwise_kernels
 import data
 
@@ -102,67 +103,66 @@ class OCSVM(object):
                          in zip(self._data.get_alpha(), self._data.get_X())])
 
         #calculate gradient of alpha (g_i)
-        kernel_matrix = self.gram(self._data.get_X())
 
-        grad_alpha = - kernel_matrix.diagonal().reshape(len(self._data.get_X()),1) \
-                     + self.gram(self._data.get_X()).dot(np.transpose(self._data.get_alpha()))\
-                                .reshape(len(self._data.get_X()),1)\
-                     + mu * np.ones(len(self._data.get_alpha())).reshape(len(self._data.get_alpha()),1)
+        grad_alpha_r = - self.gram(self._data.get_Xr()).diagonal()  \
+              + self.gram(self._data.get_Xr()).dot(self._data.get_alpha_r()) \
+              + mu * np.ones(len(self._data.get_alpha_r()))
 
         # set alpha of x_c zero
         # calculate gradient of alpha_c
         alpha_c = 0
-        grad_alpha_c = self.gram(x_c) + sum([a_i * self._kernel(x_i, x_c)
-                        for a_i, x_i in zip(self._data.get_alpha(), self._data.get_X())]) \
-                        + mu
+        grad_alpha_c = self.gram(x_c) + self.gram(x_c,self._data.get_Xs()).dot(self._data.get_alpha_s()) + mu
 
-        while grad_alpha_c[0] < 0 and alpha_c < self._data.get_C():
+        #while grad_alpha_c[0] < 0 and alpha_c < self._data.get_C():
         # just to test the loop
-        #while True:
+        while True:
             # calculate beta
             #TODO: optimize Q because inverse is computationally extensive
             Q = - inv(np.concatenate(
-                    (np.concatenate(
-                        (np.ones(len(self._data.get_Xs())).reshape(len(self._data.get_Xs()),1),
-                        self.gram(self._data.get_Xs())), axis=1
-                    ),
-                    np.concatenate(
-                        ([[0]], np.ones(len(self._data.get_alpha_s())).
-                                    reshape(1,len(self._data.get_alpha_s()))), axis=1)
-                    ), axis=0))
+                        (cat(([[0]], np.ones((1,len(self._data.get_alpha_s())))), axis=1),
+                         cat((np.ones((len(self._data.get_Xs()),1)),self.gram(self._data.get_Xs())), axis=1
+                        ))))
 
             beta = Q.dot(
-                    np.concatenate( (self.gram(self._data.get_Xs(), x_c), [[1]]), axis=0))
+                    np.concatenate( ([1], self.gram(x_c,self._data.get_Xs())[0]), axis=0))
+
             # calculate gamma
             K_cs = self.gram(x_c, self._data.get_Xs())
+            K_rs = self.gram(self._data.get_Xr(), self._data.get_Xs())
 
 
-            if len(self._data.get_Xr()) > 0:
-                K_rs = self.gram(self._data.get_Xr(), self._data.get_Xs())
-                gamma = np.concatenate(
-                            (np.concatenate(
-                                ([[1]],K_cs),axis=1),
-                             np.concatenate(
-                                 (np.ones(len(self._data.get_alpha_r())).
-                                    reshape(1,len(self._data.get_alpha_r())),
-                                  K_rs),axis=1)),
-                            axis=0).dot(beta) \
-                        + np.concatenate((self.gram(x_c),
-                                          self.gram(x_c, self._data.get_Xr())),axis=0)
-            else:
-                gamma = np.concatenate(([[1]],K_cs),axis=1).dot(beta) + self.gram(x_c)
+            gamma = np.concatenate(
+                        (np.concatenate(([[1]], K_cs),axis=1),
+                         np.concatenate(
+                             (np.ones((len(self._data.get_alpha_r()),1)),
+                              K_rs), axis = 1)),
+                        axis=0).dot(beta) \
+                    + np.concatenate((self.gram(x_c),
+                                      self.gram(self._data.get_Xr(),x_c)),axis=0)
 
-            # accounting
+        # accounting
 
             #case 1: Some alpha_i in S reaches a bound
-
             I_Splus = beta[1:] > epsilon
+            I_Splus_ind = [c for c,i in enumerate(I_Splus) if i]
+            I_Sminus = beta[1:] < - epsilon
 
-            # possible weight updates
-            grad_alpha_I = - self._data.get_alpha_s().reshape(len(self._data.get_alpha_s()),1)
-            grad_alpha_I[I_Splus] += self._data.get_C()
-            alpha_beta = np.divide(grad_alpha_I, beta[1:])
-            grad_alpha_c_S = np.absolute(alpha_beta).min() * cmp(np.absolute(alpha_beta).min(),0)
+            I_Sminus_ind = [c for c,i in enumerate(I_Sminus) if i]
+
+            grad_alpha_I_Splus = np.divide(- self._data.get_alpha_s()[I_Splus], beta[1:][I_Splus])
+            grad_alpha_I_Sminus = np.divide(- self._data.get_alpha_s()[I_Sminus] \
+                                  + np.ones(len(self._data.get_alpha_s()[I_Sminus])) * self._data.get_C(),\
+                                    beta[1:][I_Sminus])
+
+            I_S_ind = I_Splus_ind + I_Sminus_ind
+
+            # possible min S weight update
+            alpha_beta = np.concatenate((grad_alpha_I_Splus,grad_alpha_I_Sminus))
+            abs_min = np.absolute(alpha_beta).min()
+            grad_alpha_c_S = abs_min * cmp(alpha_beta[np.where(np.absolute(alpha_beta) == abs_min)],0)
+
+            # maybe just calculate if needed ...
+            # grad_alpha_c_S_ind = np.where(alpha_beta == grad_alpha_c_S)[0]
 
             #case 2: Some g_i in R reaches zero
             grad_alpha_c_R = 0
@@ -178,13 +178,25 @@ class OCSVM(object):
 
             grad_alpha_c_max = min(filter(None, [grad_alpha_c_S, grad_alpha_c_R,
                                            grad_alpha_c_g, grad_alpha_c_alpha]))
+
+            if grad_alpha_c_max == grad_alpha_c_S:
+                # removal of minimum index point
+                x_k = self._data.get_Xs()[np.where(alpha_beta == grad_alpha_c_S)[0]]
+
+            elif grad_alpha_c_max == grad_alpha_c_R:
+                a = 1
+                # expansion of minimum index point
+            else:
+                # update alpha
+                alpha_c += grad_alpha_c_max
+                self._data.update_alpha_s(beta*grad_alpha_c_max)
+                break
+            # update alpha
             alpha_c += grad_alpha_c_max
             self._data.update_alpha_s(beta*grad_alpha_c_max)
-            if not grad_alpha_c_S == grad_alpha_c_max and not grad_alpha_c_R == grad_alpha_c_max:
-                break
+            break
 
-
-            self._data.add(x_c, alpha_c)
+        #self._data.add(x_c, alpha_c)
 
 
 
