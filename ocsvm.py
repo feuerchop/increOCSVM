@@ -166,16 +166,8 @@ class OCSVM(object):
             I_Rplus_ind = [c for c,i in enumerate(I_Rplus) if i]
             I_Rminus = np.all([gamma[1:] < - epsilon, self._data.get_alpha_r() <= 1e-5],axis=0)
             I_Rminus_ind = [c for c,i in enumerate(I_Rminus) if i]
-            print I_Rplus
-            print I_Rminus
-            print gamma[1:]
-            print self._data.get_alpha_r()
-            print self._data.get_C()
-
-            return 0
 
             #calculate gradient of alpha (g_r)
-
             grad_alpha_r = - self.gram(self._data.get_Xr()).diagonal()  \
               + self.gram(self._data.get_Xr()).dot(self._data.get_alpha_r()) \
               + mu * np.ones(len(self._data.get_alpha_r()))
@@ -183,11 +175,9 @@ class OCSVM(object):
             grad_alpha_I_Rplus = largest_increase_r[I_Rplus]
             grad_alpha_I_Rminus = largest_increase_r[I_Rminus]
             I_R_ind = I_Rplus_ind + I_Rminus_ind
-            grad_alpha_c_R = cat((grad_alpha_I_Rplus, grad_alpha_I_Rminus)).min()
-            print cat((grad_alpha_I_Rplus, grad_alpha_I_Rminus))
-            print grad_alpha_c_R
-            print I_R_ind
-            return 0
+            if len(cat((grad_alpha_I_Rplus, grad_alpha_I_Rminus))) > 0:
+                grad_alpha_c_R = cat((grad_alpha_I_Rplus, grad_alpha_I_Rminus)).min()
+            else: grad_alpha_c_R = None
 
             #case 3: g_c becomes zero
             if gamma[0] > epsilon:
@@ -202,23 +192,15 @@ class OCSVM(object):
             grad_alpha_c_max = min(filter(None, [grad_alpha_c_S, grad_alpha_c_R,
                                            grad_alpha_c_g, grad_alpha_c_alpha]))
 
-            if grad_alpha_c_max == grad_alpha_c_S:
-                # removal of minimum index point
-                x_k = self._data.get_Xs()[np.where(alpha_beta == grad_alpha_c_S)[0]]
-
-            elif grad_alpha_c_max == grad_alpha_c_R:
-                a = 1
-                # expansion of minimum index point
-            else:
-                # update alpha
-                alpha_c += grad_alpha_c_max
-                self._data.update_alpha_s(beta*grad_alpha_c_max)
-                break
             # update alpha
             alpha_c += grad_alpha_c_max
+            #TODO: update alpha!
             self._data.update_alpha_s(beta*grad_alpha_c_max)
-            break
+            if grad_alpha_c_max == grad_alpha_c_g:
+                break
 
+            #TODO: update recursively Q!!!
+        print grad_alpha_c_max
         #self._data.add(x_c, alpha_c)
 
 
