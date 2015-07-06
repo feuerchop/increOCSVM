@@ -98,47 +98,40 @@ class OCSVM(object):
 
         epsilon = 0.001
          # calculate mu according to KKT-conditions
-        mu = 1 - sum([w_i * self._kernel(x_i, self._data.get_Xs()[0])
-                         for w_i, x_i
-                         in zip(self._data.get_alpha(), self._data.get_X())])
-
-        #calculate gradient of alpha (g_i)
-
-        grad_alpha_r = - self.gram(self._data.get_Xr()).diagonal()  \
-              + self.gram(self._data.get_Xr()).dot(self._data.get_alpha_r()) \
-              + mu * np.ones(len(self._data.get_alpha_r()))
+        #
+        mu = 1 - self.gram(self._data.get_Xs()[0], self._data.get_Xs()).dot(self._data.get_alpha_s())
 
         # set alpha of x_c zero
         # calculate gradient of alpha_c
         alpha_c = 0
-        grad_alpha_c = self.gram(x_c) + self.gram(x_c,self._data.get_Xs()).dot(self._data.get_alpha_s()) + mu
+        grad_alpha_c = - self.gram(x_c) + self.gram(x_c, self._data.get_Xs()).dot(self._data.get_alpha_s()) + mu
 
         #while grad_alpha_c[0] < 0 and alpha_c < self._data.get_C():
         # just to test the loop
         while True:
+
             # calculate beta
             #TODO: optimize Q because inverse is computationally extensive
-            Q = - inv(np.concatenate(
-                        (cat(([[0]], np.ones((1,len(self._data.get_alpha_s())))), axis=1),
-                         cat((np.ones((len(self._data.get_Xs()),1)),self.gram(self._data.get_Xs())), axis=1
-                        ))))
+            len_s = len(self._data.get_alpha_s())
 
-            beta = Q.dot(
-                    np.concatenate( ([1], self.gram(x_c,self._data.get_Xs())[0]), axis=0))
+            Q = - inv(cat((cat(([[0]], np.ones((1,len_s))), axis=1),cat((np.ones((len_s,1)),self.gram(self._data.get_Xs())), axis=1
+                        )),axis=0))
+
+            beta = Q.dot(cat(([1], self.gram(x_c,self._data.get_Xs())[0]), axis=0))
 
             # calculate gamma
             K_cs = self.gram(x_c, self._data.get_Xs())
             K_rs = self.gram(self._data.get_Xr(), self._data.get_Xs())
 
 
-            gamma = np.concatenate(
-                        (np.concatenate(([[1]], K_cs),axis=1),
-                         np.concatenate(
+            gamma = cat(
+                        (cat(([[1]], K_cs), axis=1),
+                         cat(
                              (np.ones((len(self._data.get_alpha_r()),1)),
                               K_rs), axis = 1)),
                         axis=0).dot(beta) \
-                    + np.concatenate((self.gram(x_c),
-                                      self.gram(self._data.get_Xr(),x_c)),axis=0)
+                    + cat((self.gram(x_c),
+                                      self.gram(x_c,self._data.get_Xr())),axis=1)[0]
 
         # accounting
 
@@ -146,7 +139,6 @@ class OCSVM(object):
             I_Splus = beta[1:] > epsilon
             I_Splus_ind = [c for c,i in enumerate(I_Splus) if i]
             I_Sminus = beta[1:] < - epsilon
-
             I_Sminus_ind = [c for c,i in enumerate(I_Sminus) if i]
 
             grad_alpha_I_Splus = np.divide(- self._data.get_alpha_s()[I_Splus], beta[1:][I_Splus])
@@ -157,7 +149,7 @@ class OCSVM(object):
             I_S_ind = I_Splus_ind + I_Sminus_ind
 
             # possible min S weight update
-            alpha_beta = np.concatenate((grad_alpha_I_Splus,grad_alpha_I_Sminus))
+            alpha_beta = cat((grad_alpha_I_Splus,grad_alpha_I_Sminus))
             abs_min = np.absolute(alpha_beta).min()
             grad_alpha_c_S = abs_min * cmp(alpha_beta[np.where(np.absolute(alpha_beta) == abs_min)],0)
 
@@ -165,7 +157,38 @@ class OCSVM(object):
             # grad_alpha_c_S_ind = np.where(alpha_beta == grad_alpha_c_S)[0]
 
             #case 2: Some g_i in R reaches zero
-            grad_alpha_c_R = 0
+
+            alpha_r = self._data.get_alpha_r()
+
+
+
+            I_Rplus = np.all([gamma[1:] > epsilon, self._data.get_alpha_r() == self._data.get_C()],axis=0)
+            I_Rplus_ind = [c for c,i in enumerate(I_Rplus) if i]
+            I_Rminus = np.all([gamma[1:] < - epsilon, self._data.get_alpha_r() <= 1e-5],axis=0)
+            I_Rminus_ind = [c for c,i in enumerate(I_Rminus) if i]
+            print I_Rplus
+            print I_Rminus
+            print gamma[1:]
+            print self._data.get_alpha_r()
+            print self._data.get_C()
+
+            return 0
+
+            #calculate gradient of alpha (g_r)
+
+            grad_alpha_r = - self.gram(self._data.get_Xr()).diagonal()  \
+              + self.gram(self._data.get_Xr()).dot(self._data.get_alpha_r()) \
+              + mu * np.ones(len(self._data.get_alpha_r()))
+            largest_increase_r = np.divide(- grad_alpha_r, gamma[1:])
+            grad_alpha_I_Rplus = largest_increase_r[I_Rplus]
+            grad_alpha_I_Rminus = largest_increase_r[I_Rminus]
+            I_R_ind = I_Rplus_ind + I_Rminus_ind
+            grad_alpha_c_R = cat((grad_alpha_I_Rplus, grad_alpha_I_Rminus)).min()
+            print cat((grad_alpha_I_Rplus, grad_alpha_I_Rminus))
+            print grad_alpha_c_R
+            print I_R_ind
+            return 0
+
             #case 3: g_c becomes zero
             if gamma[0] > epsilon:
                 grad_alpha_c_g = np.divide(-grad_alpha_c, gamma[0])

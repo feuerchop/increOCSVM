@@ -52,3 +52,15 @@ class Data(object):
         return np.all([self._alpha > 1e-5, self._alpha < self.get_C()], axis=0)
     def get_alpha_s_ind(self):
         return [ind for ind, i in enumerate(self.get_sv()) if i]
+
+    def get_alpha_e(self):
+        return self._alpha[self._alpha == self.get_C()]
+
+    def get_alpha_o(self):
+        return self._alpha[self._alpha <= 1e-5]
+
+    def get_X_e(self):
+        return self._X[self._alpha == self.get_C()]
+
+    def get_X_o(self):
+        return self._X[self._alpha <= 1e-5]
