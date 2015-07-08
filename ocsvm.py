@@ -199,11 +199,15 @@ class OCSVM(object):
             self._data.update_alpha_s(beta[1:]*grad_alpha_c_max)
             if grad_alpha_c_max == grad_alpha_c_g:
                 break
-
+            else:
+                if grad_alpha_c_max == grad_alpha_c_R:
+                    #TODO: how to calculate alpha_k => (minimum point which will be a support vector then)
+            # update Q
             Q = cat((cat((Q, [np.zeros(Q.shape[1])]), axis=0), np.zeros((Q.shape[0] + 1, 1))), axis=1) + 1/gamma[0] * cat((beta,[1]), axis=1).dot(cat((beta,[1]), axis=1))
 
         print grad_alpha_c_max
-        #self._data.add(x_c, alpha_c)
+        if grad_alpha_c <= 1e-5:
+            self._data.add(x_c, alpha_c)
 
 
 
