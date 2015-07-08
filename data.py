@@ -43,7 +43,7 @@ class Data(object):
         return self._C
 
     def update_alpha_s(self, update_alpha):
-        self._X[np.all([self._alpha > 1e-5, self._alpha < self.get_C()], axis=0)] = update_alpha
+        self._alpha[np.all([self._alpha > 1e-5, self._alpha < self.get_C()], axis=0)] = update_alpha
 
     def add(self, x_c, alpha_c):
         self._X = np.concatenate((self._X, x_c), axis=0)

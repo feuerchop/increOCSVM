@@ -108,14 +108,14 @@ class OCSVM(object):
 
         #while grad_alpha_c[0] < 0 and alpha_c < self._data.get_C():
         # just to test the loop
+        len_s = len(self._data.get_alpha_s())
+        Q = - inv(cat((cat(([[0]], np.ones((1,len_s))), axis=1),cat((np.ones((len_s,1)),self.gram(self._data.get_Xs())), axis=1
+                        )),axis=0))
         while True:
 
             # calculate beta
             #TODO: optimize Q because inverse is computationally extensive
-            len_s = len(self._data.get_alpha_s())
 
-            Q = - inv(cat((cat(([[0]], np.ones((1,len_s))), axis=1),cat((np.ones((len_s,1)),self.gram(self._data.get_Xs())), axis=1
-                        )),axis=0))
 
             beta = Q.dot(cat(([1], self.gram(x_c,self._data.get_Xs())[0]), axis=0))
 
@@ -194,12 +194,14 @@ class OCSVM(object):
 
             # update alpha
             alpha_c += grad_alpha_c_max
-            #TODO: update alpha!
-            self._data.update_alpha_s(beta*grad_alpha_c_max)
+            grad_alpha_c = gamma[0] * grad_alpha_c_max
+            grad_alpha_r = gamma[1:] * grad_alpha_c_max
+            self._data.update_alpha_s(beta[1:]*grad_alpha_c_max)
             if grad_alpha_c_max == grad_alpha_c_g:
                 break
 
-            #TODO: update recursively Q!!!
+            Q = cat((cat((Q, [np.zeros(Q.shape[1])]), axis=0), np.zeros((Q.shape[0] + 1, 1))), axis=1) + 1/gamma[0] * cat((beta,[1]), axis=1).dot(cat((beta,[1]), axis=1))
+
         print grad_alpha_c_max
         #self._data.add(x_c, alpha_c)
 
