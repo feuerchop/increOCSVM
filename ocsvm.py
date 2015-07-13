@@ -104,17 +104,15 @@ class OCSVM(object):
         # calculate gradient of alpha_c
         alpha_c = 0
         grad_alpha_c = - self.gram(x_c) + self.gram(x_c, self._data.get_Xs()).dot(self._data.get_alpha_s()) + mu
-        print "grad_alpha: " + str(self._data.get_alpha())
-        print "grad_alpha_s: " + str(self._data.get_alpha_s())
-        print "grad_alpha_c: " + str(grad_alpha_c)
+
         #
         # just to test the loop
         len_s = len(self._data.get_alpha_s())
         Q = - inv(cat((cat(([[0]], np.ones((1,len_s))), axis=1),cat((np.ones((len_s,1)),self.gram(self._data.get_Xs())), axis=1
                         )),axis=0))
-
-        while grad_alpha_c[0] < 0 and alpha_c < self._data.get_C():
-
+        loop_count = 0
+        while grad_alpha_c < 0 and alpha_c < self._data.get_C():
+            print loop_count
             # calculate beta
 
             beta = Q.dot(cat(([1], self.gram(x_c,self._data.get_Xs())[0]), axis=0))
@@ -152,9 +150,6 @@ class OCSVM(object):
             abs_min = np.absolute(alpha_beta).min()
             grad_alpha_c_S = abs_min * cmp(alpha_beta[np.where(np.absolute(alpha_beta) == abs_min)],0)
 
-            # maybe just calculate if needed ...
-            # grad_alpha_c_S_ind = np.where(alpha_beta == grad_alpha_c_S)[0]
-
             #case 2: Some g_i in R reaches zero
 
             alpha_r = self._data.get_alpha_r()
@@ -191,10 +186,16 @@ class OCSVM(object):
             grad_alpha_c_max = min(filter(None, [grad_alpha_c_S, grad_alpha_c_R,
                                            grad_alpha_c_g, grad_alpha_c_alpha]))
 
+            print "old alpha_s: " + str(self._data.get_alpha_s())
+            print "new alpha_s: " + str(self._data.get_alpha_s() + beta[1:]*grad_alpha_c_max)
+
             if grad_alpha_c_max == grad_alpha_c_R:
-                    print "move from R to S => increment Q"
-                    #Q = cat((cat((Q, [np.zeros(Q.shape[1])]), axis=0), np.zeros((Q.shape[0] + 1, 1))), axis=1) + 1/gamma[0] * cat((beta,[1]), axis=1).dot(cat((beta,[1]), axis=1))
-                    # decrement Q
+                #TODO: How to update alpha_R???????
+                print "move from R to S => increment Q"
+                R = -1 * Q
+                R = cat((cat((R,np.zeros((1,R.shape[1]))),axis=0),np.zeros((R.shape[0]+1,1))),axis=1) + (1/gamma[0]) * cat((beta, [1]),axis=0)* np.array([cat((beta, [1]),axis=0)]).T
+                Q = -1 * R
+
             else:
                 print "move from S to R => decrement Q"
                 grad_alpha_c_S_ind = I_S_ind[np.where(alpha_beta == grad_alpha_c_S)[0]] + 1
@@ -213,12 +214,12 @@ class OCSVM(object):
             grad_alpha_c = gamma[0] * grad_alpha_c_max
             grad_alpha_r = gamma[1:] * grad_alpha_c_max
 
-            print "old alpha_s: " + str(self._data.get_alpha_s())
-            print "new alpha_s: " + str(self._data.get_alpha_s() + beta[1:]*grad_alpha_c_S)
 
+            self._data.update_alpha_s(self._data.get_alpha_s() + beta[1:]*grad_alpha_c_max)
             if grad_alpha_c_max == grad_alpha_c_g:
                 print "grad_alpha_c_max from c"
                 break
+            loop_count += 1
 
         print grad_alpha_c_max
         if grad_alpha_c <= 1e-5:
