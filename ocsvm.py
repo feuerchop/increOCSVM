@@ -93,6 +93,7 @@ class OCSVM(object):
     ### incremental
 
     def increment(self, x_c):
+        grad_alpha_c_max = None
         print self._data.get_alpha_s()
         epsilon = 0.001
          # calculate mu according to KKT-conditions
@@ -146,7 +147,6 @@ class OCSVM(object):
                                     beta[1:][I_Sminus])
 
             I_S_ind = I_Splus_ind + I_Sminus_ind
-
             # possible min S weight update
             alpha_beta = cat((grad_alpha_I_Splus,grad_alpha_I_Sminus))
             abs_min = np.absolute(alpha_beta).min()
@@ -158,8 +158,6 @@ class OCSVM(object):
             #case 2: Some g_i in R reaches zero
 
             alpha_r = self._data.get_alpha_r()
-
-
 
             I_Rplus = np.all([gamma[1:] > epsilon, self._data.get_alpha_r() == self._data.get_C()],axis=0)
             print "I_Rplus: "+ str(I_Rplus)
@@ -173,9 +171,6 @@ class OCSVM(object):
               + self.gram(self._data.get_Xr(),self._data.get_Xs()).dot(self._data.get_alpha_s()) \
               + mu * np.ones(len(self._data.get_alpha_r()))
             #- self.gram(x_c) + self.gram(x_c, self._data.get_Xs()).dot(self._data.get_alpha_s()) + mu
-            print "alpha_r: " + str(self._data.get_alpha_r())
-            print "grad_alpha_r: " + str(grad_alpha_r)
-            print "gamma: " + str(gamma[1:])
             largest_increase_r = np.divide(- grad_alpha_r, gamma[1:])
             grad_alpha_I_Rplus = largest_increase_r[I_Rplus]
             grad_alpha_I_Rminus = largest_increase_r[I_Rminus]
@@ -196,7 +191,24 @@ class OCSVM(object):
             grad_alpha_c_max = min(filter(None, [grad_alpha_c_S, grad_alpha_c_R,
                                            grad_alpha_c_g, grad_alpha_c_alpha]))
 
-            # update alpha
+            if grad_alpha_c_max == grad_alpha_c_R:
+                    print "move from R to S => increment Q"
+                    #Q = cat((cat((Q, [np.zeros(Q.shape[1])]), axis=0), np.zeros((Q.shape[0] + 1, 1))), axis=1) + 1/gamma[0] * cat((beta,[1]), axis=1).dot(cat((beta,[1]), axis=1))
+                    # decrement Q
+            else:
+                print "move from S to R => decrement Q"
+                grad_alpha_c_S_ind = I_S_ind[np.where(alpha_beta == grad_alpha_c_S)[0]] + 1
+                R = -1 * Q
+                for i in range(R.shape[0]):
+                    for j in range(R.shape[1]):
+                        if i != grad_alpha_c_S_ind and j != grad_alpha_c_S_ind:
+                            R[i][j] = R[i][j] - R[i][grad_alpha_c_S_ind] * R[grad_alpha_c_S_ind][j] / R[grad_alpha_c_S_ind][grad_alpha_c_S_ind]
+                R = np.delete(R, grad_alpha_c_S_ind,0)
+                R = np.delete(R, grad_alpha_c_S_ind,1)
+                Q = -1 * R
+
+
+            # update alpha after Q update (is better)
             alpha_c += grad_alpha_c_max
             grad_alpha_c = gamma[0] * grad_alpha_c_max
             grad_alpha_r = gamma[1:] * grad_alpha_c_max
@@ -204,23 +216,12 @@ class OCSVM(object):
             print "old alpha_s: " + str(self._data.get_alpha_s())
             print "new alpha_s: " + str(self._data.get_alpha_s() + beta[1:]*grad_alpha_c_S)
 
-            return 0
             if grad_alpha_c_max == grad_alpha_c_g:
-                print "break"
+                print "grad_alpha_c_max from c"
                 break
-            '''
-            else:
-                if grad_alpha_c_max == grad_alpha_c_R:
-                    #TODO: how to calculate alpha_k => (minimum point which will be a support vector then)
-                    # increment Q
-                    Q = cat((cat((Q, [np.zeros(Q.shape[1])]), axis=0), np.zeros((Q.shape[0] + 1, 1))), axis=1) + 1/gamma[0] * cat((beta,[1]), axis=1).dot(cat((beta,[1]), axis=1))
-                    # decrement Q
-            # update Q
-
 
         print grad_alpha_c_max
         if grad_alpha_c <= 1e-5:
             self._data.add(x_c, alpha_c)
 
 
-'''

@@ -64,3 +64,7 @@ class Data(object):
 
     def get_X_o(self):
         return self._X[self._alpha <= 1e-5]
+
+    def get_ind_S(self):
+        ind = np.all([self._alpha > 1e-5, self._alpha < self.get_C()], axis=0)
+        return [i for i,bool in enumerate(ind) if bool]
