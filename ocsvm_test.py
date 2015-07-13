@@ -68,16 +68,18 @@ def standardExample():
 
 def incrementExample():
     # Generate train data
-    X = 0.3 * np.random.randn(10, 2)
+    X = 0.3 * np.random.randn(5, 2)
     X_train = np.r_[X + 2, X-2]
+    X_train = np.array([[ 2.05014156, 1.57874676], [ 1.77364132, 1.79817027], [ 2.168239, 1.79832986], [ 1.75084617, 1.97693673], [ 2.22726199, 2.54527565],
+            [-1.94985844, -2.42125324], [-2.22635868, -2.20182973], [-1.831761, -2.20167014], [-2.24915383, -2.02306327], [-1.77273801, -1.45472435]])
 
 
     # Generate some regular novel observations
-    X = 0.3 * np.random.randn(5, 2)
+    X = 0.3 * np.random.randn(1, 2)
     X_test = np.r_[X + 2,X-2]
 
     # Generate some abnormal novel observations
-    X_outliers = np.random.uniform(low=-4, high=4, size=(5, 2))
+    X_outliers = np.random.uniform(low=-4, high=4, size=(2, 2))
 
     clf1 = ocsvm.OCSVM("rbf", nu=0.5, gamma=3.1625)
     clf1.train(X_train)
@@ -88,13 +90,14 @@ def incrementExample():
     clf.train(X_train[:-1])
 
     #Plot the data
-    #plt.figure()
-    #plot(clf, X_train[:-1], X_test, X_outliers, 100, False)
-    print "point to increment"
+    plt.figure()
+    #plot(clf1, X_train[:-1], X_test, X_outliers, 100, False)
+    #plt.show()
+    #print "point to increment"
     clf.increment(X_train[-1:])
     #plt.figure()
     #plot(clf, X_train, X_test, X_outliers, 100, True)
-    #plt.show()
+
     #plt.savefig('test.pdf')
 
 if __name__ == "__main__":

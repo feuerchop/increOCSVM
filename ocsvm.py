@@ -27,7 +27,6 @@ class OCSVM(object):
         self._data = data.Data()
 
     #returns trained SVM predictor given features (X)
-    #TODO: we need to store the key properties of model after training
     # Please check libsvm what they provide for output, e.g., I need to access to the sv_idx all the time
     def train(self, X):
         self._data.set_X(X)
@@ -60,7 +59,6 @@ class OCSVM(object):
         return pairwise_kernels(X, Y, "rbf", gamma=self._gamma)
 
     #compute Lagrangian multipliers
-    # TODO: I'd rather this part directly goes in train()
     def alpha(self, X):
         n_samples, n_features = X.shape
         K = self.gram(X)
@@ -95,7 +93,7 @@ class OCSVM(object):
     ### incremental
 
     def increment(self, x_c):
-
+        print self._data.get_alpha_s()
         epsilon = 0.001
          # calculate mu according to KKT-conditions
         #
@@ -105,17 +103,18 @@ class OCSVM(object):
         # calculate gradient of alpha_c
         alpha_c = 0
         grad_alpha_c = - self.gram(x_c) + self.gram(x_c, self._data.get_Xs()).dot(self._data.get_alpha_s()) + mu
-
-        #while grad_alpha_c[0] < 0 and alpha_c < self._data.get_C():
+        print "grad_alpha: " + str(self._data.get_alpha())
+        print "grad_alpha_s: " + str(self._data.get_alpha_s())
+        print "grad_alpha_c: " + str(grad_alpha_c)
+        #
         # just to test the loop
         len_s = len(self._data.get_alpha_s())
         Q = - inv(cat((cat(([[0]], np.ones((1,len_s))), axis=1),cat((np.ones((len_s,1)),self.gram(self._data.get_Xs())), axis=1
                         )),axis=0))
-        while True:
+
+        while grad_alpha_c[0] < 0 and alpha_c < self._data.get_C():
 
             # calculate beta
-            #TODO: optimize Q because inverse is computationally extensive
-
 
             beta = Q.dot(cat(([1], self.gram(x_c,self._data.get_Xs())[0]), axis=0))
 
@@ -163,14 +162,20 @@ class OCSVM(object):
 
 
             I_Rplus = np.all([gamma[1:] > epsilon, self._data.get_alpha_r() == self._data.get_C()],axis=0)
+            print "I_Rplus: "+ str(I_Rplus)
             I_Rplus_ind = [c for c,i in enumerate(I_Rplus) if i]
             I_Rminus = np.all([gamma[1:] < - epsilon, self._data.get_alpha_r() <= 1e-5],axis=0)
+            print "I_Rminus: " + str(I_Rminus)
             I_Rminus_ind = [c for c,i in enumerate(I_Rminus) if i]
 
             #calculate gradient of alpha (g_r)
             grad_alpha_r = - self.gram(self._data.get_Xr()).diagonal()  \
-              + self.gram(self._data.get_Xr()).dot(self._data.get_alpha_r()) \
+              + self.gram(self._data.get_Xr(),self._data.get_Xs()).dot(self._data.get_alpha_s()) \
               + mu * np.ones(len(self._data.get_alpha_r()))
+            #- self.gram(x_c) + self.gram(x_c, self._data.get_Xs()).dot(self._data.get_alpha_s()) + mu
+            print "alpha_r: " + str(self._data.get_alpha_r())
+            print "grad_alpha_r: " + str(grad_alpha_r)
+            print "gamma: " + str(gamma[1:])
             largest_increase_r = np.divide(- grad_alpha_r, gamma[1:])
             grad_alpha_I_Rplus = largest_increase_r[I_Rplus]
             grad_alpha_I_Rminus = largest_increase_r[I_Rminus]
@@ -178,7 +183,6 @@ class OCSVM(object):
             if len(cat((grad_alpha_I_Rplus, grad_alpha_I_Rminus))) > 0:
                 grad_alpha_c_R = cat((grad_alpha_I_Rplus, grad_alpha_I_Rminus)).min()
             else: grad_alpha_c_R = None
-
             #case 3: g_c becomes zero
             if gamma[0] > epsilon:
                 grad_alpha_c_g = np.divide(-grad_alpha_c, gamma[0])
@@ -196,21 +200,27 @@ class OCSVM(object):
             alpha_c += grad_alpha_c_max
             grad_alpha_c = gamma[0] * grad_alpha_c_max
             grad_alpha_r = gamma[1:] * grad_alpha_c_max
-            self._data.update_alpha_s(beta[1:]*grad_alpha_c_max)
+
+            print "old alpha_s: " + str(self._data.get_alpha_s())
+            print "new alpha_s: " + str(self._data.get_alpha_s() + beta[1:]*grad_alpha_c_S)
+
+            return 0
             if grad_alpha_c_max == grad_alpha_c_g:
+                print "break"
                 break
+            '''
             else:
                 if grad_alpha_c_max == grad_alpha_c_R:
                     #TODO: how to calculate alpha_k => (minimum point which will be a support vector then)
+                    # increment Q
+                    Q = cat((cat((Q, [np.zeros(Q.shape[1])]), axis=0), np.zeros((Q.shape[0] + 1, 1))), axis=1) + 1/gamma[0] * cat((beta,[1]), axis=1).dot(cat((beta,[1]), axis=1))
+                    # decrement Q
             # update Q
-            Q = cat((cat((Q, [np.zeros(Q.shape[1])]), axis=0), np.zeros((Q.shape[0] + 1, 1))), axis=1) + 1/gamma[0] * cat((beta,[1]), axis=1).dot(cat((beta,[1]), axis=1))
+
 
         print grad_alpha_c_max
         if grad_alpha_c <= 1e-5:
             self._data.add(x_c, alpha_c)
 
 
-
-
-
-
+'''
