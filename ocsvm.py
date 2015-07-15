@@ -6,6 +6,7 @@ from time import gmtime, strftime
 from numpy.linalg import inv
 from numpy import concatenate as cat
 from sklearn.metrics.pairwise import pairwise_kernels
+from numpy import vstack, hstack, ones, zeros, absolute, where, divide, inf 
 import data
 
 #print(__doc__)
@@ -32,15 +33,15 @@ class OCSVM(object):
         self._data.set_X(X)
         self._data.set_C(1/(self._nu*len(X)))
         # get lagrangian multiplier
-        self._data.set_alpha(self.alpha(self._data.get_X()))
+        self._data.set_alpha(self.alpha(self._data.X()))
         # defines necessary parameter for prediction
-        self.predictor(self._data.get_X(), self._data.get_alpha())
+        self.predictor(self._data.X(), self._data.alpha())
 
     #returns SVM predictors with given X and langrange mutlipliers
     def predictor(self, X, alpha):
 
         # define support vector and weights/alpha
-        alpha = self._data.get_alpha_s()
+        alpha = self._data.alpha_s()
         sv = self._data.get_Xs()
 
         #for computing rho we need an x_i with corresponding a_i < 1/nu and a > 0
@@ -64,15 +65,15 @@ class OCSVM(object):
         K = self.gram(X)
 
         P = cvxopt.matrix(K)
-        q = cvxopt.matrix(np.zeros(n_samples))
-        A = cvxopt.matrix(np.ones((n_samples,1)),(1,n_samples))
+        q = cvxopt.matrix(zeros(n_samples))
+        A = cvxopt.matrix(ones((n_samples,1)),(1,n_samples))
         b = cvxopt.matrix(1.0)
 
-        G_1 = cvxopt.matrix(np.diag(np.ones(n_samples) * -1))
-        h_1 = cvxopt.matrix(np.zeros(n_samples))
+        G_1 = cvxopt.matrix(np.diag(ones(n_samples) * -1))
+        h_1 = cvxopt.matrix(zeros(n_samples))
 
-        G_2 = cvxopt.matrix(np.diag(np.ones(n_samples)))
-        h_2 = cvxopt.matrix(np.ones(n_samples) * 1/(self._nu*len(X)))
+        G_2 = cvxopt.matrix(np.diag(ones(n_samples)))
+        h_2 = cvxopt.matrix(ones(n_samples) * 1/(self._nu*len(X)))
 
         G = cvxopt.matrix(np.vstack((G_1, G_2)))
         h = cvxopt.matrix(np.vstack((h_1, h_2)))
@@ -88,112 +89,137 @@ class OCSVM(object):
 
     # Returns distance to boundary
     def decision_function(self, x):
-        return -1 * self._rho + self._data.get_alpha_s().dot(self.gram(self._data.get_Xs(),x))
+        return -1 * self._rho + self._data.alpha_s().dot(self.gram(self._data.get_Xs(),x))
 
     ### incremental
 
     def increment(self, x_c):
-        grad_alpha_c_max = None
-        print self._data.get_alpha_s()
-        epsilon = 0.001
-         # calculate mu according to KKT-conditions
-        #
-        mu = 1 - self.gram(self._data.get_Xs()[0], self._data.get_Xs()).dot(self._data.get_alpha_s())
+        # initialize
 
-        # set alpha of x_c zero
-        # calculate gradient of alpha_c
-        alpha_c = 0
-        grad_alpha_c = - self.gram(x_c) + self.gram(x_c, self._data.get_Xs()).dot(self._data.get_alpha_s()) + mu
 
-        #
-        # just to test the loop
-        len_s = len(self._data.get_alpha_s())
-        Q = - inv(cat((cat(([[0]], np.ones((1,len_s))), axis=1),cat((np.ones((len_s,1)),self.gram(self._data.get_Xs())), axis=1
-                        )),axis=0))
-        loop_count = 0
-        while grad_alpha_c < 0 and alpha_c < self._data.get_C():
-            print loop_count
+        X = self._data.X() #data points
+        a = self._data.alpha() #alpha
+        ac = 0 #alpha of new point c
+        e = 1e-5
+        C = 1/(self._nu*len(X))
+
+        inds = np.all([a > e, a < C - e], axis=0)       # support vectors indeces
+        indr = np.any([a <= e, a >= C - e], axis=0)     # error and non-support vectors indeces
+        inde = a[indr] >= C - e                               # error vectors indeces in R
+        indo = a[indr] <= e                                   # non-support vectors indeces in R
+
+        l = len(a)
+        ls = len(a[inds])                               # support vectors length
+        lr = len(a[indr])                               # error and non-support vectors length
+        le = len(a[inde])                               # error vectors lenght
+        lo = len(a[indo])                               # non-support vectors
+
+        Kss = self.gram(X[inds]) # kernel of support vectors
+        Krr = self.gram(X[indr]) # kernel of error vectors
+        Krs = self.gram(X[indr], X[inds]) # kernel of error vectors, support vectors
+        Kcs = self.gram(x_c, X[inds])[0]
+        Kcr = self.gram(x_c, X[indr])[0]
+        Kcc = 1
+
+        # calculate mu according to KKT-conditions
+
+        mu = 1 - self.gram(X[inds][0], X[inds]).dot(a[inds])
+
+        # calculate gradient
+        gc = - Kcc + Kcs.dot(a[inds]) + mu
+        g = ones(l)
+        g[inds] = zeros(ls)
+        g[indr] = ones((lr,1)) * mu - Krr.diagonal() + Krs.dot(a[inds])
+
+        # initial calculation for beta
+
+        Q = inv(vstack([hstack([0,ones(ls)]),hstack([ones((ls,1)), Kss])]))
+
+        n = hstack([1, Kcs])
+
+        while gc < 0 and ac < C:
+
             # calculate beta
-
-            beta = Q.dot(cat(([1], self.gram(x_c,self._data.get_Xs())[0]), axis=0))
+            beta = - Q.dot(n)
+            betas = beta[1:]
 
             # calculate gamma
-            K_cs = self.gram(x_c, self._data.get_Xs())
-            K_rs = self.gram(self._data.get_Xr(), self._data.get_Xs())
+            gamma = vstack([hstack([1, Kcs]), hstack([ones((lr,1)), Krs])]).dot(beta) + hstack([Kcc, Kcr])
+            gammac = gamma[0]
+            gammar = gamma[1:]
 
-
-            gamma = cat(
-                        (cat(([[1]], K_cs), axis=1),
-                         cat(
-                             (np.ones((len(self._data.get_alpha_r()),1)),
-                              K_rs), axis = 1)),
-                        axis=0).dot(beta) \
-                    + cat((self.gram(x_c),
-                                      self.gram(x_c,self._data.get_Xr())),axis=1)[0]
-
-        # accounting
+            # accounting
 
             #case 1: Some alpha_i in S reaches a bound
-            I_Splus = beta[1:] > epsilon
-            I_Splus_ind = [c for c,i in enumerate(I_Splus) if i]
-            I_Sminus = beta[1:] < - epsilon
-            I_Sminus_ind = [c for c,i in enumerate(I_Sminus) if i]
+            if ls > 0:
+                IS_plus = betas > e
+                IS_minus = betas < - e
+                IS_zero = np.any([betas <= e, betas >= -e], axis=0)
 
-            grad_alpha_I_Splus = np.divide(- self._data.get_alpha_s()[I_Splus], beta[1:][I_Splus])
-            grad_alpha_I_Sminus = np.divide(- self._data.get_alpha_s()[I_Sminus] \
-                                  + np.ones(len(self._data.get_alpha_s()[I_Sminus])) * self._data.get_C(),\
-                                    beta[1:][I_Sminus])
+                gsmax = zeros(ls)
+                gsmax[IS_zero] = ones(len(betas[IS_zero])) * inf
+                gsmax[IS_plus] = ones(len(betas[IS_plus]))*C-a[inds][IS_plus]
+                gsmax[IS_minus] = - a[inds][IS_minus]
 
-            I_S_ind = I_Splus_ind + I_Sminus_ind
-            # possible min S weight update
-            alpha_beta = cat((grad_alpha_I_Splus,grad_alpha_I_Sminus))
-            abs_min = np.absolute(alpha_beta).min()
-            grad_alpha_c_S = abs_min * cmp(alpha_beta[np.where(np.absolute(alpha_beta) == abs_min)],0)
-
+                absmin = absolute(gsmax).min()
+                gsmin = absmin * cmp(gsmax[where(absolute(gsmax) == absmin)],0)
+                ismin = where(gsmax == gsmin)
+            else: gsmin = inf
+            print "gsmin: " + str(gsmin)
             #case 2: Some g_i in R reaches zero
+            if le > 0:
+                Ie_plus = gammar[inde] > e
+                Ie_inf = gammar[inde] <= e
+                gec = zeros(le)
+                gec[Ie_plus] = divide(-g[indr][inde][Ie_plus], gammar[inde][Ie_plus])
+                gec[Ie_inf] = inf
+                gemin = gec.min()
+                iemin = where(gec == gemin)
+            else: gemin = inf
+            print "gemin: " + str(gemin)
+            if lo > 0:
+                Io_minus = gammar[indo] < - e
+                Io_inf = gammar[indo] >= - e
+                goc = zeros(lo)
+                goc[Io_minus] = divide(-g[indr][indo][Io_minus], gammar[indo][Io_minus])
+                goc[Io_inf] = inf
+                gomin = goc.min()
+                iomin = where(goc == gomin)
+                print gammar[indo]
+                print g[indr][indo]
+                print gomin
+            else: gomin = inf
+            print "gomin: " + str(gomin)
 
-            alpha_r = self._data.get_alpha_r()
+            # case 3: gc becomes zero
+            if gammac > e: gcmin = - gc/gammac
 
-            I_Rplus = np.all([gamma[1:] > epsilon, self._data.get_alpha_r() == self._data.get_C()],axis=0)
-            print "I_Rplus: "+ str(I_Rplus)
-            I_Rplus_ind = [c for c,i in enumerate(I_Rplus) if i]
-            I_Rminus = np.all([gamma[1:] < - epsilon, self._data.get_alpha_r() <= 1e-5],axis=0)
-            print "I_Rminus: " + str(I_Rminus)
-            I_Rminus_ind = [c for c,i in enumerate(I_Rminus) if i]
+            else: gcmin = inf
+            print gcmin
+            # case 4
+            gacmin = C - ac
+            print gacmin
 
-            #calculate gradient of alpha (g_r)
-            grad_alpha_r = - self.gram(self._data.get_Xr()).diagonal()  \
-              + self.gram(self._data.get_Xr(),self._data.get_Xs()).dot(self._data.get_alpha_s()) \
-              + mu * np.ones(len(self._data.get_alpha_r()))
-            #- self.gram(x_c) + self.gram(x_c, self._data.get_Xs()).dot(self._data.get_alpha_s()) + mu
-            largest_increase_r = np.divide(- grad_alpha_r, gamma[1:])
-            grad_alpha_I_Rplus = largest_increase_r[I_Rplus]
-            grad_alpha_I_Rminus = largest_increase_r[I_Rminus]
-            I_R_ind = I_Rplus_ind + I_Rminus_ind
-            if len(cat((grad_alpha_I_Rplus, grad_alpha_I_Rminus))) > 0:
-                grad_alpha_c_R = cat((grad_alpha_I_Rplus, grad_alpha_I_Rminus)).min()
-            else: grad_alpha_c_R = None
-            #case 3: g_c becomes zero
-            if gamma[0] > epsilon:
-                grad_alpha_c_g = np.divide(-grad_alpha_c, gamma[0])
-            else:
-                grad_alpha_c_g = None
-            #case 4
-            grad_alpha_c_alpha = self._data.get_C() - alpha_c
-
-            # get smallest gradient of alpha
-
-            grad_alpha_c_max = min(filter(None, [grad_alpha_c_S, grad_alpha_c_R,
-                                           grad_alpha_c_g, grad_alpha_c_alpha]))
-
-            print "old alpha_s: " + str(self._data.get_alpha_s())
-            print "new alpha_s: " + str(self._data.get_alpha_s() + beta[1:]*grad_alpha_c_max)
+            print min([gsmin, gemin, gomin, gcmin, gacmin])
+            print qmin
+            return 0
+            imin = where([gsmin, gemin, gomin, gcmin, gacmin] == gmin)
+            print qmin
+            print imin
+            return 0
+            
 
             if grad_alpha_c_max == grad_alpha_c_R:
-                #TODO: How to update alpha_R???????
+                ind = abs(grad_alpha_r) == min(abs(grad_alpha_r))
+                ind_R = I_R_ind[np.where(ind == True)[0]]
+                grad_r_new = grad_alpha_r[I_R_ind[np.where(ind == True)[0]]]
+                print grad_r_new
+                X_r = self._data.get_Xr()[I_R_ind[np.where(ind == True)[0]]]
+                new_alpha = (grad_r_new + self.gram(X_r) - mu -self.gram(X_r, self._data.get_Xs()).dot(self._data.alpha_s()))
+
                 print "move from R to S => increment Q"
                 R = -1 * Q
-                R = cat((cat((R,np.zeros((1,R.shape[1]))),axis=0),np.zeros((R.shape[0]+1,1))),axis=1) + (1/gamma[0]) * cat((beta, [1]),axis=0)* np.array([cat((beta, [1]),axis=0)]).T
+                R = cat((cat((R,zeros((1,R.shape[1]))),axis=0),zeros((R.shape[0]+1,1))),axis=1) + (1/gamma[0]) * cat((beta, [1]),axis=0)* np.array([cat((beta, [1]),axis=0)]).T
                 Q = -1 * R
 
             else:
@@ -210,19 +236,18 @@ class OCSVM(object):
 
 
             # update alpha after Q update (is better)
-            alpha_c += grad_alpha_c_max
-            grad_alpha_c = gamma[0] * grad_alpha_c_max
-            grad_alpha_r = gamma[1:] * grad_alpha_c_max
+            ac += grad_alpha_c_max
 
 
-            self._data.update_alpha_s(self._data.get_alpha_s() + beta[1:]*grad_alpha_c_max)
+
+            self._data.update_alpha_s(self._data.alpha_s() + beta[1:]*grad_alpha_c_max)
             if grad_alpha_c_max == grad_alpha_c_g:
                 print "grad_alpha_c_max from c"
                 break
             loop_count += 1
 
         print grad_alpha_c_max
-        if grad_alpha_c <= 1e-5:
-            self._data.add(x_c, alpha_c)
+        if gc <= 1e-5:
+            self._data.add(x_c, ac)
 
 
