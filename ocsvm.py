@@ -6,8 +6,9 @@ from time import gmtime, strftime
 from numpy.linalg import inv
 from numpy import concatenate as cat
 from sklearn.metrics.pairwise import pairwise_kernels
-from numpy import vstack, hstack, ones, zeros, absolute, where, divide, inf 
+from numpy import vstack, hstack, ones, zeros, absolute, where, divide, inf, delete, outer
 import data
+import sys
 
 #print(__doc__)
 
@@ -75,8 +76,8 @@ class OCSVM(object):
         G_2 = cvxopt.matrix(np.diag(ones(n_samples)))
         h_2 = cvxopt.matrix(ones(n_samples) * 1/(self._nu*len(X)))
 
-        G = cvxopt.matrix(np.vstack((G_1, G_2)))
-        h = cvxopt.matrix(np.vstack((h_1, h_2)))
+        G = cvxopt.matrix(vstack((G_1, G_2)))
+        h = cvxopt.matrix(vstack((h_1, h_2)))
 
         solution = cvxopt.solvers.qp(P, q, G, h, A, b)
         return np.ravel(solution['x'])
@@ -89,17 +90,18 @@ class OCSVM(object):
 
     # Returns distance to boundary
     def decision_function(self, x):
+        #print self._rho
         return -1 * self._rho + self._data.alpha_s().dot(self.gram(self._data.get_Xs(),x))
 
     ### incremental
 
-    def increment(self, x_c):
+    def increment(self, xc):
         # initialize
 
 
-        X = self._data.X() #data points
-        a = self._data.alpha() #alpha
-        ac = 0 #alpha of new point c
+        X = self._data.X()          # data points
+        a = self._data.alpha()      # alpha
+        ac = 0                      # alpha of new point c
         e = 1e-5
         C = 1/(self._nu*len(X))
 
@@ -117,32 +119,39 @@ class OCSVM(object):
         Kss = self.gram(X[inds]) # kernel of support vectors
         Krr = self.gram(X[indr]) # kernel of error vectors
         Krs = self.gram(X[indr], X[inds]) # kernel of error vectors, support vectors
-        Kcs = self.gram(x_c, X[inds])[0]
-        Kcr = self.gram(x_c, X[indr])[0]
-        Kcc = 1
+        Kcs = self.gram(xc, X[inds])[0]
+        Kcr = self.gram(xc, X[indr])[0]
+        Kcc = self.gram(xc)[0]
 
         # calculate mu according to KKT-conditions
         mu = 1 - self.gram(X[inds][0], X[inds]).dot(a[inds])
+        print "mu_all: " + str(ones(ls) - self.gram(X[inds]).dot(a[inds]))
 
         # calculate gradient
-        gc = - Kcc + Kcs.dot(a[inds]) + mu
+        print "a: " + str(a)
+        print "Kcs.dot(a[inds]): "+ str(Kcs.dot(a[inds]))
+        gc = Kcc + Kcs.dot(a[inds]) - mu
+        print "gc: "+ str(gc)
+
         g = ones(l)
         g[inds] = zeros(ls)
-        g[indr] = - Krr.diagonal() + Krs.dot(a[inds]) + ones((lr,1)) * mu
+        g[indr] = + Krr.diagonal() + Krs.dot(a[inds]) - ones((lr,1)) * mu
+        print "a[inds]: " + str(a[inds])
+        print "g[inds]: " + str(g[inds])
+        print "a[indr]: " + str(a[indr])
+        print "g[indr]: " + str(g[indr])
 
         # initial calculation for beta
 
         Q = inv(vstack([hstack([0,ones(ls)]),hstack([ones((ls,1)), Kss])]))
 
-        n = hstack([1, Kcs])
         init_loop = True
+        loop_count = 1
         while gc < 0 and ac < C:
-            if init_loop:
-                init_loop = False
-            else:
-                init_loop = False
-
+            print "increment/decrement loop " + str(loop_count)
+            loop_count += 1
             # calculate beta
+            n = hstack([1, Kcs])
             beta = - Q.dot(n)
             betas = beta[1:]
 
@@ -150,7 +159,10 @@ class OCSVM(object):
             gamma = vstack([hstack([1, Kcs]), hstack([ones((lr,1)), Krs])]).dot(beta) + hstack([Kcc, Kcr])
             gammac = gamma[0]
             gammar = gamma[1:]
-
+            print "gamma: " + str(gamma)
+            print indr
+            print inde
+            print indo
             # accounting
 
             #case 1: Some alpha_i in S reaches a bound
@@ -209,34 +221,118 @@ class OCSVM(object):
             imin = where([gsmin, gemin, gomin, gcmin, gacmin] == gmin)[0][0]
             ac = ac + gmin
             a[inds] = a[inds] + betas*gmin
+            print "a[indr]: " + str(a[indr])
+            print "g[indr]: " + str(g[indr])
             g[indr] = g[indr] + gammar * gmin
+            print "gammar * gmin: " + str(gammar * gmin)
+            print "g[indr]: " + str(g[indr])
             gc = gc + gammac * gmin
             print a[inds]
+
             if imin == 0: # min = gsmin => move k from s to r
                 print "move k from s to r"
                 #update indeces
                 inds = np.all([a > e, a < C - e], axis=0)       # support vectors indeces
                 indr = np.any([a <= e, a >= C - e], axis=0)     # error and non-support vectors indeces
-                #update length of sets
-                ls = len(a[inds])                               # support vectors length
-                lr = len(a[indr])                               # error and non-support vectors length
-                #update kernel
-                Kss = self.gram(X[inds]) # kernel of support vectors
-                Krr = self.gram(X[indr]) # kernel of error vectors
-                Krs = self.gram(X[indr], X[inds]) # kernel of error vectors, support vectors
-                Kcs = self.gram(x_c, X[inds])[0]
-                Kcr = self.gram(x_c, X[indr])[0]
-                # update
-                mu = 1 - self.gram(X[inds][0], X[inds]).dot(a[inds])
-                break
-            elif imin == 1 or imin == 2: # min = gemin | gomin => move k from r to s
-                print "move k from s to r"
+                inde = a[indr] >= C - e                               # error vectors indeces in R
+                indo = a[indr] <= e                                   # non-support vectors indeces in R
 
-                break
+                #decrement Q, delete row ismin and column ismin
+                print "Q.shape: " + str(Q.shape)
+                ismin = ismin[0][0]
+                for i in range(Q.shape[0]):
+                    for j in range(Q.shape[1]):
+                        if i != ismin and j != ismin:
+                            Q[i][j] = Q[i][j] - Q[i][ismin]*Q[ismin][j]/Q[ismin][ismin]
+                Q = delete(Q, ismin, 0)
+                Q = delete(Q, ismin, 1)
+
+                print inds
+                print indr
+                print Q.shape
+
+
+
+            elif imin == 1:
+                print "move k from e (r) to s"
+                # get x, a and g
+                Xk = X[indr][inde][iemin]
+                ak = a[indr][inde][iemin]
+                gk = g[indr][inde][iemin]
+                gammak = gammar[iemin]
+
+                # delete the elements from X,a and g => add it to the end of X,a,g
+                ind_del = where(a == ak)
+                X = delete(X, ind_del, axis=0)
+                a = delete(a, ind_del)
+                g = delete(g, ind_del)
+                X = vstack((X, Xk))
+                a = hstack((a, ak))
+                g = hstack((g, gk))
+
+                # set indeces new
+                inds = delete(inds, ind_del)
+                inds = hstack((inds,True))
+                indr = delete(indr, ind_del)
+                indr = hstack((indr, False))
+                inde = delete(inde, iemin)
+                indr = delete(indr, iemin)
+
+                #increment Q
+                Q = hstack((vstack((Q, zeros(Q.shape[1]))),zeros((Q.shape[0] + 1,1)))) \
+                    + 1/gammak * outer(hstack((beta,1)), hstack((beta,1)))
+
+            elif imin == 2: # min = gemin | gomin => move k from r to s
+                print "move k from i (r) to s"
+                Xk = X[indr][indo][iomin]
+                ak = a[indr][indo][iomin]
+                gk = g[indr][indo][iomin]
+                gammak = gammar[iomin]
+
+                # delete the elements from X,a and g => add it to the end of X,a,g
+                ind_del = where(a == ak)
+                X = delete(X, ind_del, axis=0)
+                a = delete(a, ind_del)
+                g = delete(g, ind_del)
+                X = vstack((X, Xk))
+                a = hstack((a, ak))
+                g = hstack((g, gk))
+
+                # set indeces new
+                inds = delete(inds, ind_del)
+                inds = hstack((inds,True))
+                indr = delete(indr, ind_del)
+                indr = hstack((indr, False))
+                inde = delete(inde, iomin)
+                indo = delete(indo, iomin)
+
+                #increment Q
+                Q = hstack((vstack((Q, zeros(Q.shape[1]))),zeros((Q.shape[0] + 1,1)))) \
+                    + 1/gammak * outer(hstack((beta,1)), hstack((beta,1)))
+
             else: # k = c => terminate
                 print "k = c => terminate"
                 break
-            #TODO: Update Q
 
 
+            #update length of sets
+            ls = len(a[inds])                               # support vectors length
+            lr = len(a[indr])                               # error and non-support vectors length
+            le = len(a[inde])                               # error vectors lenght
+            lo = len(a[indo])                               # non-support vectors
+            #update kernel
+            Kss = self.gram(X[inds])                        # kernel of support vectors
+            Krr = self.gram(X[indr])                        # kernel of error vectors
+            Krs = self.gram(X[indr], X[inds])               # kernel of error vectors, support vectors
+            Kcs = self.gram(xc, X[inds])[0]
+            Kcr = self.gram(xc, X[indr])[0]
 
+            # update
+            mu = 1 - self.gram(X[inds][0], X[inds]).dot(a[inds])
+        self._data.set_X(X)
+        self._data.set_alpha(a)
+        self._data.add(xc, ac)
+        print ac
+        print gc
+        print self._data.alpha()
+        print sum(self._data.alpha())

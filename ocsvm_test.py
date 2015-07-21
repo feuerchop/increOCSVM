@@ -69,7 +69,9 @@ def incrementExample():
     # Generate train data
     X = 0.3 * np.random.randn(10, 2)
     print X
-    X_train = X
+    X_train = np.array([[ 0.0025938, -0.02196003], [-0.21087275, -0.04131728], [-0.29849882, -0.10758852],
+                        [ 0.08820899, -0.10650461], [-0.32360685, 0.09747189], [ 0.42518186, 0.02529367], [ 0.09971183, -0.14351817],
+                        [ 0.13160906,  0.37036343], [-0.09614565, 0.1042193 ], [-0.54352837, -0.21775554]])
     #X_train = np.array([[0.43820715,-0.24545596], [ 0.54800681, -0.10448275]
     #    , [-0.22072283, 0.615242  ] ,[ 0.56838124, -0.0731333 ] ,[ 0.20640239, -0.60750008],
     #                    [-0.50627214, -0.01806128] ,[ 0.06960881, -0.2666668 ] ,[-0.14210866, -0.38488849],
@@ -94,19 +96,19 @@ def incrementExample():
     # Train the data
     clf = ocsvm.OCSVM("rbf", nu=0.1, gamma=3.1625)
     clf.train(X_train[:-1])
-    #plot(clf, X_train[:-1], X_test, X_outliers, 100, False)
-    #plt.show()
+    plot(clf, X_train[:-1], X_test, X_outliers[-1:], 100, False)
+    #
     clf.increment(X_train[-1:])
 
     #Plot the data
-    #plt.figure()
-    #plot(clf1, X_train[:-1], X_test, X_outliers, 100, False)
+    plt.figure()
+    plot(clf, X_train[:-1], X_test, X_outliers[-1:], 100, False)
 
     #print "point to increment"
     #
     #plt.figure()
     #plot(clf, X_train, X_test, X_outliers, 100, True)
-
+    plt.show()
     #plt.savefig('test.pdf')
 
 if __name__ == "__main__":
