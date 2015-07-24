@@ -36,10 +36,10 @@ class OCSVM(object):
         # get lagrangian multiplier
         self._data.set_alpha(self.alpha(self._data.X()))
         # defines necessary parameter for prediction
-        self.predictor(self._data.X(), self._data.alpha())
+        self.predictor()
 
     #returns SVM predictors with given X and langrange mutlipliers
-    def predictor(self, X, alpha):
+    def predictor(self):
 
         # define support vector and weights/alpha
         alpha = self._data.alpha_s()
@@ -142,6 +142,10 @@ class OCSVM(object):
             beta = - Q.dot(n)
             betas = beta[1:]
             print "a[inds]: %s" % a[inds]
+            print "inds: %s" %inds
+            print "indr: %s" %indr
+            print "inde: %s" %inde
+            print "indo: %s" %indo
             print "betas: %s" % betas
             # calculate gamma
             gamma = vstack([hstack([1, Kcs]), hstack([ones((lr,1)), Krs])]).dot(beta) + hstack([Kcc, Kcr])
@@ -247,13 +251,16 @@ class OCSVM(object):
                 X = vstack((X, Xk))
                 a = hstack((a, ak))
                 g = hstack((g, gk))
-
+                print "indr: %s" %indr
+                print "inde: %s" %inde
+                print "indo: %s" %indo
                 # set indeces new
                 indr = delete(indr, ind_del)
                 indr = hstack((indr,True))
 
                 inds = delete(inds, ind_del)
                 inds = hstack((inds, False))
+
                 if ak < e:
                     indo = hstack((inde, True))
                     inde = hstack((inde, False))
@@ -351,6 +358,7 @@ class OCSVM(object):
         self._data.set_X(X)
         self._data.set_alpha(a)
         self._data.add(xc, ac)
+        self.predictor()
         print self._data.alpha_s()
         print sum(self._data.alpha_s())
         print self._data.Xs()
