@@ -43,7 +43,7 @@ class OCSVM(object):
 
         # define support vector and weights/alpha
         alpha = self._data.alpha_s()
-        sv = self._data.get_Xs()
+        sv = self._data.Xs()
 
         #for computing rho we need an x_i with corresponding a_i < 1/nu and a > 0
         rho_x = 0
@@ -82,33 +82,28 @@ class OCSVM(object):
         solution = cvxopt.solvers.qp(P, q, G, h, A, b)
         return np.ravel(solution['x'])
 
-    #Returns SVM predicton given feature vector
-    def predict(self, x):
-        result = -1 * self._rho
-
-        return np.sign(result)
-
     # Returns distance to boundary
     def decision_function(self, x):
         #print self._rho
-        return -1 * self._rho + self._data.alpha_s().dot(self.gram(self._data.get_Xs(),x))
+        return -1 * self._rho + self._data.alpha_s().dot(self.gram(self._data.Xs(),x))
 
     ### incremental
 
-    def increment(self, xc):
-        # initialize
+    def increment(self, xc, xo=None):
+        e = 1e-5
 
+        # initialize X, a, C, g, indeces, kernel values
 
         X = self._data.X()          # data points
         a = self._data.alpha()      # alpha
         ac = 0                      # alpha of new point c
-        e = 1e-5
         C = 1/(self._nu*len(X))
+        print "C: %s" % C
 
-        inds = np.all([a > e, a < C - e], axis=0)       # support vectors indeces
-        indr = np.any([a <= e, a >= C - e], axis=0)     # error and non-support vectors indeces
-        inde = a[indr] >= C - e                               # error vectors indeces in R
-        indo = a[indr] <= e                                   # non-support vectors indeces in R
+        inds = np.all([a > e, a < C - e], axis=0)           # support vectors indeces
+        indr = np.any([a <= e, a >= C - e], axis=0)         # error and non-support vectors indeces
+        inde = a[indr] >= C - e                             # error vectors indeces in R
+        indo = a[indr] <= e                                 # non-support vectors indeces in R
 
         l = len(a)
         ls = len(a[inds])                               # support vectors length
@@ -117,54 +112,46 @@ class OCSVM(object):
         lo = len(a[indo])                               # non-support vectors
 
         Kss = self.gram(X[inds]) # kernel of support vectors
-        Krr = self.gram(X[indr]) # kernel of error vectors
         Krs = self.gram(X[indr], X[inds]) # kernel of error vectors, support vectors
         Kcs = self.gram(xc, X[inds])[0]
         Kcr = self.gram(xc, X[indr])[0]
-        Kcc = self.gram(xc)[0]
+        Kcc = 1
 
         # calculate mu according to KKT-conditions
         mu = 1 - self.gram(X[inds][0], X[inds]).dot(a[inds])
-        print "mu_all: " + str(ones(ls) - self.gram(X[inds]).dot(a[inds]))
-
         # calculate gradient
-        print "a: " + str(a)
-        print "Kcs.dot(a[inds]): "+ str(Kcs.dot(a[inds]))
-        gc = Kcc + Kcs.dot(a[inds]) - mu
-        print "gc: "+ str(gc)
-
+        gc = - 1 + Kcs.dot(a[inds]) + mu
         g = ones(l)
         g[inds] = zeros(ls)
-        g[indr] = + Krr.diagonal() + Krs.dot(a[inds]) - ones((lr,1)) * mu
-        print "a[inds]: " + str(a[inds])
-        print "g[inds]: " + str(g[inds])
-        print "a[indr]: " + str(a[indr])
-        print "g[indr]: " + str(g[indr])
+        g[indr] = - ones(lr) + Krs.dot(a[inds]) + ones((lr,1)) * mu
+        print "g[indr] %s" % g[indr]
+        print "g[indr][indo] %s" % g[indr][indo]
 
         # initial calculation for beta
-
         Q = inv(vstack([hstack([0,ones(ls)]),hstack([ones((ls,1)), Kss])]))
 
-        init_loop = True
         loop_count = 1
-        while gc < 0 and ac < C:
-            print "increment/decrement loop " + str(loop_count)
+        while gc < e and ac < C - e:
+            ac0 = ac
+            print "--------------------------" + "increment/decrement loop " + str(loop_count) + "--------------------------"
+
             loop_count += 1
             # calculate beta
             n = hstack([1, Kcs])
+            print "shape of Q: %s, shape of n: %s" % (Q.shape, n.shape)
             beta = - Q.dot(n)
             betas = beta[1:]
-
+            print "a[inds]: %s" % a[inds]
+            print "betas: %s" % betas
             # calculate gamma
             gamma = vstack([hstack([1, Kcs]), hstack([ones((lr,1)), Krs])]).dot(beta) + hstack([Kcc, Kcr])
             gammac = gamma[0]
             gammar = gamma[1:]
-            print "gamma: " + str(gamma)
-            print indr
-            print inde
-            print indo
-            # accounting
 
+            print "gammar: %s" %gammar
+            print "indo: %s" %indo
+
+            # accounting
             #case 1: Some alpha_i in S reaches a bound
             if ls > 0:
                 IS_plus = betas > e
@@ -180,23 +167,16 @@ class OCSVM(object):
                 gsmin = absolute(gsmax).min()
                 ismin = where(absolute(gsmax) == gsmin)
             else: gsmin = inf
-            print "gsmin: " + str(gsmin)
             #case 2: Some g_i in R reaches zero
             if le > 0:
-                print "gammar: "+ str(gammar)
-                print "g[indr]: " +str(g[indr])
-                print "a[indr]: " + str(a[indr])
-                print C
                 Ie_plus = gammar[inde] > e
                 Ie_inf = gammar[inde] <= e
                 gec = zeros(le)
                 gec[Ie_plus] = divide(-g[indr][inde][Ie_plus], gammar[inde][Ie_plus])
                 gec[Ie_inf] = inf
-                print gec
                 gemin = gec.min()
                 iemin = where(gec == gemin)
             else: gemin = inf
-            print "gemin: " + str(gemin)
             if lo > 0:
                 Io_minus = gammar[indo] < - e
                 Io_inf = gammar[indo] >= - e
@@ -207,38 +187,81 @@ class OCSVM(object):
                 iomin = where(goc == gomin)
 
             else: gomin = inf
-            print "gomin: " + str(gomin)
 
             # case 3: gc becomes zero
             if gammac > e: gcmin = - gc/gammac
-
             else: gcmin = inf
-            print "gcmin: " + str(gcmin[0])
             # case 4
             gacmin = C - ac
-            print "gacmin: " + str(gacmin)
+
+            # determine minimum largest increment
             gmin = min([gsmin, gemin, gomin, gcmin, gacmin])
+
+            # print a lot ...
+            print "gsmin: %s" %gsmin
+            print "g[inds]: %s" %g[inds]
+            print "a[inds]: %s" %a[inds]
+            print "---"
+            print "gemin: %s" %gemin
+            print "g[indr][inde]: %s" %g[inde]
+            print "a[indr][inde]: %s" %a[inde]
+            print "---"
+            print "gomin: %s" %gomin
+            print "g[indr][indo]: %s" %g[indr][indo]
+            print "a[indr][indo]: %s" %a[indr][indo]
+            print "---"
+            print "gcmin: %s" %gcmin
+            print "gc: %s" %gc
+            print "ac: %s" %ac
+            print "---"
+            print "gacmin: %s" % gacmin
+            print "---"
             imin = where([gsmin, gemin, gomin, gcmin, gacmin] == gmin)[0][0]
-            ac = ac + gmin
+
+            # update a, g,
+            ac += gmin
             a[inds] = a[inds] + betas*gmin
-            print "a[indr]: " + str(a[indr])
-            print "g[indr]: " + str(g[indr])
             g[indr] = g[indr] + gammar * gmin
-            print "gammar * gmin: " + str(gammar * gmin)
-            print "g[indr]: " + str(g[indr])
             gc = gc + gammac * gmin
-            print a[inds]
+            print "after update"
+            print "a[inds]: %s" % a[inds]
+            print "a[indr]: %s" % a[indr]
+            print "g[indr]: %s" % g[indr]
 
             if imin == 0: # min = gsmin => move k from s to r
+
                 print "move k from s to r"
                 #update indeces
-                inds = np.all([a > e, a < C - e], axis=0)       # support vectors indeces
-                indr = np.any([a <= e, a >= C - e], axis=0)     # error and non-support vectors indeces
-                inde = a[indr] >= C - e                               # error vectors indeces in R
-                indo = a[indr] <= e                                   # non-support vectors indeces in R
+
+                # get x, a and g
+                Xk = X[inds][ismin]
+                ak = a[inds][ismin]
+                gk = g[inds][ismin]
+                betak = betas[ismin]
+
+                # delete the elements from X,a and g => add it to the end of X,a,g
+                ind_del = where(a == ak)
+                X = delete(X, ind_del, axis=0)
+                a = delete(a, ind_del)
+                g = delete(g, ind_del)
+                X = vstack((X, Xk))
+                a = hstack((a, ak))
+                g = hstack((g, gk))
+
+                # set indeces new
+                indr = delete(indr, ind_del)
+                indr = hstack((indr,True))
+
+                inds = delete(inds, ind_del)
+                inds = hstack((inds, False))
+                if ak < e:
+                    indo = hstack((inde, True))
+                    inde = hstack((inde, False))
+                else:
+                    indo = hstack((inde, False))
+                    inde = hstack((inde, True))
 
                 #decrement Q, delete row ismin and column ismin
-                print "Q.shape: " + str(Q.shape)
                 ismin = ismin[0][0]
                 for i in range(Q.shape[0]):
                     for j in range(Q.shape[1]):
@@ -246,12 +269,6 @@ class OCSVM(object):
                             Q[i][j] = Q[i][j] - Q[i][ismin]*Q[ismin][j]/Q[ismin][ismin]
                 Q = delete(Q, ismin, 0)
                 Q = delete(Q, ismin, 1)
-
-                print inds
-                print indr
-                print Q.shape
-
-
 
             elif imin == 1:
                 print "move k from e (r) to s"
@@ -305,6 +322,8 @@ class OCSVM(object):
                 indr = hstack((indr, False))
                 inde = delete(inde, iomin)
                 indo = delete(indo, iomin)
+                print inde
+                print indo
 
                 #increment Q
                 Q = hstack((vstack((Q, zeros(Q.shape[1]))),zeros((Q.shape[0] + 1,1)))) \
@@ -322,17 +341,16 @@ class OCSVM(object):
             lo = len(a[indo])                               # non-support vectors
             #update kernel
             Kss = self.gram(X[inds])                        # kernel of support vectors
-            Krr = self.gram(X[indr])                        # kernel of error vectors
             Krs = self.gram(X[indr], X[inds])               # kernel of error vectors, support vectors
             Kcs = self.gram(xc, X[inds])[0]
             Kcr = self.gram(xc, X[indr])[0]
 
             # update
             mu = 1 - self.gram(X[inds][0], X[inds]).dot(a[inds])
+
         self._data.set_X(X)
         self._data.set_alpha(a)
         self._data.add(xc, ac)
-        print ac
-        print gc
-        print self._data.alpha()
-        print sum(self._data.alpha())
+        print self._data.alpha_s()
+        print sum(self._data.alpha_s())
+        print self._data.Xs()

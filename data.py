@@ -22,7 +22,7 @@ class Data(object):
         return self._X
 
     # return data points corresponding to support vector
-    def get_Xs(self):
+    def Xs(self):
         return self._X[np.all([self._alpha > 1e-5, self._alpha < self.C()], axis=0)]
 
     def get_Xr(self):
@@ -46,8 +46,8 @@ class Data(object):
         self._alpha[np.all([self._alpha > 1e-5, self._alpha < self.C()], axis=0)] = update_alpha
 
     def add(self, x_c, alpha_c):
-        self._X = np.concatenate((self._X, x_c), axis=0)
-        self._alpha = np.concatenate((self._alpha, alpha_c), axis=1)
+        self._X = np.vstack((self._X, x_c))
+        self._alpha = np.hstack((self._alpha, alpha_c))
     def get_sv(self):
         return np.all([self._alpha > 1e-5, self._alpha < self.C()], axis=0)
     def get_alpha_s_ind(self):
