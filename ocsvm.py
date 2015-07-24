@@ -98,7 +98,6 @@ class OCSVM(object):
         a = self._data.alpha()      # alpha
         ac = 0                      # alpha of new point c
         C = 1/(self._nu*len(X))
-        print "C: %s" % C
 
         inds = np.all([a > e, a < C - e], axis=0)           # support vectors indeces
         indr = np.any([a <= e, a >= C - e], axis=0)         # error and non-support vectors indeces
@@ -124,8 +123,6 @@ class OCSVM(object):
         g = ones(l)
         g[inds] = zeros(ls)
         g[indr] = - ones(lr) + Krs.dot(a[inds]) + ones((lr,1)) * mu
-        print "g[indr] %s" % g[indr]
-        print "g[indr][indo] %s" % g[indr][indo]
 
         # initial calculation for beta
         Q = inv(vstack([hstack([0,ones(ls)]),hstack([ones((ls,1)), Kss])]))
@@ -134,26 +131,21 @@ class OCSVM(object):
         while gc < e and ac < C - e:
             ac0 = ac
             print "--------------------------" + "increment/decrement loop " + str(loop_count) + "--------------------------"
-
+            print "a[inds]: %s" %a[inds]
+            print "a[indr]: %s" %a[indr]
             loop_count += 1
             # calculate beta
             n = hstack([1, Kcs])
-            print "shape of Q: %s, shape of n: %s" % (Q.shape, n.shape)
             beta = - Q.dot(n)
             betas = beta[1:]
-            print "a[inds]: %s" % a[inds]
-            print "inds: %s" %inds
-            print "indr: %s" %indr
-            print "inde: %s" %inde
-            print "indo: %s" %indo
-            print "betas: %s" % betas
-            # calculate gamma
-            gamma = vstack([hstack([1, Kcs]), hstack([ones((lr,1)), Krs])]).dot(beta) + hstack([Kcc, Kcr])
-            gammac = gamma[0]
-            gammar = gamma[1:]
 
-            print "gammar: %s" %gammar
-            print "indo: %s" %indo
+            # calculate gamma
+            if lr > 0:
+                gamma = vstack([hstack([1, Kcs]), hstack([ones((lr,1)), Krs])]).dot(beta) + hstack([Kcc, Kcr])
+                gammac = gamma[0]
+                gammar = gamma[1:]
+            else:
+                gammac =hstack([1, Kcs]).dot(beta) + Kcc
 
             # accounting
             #case 1: Some alpha_i in S reaches a bound
@@ -200,26 +192,6 @@ class OCSVM(object):
 
             # determine minimum largest increment
             gmin = min([gsmin, gemin, gomin, gcmin, gacmin])
-
-            # print a lot ...
-            print "gsmin: %s" %gsmin
-            print "g[inds]: %s" %g[inds]
-            print "a[inds]: %s" %a[inds]
-            print "---"
-            print "gemin: %s" %gemin
-            print "g[indr][inde]: %s" %g[inde]
-            print "a[indr][inde]: %s" %a[inde]
-            print "---"
-            print "gomin: %s" %gomin
-            print "g[indr][indo]: %s" %g[indr][indo]
-            print "a[indr][indo]: %s" %a[indr][indo]
-            print "---"
-            print "gcmin: %s" %gcmin
-            print "gc: %s" %gc
-            print "ac: %s" %ac
-            print "---"
-            print "gacmin: %s" % gacmin
-            print "---"
             imin = where([gsmin, gemin, gomin, gcmin, gacmin] == gmin)[0][0]
 
             # update a, g,
@@ -227,10 +199,6 @@ class OCSVM(object):
             a[inds] = a[inds] + betas*gmin
             g[indr] = g[indr] + gammar * gmin
             gc = gc + gammac * gmin
-            print "after update"
-            print "a[inds]: %s" % a[inds]
-            print "a[indr]: %s" % a[indr]
-            print "g[indr]: %s" % g[indr]
 
             if imin == 0: # min = gsmin => move k from s to r
 
@@ -241,19 +209,16 @@ class OCSVM(object):
                 Xk = X[inds][ismin]
                 ak = a[inds][ismin]
                 gk = g[inds][ismin]
-                betak = betas[ismin]
-
                 # delete the elements from X,a and g => add it to the end of X,a,g
-                ind_del = where(a == ak)
+                inds_ind = [c for c,val in enumerate(inds) if val]
+                ind_del = inds_ind[ismin[0]]
                 X = delete(X, ind_del, axis=0)
                 a = delete(a, ind_del)
                 g = delete(g, ind_del)
                 X = vstack((X, Xk))
                 a = hstack((a, ak))
                 g = hstack((g, gk))
-                print "indr: %s" %indr
-                print "inde: %s" %inde
-                print "indo: %s" %indo
+
                 # set indeces new
                 indr = delete(indr, ind_del)
                 indr = hstack((indr,True))
@@ -262,10 +227,10 @@ class OCSVM(object):
                 inds = hstack((inds, False))
 
                 if ak < e:
-                    indo = hstack((inde, True))
+                    indo = hstack((indo, True))
                     inde = hstack((inde, False))
                 else:
-                    indo = hstack((inde, False))
+                    indo = hstack((indo, False))
                     inde = hstack((inde, True))
 
                 #decrement Q, delete row ismin and column ismin
@@ -286,7 +251,8 @@ class OCSVM(object):
                 gammak = gammar[iemin]
 
                 # delete the elements from X,a and g => add it to the end of X,a,g
-                ind_del = where(a == ak)
+                indr_ind = [c for c,val in enumerate(indr) if val]
+                ind_del = indr_ind[iemin[0]]
                 X = delete(X, ind_del, axis=0)
                 a = delete(a, ind_del)
                 g = delete(g, ind_del)
@@ -314,7 +280,8 @@ class OCSVM(object):
                 gammak = gammar[iomin]
 
                 # delete the elements from X,a and g => add it to the end of X,a,g
-                ind_del = where(a == ak)
+                indr_ind = [c for c,val in enumerate(indr) if val]
+                ind_del = indr_ind[iomin[0]]
                 X = delete(X, ind_del, axis=0)
                 a = delete(a, ind_del)
                 g = delete(g, ind_del)
@@ -329,8 +296,6 @@ class OCSVM(object):
                 indr = hstack((indr, False))
                 inde = delete(inde, iomin)
                 indo = delete(indo, iomin)
-                print inde
-                print indo
 
                 #increment Q
                 Q = hstack((vstack((Q, zeros(Q.shape[1]))),zeros((Q.shape[0] + 1,1)))) \
@@ -347,10 +312,14 @@ class OCSVM(object):
             le = len(a[inde])                               # error vectors lenght
             lo = len(a[indo])                               # non-support vectors
             #update kernel
-            Kss = self.gram(X[inds])                        # kernel of support vectors
-            Krs = self.gram(X[indr], X[inds])               # kernel of error vectors, support vectors
-            Kcs = self.gram(xc, X[inds])[0]
-            Kcr = self.gram(xc, X[indr])[0]
+            if ls > 0:
+                Kss = self.gram(X[inds])
+                Kcs = self.gram(xc, X[inds])[0]                   # kernel of support vectors
+            if lr > 0 and ls > 0:
+                Krs = self.gram(X[indr], X[inds])               # kernel of error vectors, support vectors
+                Kcr = self.gram(xc, X[indr])[0]
+
+
 
             # update
             mu = 1 - self.gram(X[inds][0], X[inds]).dot(a[inds])

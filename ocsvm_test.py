@@ -53,8 +53,10 @@ def standardExample():
     X_outliers = np.random.uniform(low=-4, high=4, size=(15, 2))
 
     # Train the data
-    clf = ocsvm.OCSVM("rbf", nu=0.5, gamma=3.1625)
+    clf = ocsvm.OCSVM("rbf", nu=0.1, gamma=5.1625)
     clf.train(X_train)
+
+    print "alpha_s: %s" % clf._data.alpha_s()
 
 
     #Plot the data
