@@ -133,17 +133,23 @@ class OCSVM(object):
             print "--------------------------" + "increment/decrement loop " + str(loop_count) + "--------------------------"
             print "a[inds]: %s" %a[inds]
             print "a[indr]: %s" %a[indr]
+            print "gc: %s" %gc
+            print "ac: %s"%ac
             loop_count += 1
             # calculate beta
             n = hstack([1, Kcs])
             beta = - Q.dot(n)
             betas = beta[1:]
+            print "beta: %s" %beta
+            print "g[inds]: %s" %g[inds]
+            print "g[indr]: %s" %g[indr]
 
             # calculate gamma
             if lr > 0:
                 gamma = vstack([hstack([1, Kcs]), hstack([ones((lr,1)), Krs])]).dot(beta) + hstack([Kcc, Kcr])
                 gammac = gamma[0]
                 gammar = gamma[1:]
+                print gammar
             else:
                 gammac =hstack([1, Kcs]).dot(beta) + Kcc
 
@@ -167,18 +173,24 @@ class OCSVM(object):
             if le > 0:
                 Ie_plus = gammar[inde] > e
                 Ie_inf = gammar[inde] <= e
-                gec = zeros(le)
+                gec = zeros(len(g[inde] > e))
                 gec[Ie_plus] = divide(-g[indr][inde][Ie_plus], gammar[inde][Ie_plus])
                 gec[Ie_inf] = inf
+                for i in range(0, len(gec)):
+                    if gec[i] <= e:
+                        gec[i] = inf
                 gemin = gec.min()
                 iemin = where(gec == gemin)
             else: gemin = inf
             if lo > 0:
                 Io_minus = gammar[indo] < - e
                 Io_inf = gammar[indo] >= - e
-                goc = zeros(lo)
+                goc = zeros(len(g[indo] > e))
                 goc[Io_minus] = divide(-g[indr][indo][Io_minus], gammar[indo][Io_minus])
                 goc[Io_inf] = inf
+                for i in range(0, len(goc)):
+                    if goc[i] <= e:
+                        goc[i] = inf
                 gomin = goc.min()
                 iomin = where(goc == gomin)
 
@@ -193,7 +205,8 @@ class OCSVM(object):
             # determine minimum largest increment
             gmin = min([gsmin, gemin, gomin, gcmin, gacmin])
             imin = where([gsmin, gemin, gomin, gcmin, gacmin] == gmin)[0][0]
-
+            print "gsmin: %s, gemin: %s, gomin: %s, gcmin: %s, gacmin: %s" % (gsmin, gemin, gomin, gcmin, gacmin)
+            print "gmin: %s" %gmin
             # update a, g,
             ac += gmin
             a[inds] = a[inds] + betas*gmin
