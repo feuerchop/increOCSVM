@@ -71,7 +71,7 @@ def getBestParas(X5fold):
     print len(clf._data.alpha_s()), len(clf._data.alpha())
     #print clf._data.alpha()
     print "C: " % clf._data.C()
-    print "gold standard alpha s: %s, sum(a): %s" % (clf._data.alpha_s(), sum(clf._data.alpha_s()))
+    print "gold standard alpha s: %s, sum(as): %s" % (clf._data.alpha_s(), sum(clf._data.alpha_s()))
     print "f1: %s, precision: %s, recall: %s, nu: %s, gamma: %s, error: %s" % (best_paras[0], best_paras[1],
                                                                                best_paras[2], best_paras[3], best_paras[4], best_paras[5])
     return best_paras
@@ -148,7 +148,7 @@ def incrementEval(X5fold, nu, gamma):
         rec += r
         f1score += f
         err += e
-
+        break
     print "prec: %s, rec: %s, f1score: %s, err: %s" % (float(prec)/5, float(rec)/5, float(f1score)/5, float(err)/5)
 
     return clf, X_tra, X_lst, train_predict, test_predict
