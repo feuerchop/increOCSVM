@@ -156,11 +156,9 @@ def incrementEval(X5fold, nu, gamma):
 
 def train(X_tra, n, g):
     clf = ocsvm.OCSVM("rbf", nu=n, gamma=g)
-    minTrain = clf.getMinTrain(n)
-    print minTrain
-    clf.train(X_tra[:minTrain[0]])
+    clf.train(X_tra[:-1])
     print clf._data.alpha_s()
-    X_tra = X_tra[minTrain[0]:]
+    X_tra = X_tra[-1:]
     for i,x in enumerate(X_tra):
         print "========================== INCREMENTAL %s" %i
         clf.increment(x)

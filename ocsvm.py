@@ -103,93 +103,17 @@ class OCSVM(object):
 
         e = 1e-4
         # initialize X, a, C, g, indeces, kernel values
-        X = self._data.X()          # data points
-        C_old = 1/(self._nu*(len(X)))
-        print "C before: %s" % C_old
+        X = self._data.X()                                  # data points
         C = 1/(self._nu*(len(X)+1))
-
-        print "C now: %s" %C
-        setA = False
+        print "C: %s" %C
         a = self._data.alpha()
-        print "sum(a): %s" % sum(a)
-        for i in a:
-            if i > C:
-                setA = True
-                break
-        if setA:
-
-            norm = True
-
-            inds = np.all([a > e, a < C_old - e], axis=0)
-            inde = a >= C_old - e
-            indo = a <= e
-            diff_old = 1 - len(a[inde]) * C_old
-            print "a: %s" % a
-            print "a[inds]: %s" % a[inds]
-
-
-            diff_new = 1 - len(a[inde]) * C
-            print "diff_old: %s, diff_new: %s" % (diff_old, diff_new)
-            atnew = zeros(len(a))
-            if max(a[inds]) / diff_old * diff_new > C:
-                print "max(a[inds]) / diff_old * diff_new > C"
-                if sum(a[inds]) > 1 - e and len(a[inde]) + len(a[indo]) < 1:
-                    print "new mode"
-                    if float(1)/len(a[inds]) < C:
-                        atnew[inds] = float(1)/len(a[inds])
-                    else:
-                        print "???"
-                        sys.exit()
-                else:
-                    print "else new mode"
-                    if int(math.ceil(float(1)/C * (1 - C_old * diff_old / max(a[inds])))) - len(a[inde]) <= len(a[indo]):
-
-                        atnew[inde] = C
-                        nE = max(int(math.ceil(float(1)/C * (1 - C_old * diff_old / max(a[inds]))) - len(a[inde])),1)
-                        print nE
-                        j = 0
-                        for i in range(len(atnew)):
-                            if indo[i]:
-                                atnew[i] = C
-                                j += 1
-                            if j == nE: break
-
-                        atnew[inds] = a[inds] / diff_old * (1 - sum(atnew))
-                    else:
-                        print "cannot be done :("
-                        sys.exit()
-
-            else:
-                print "else"
-                atnew[inde] = C
-                print "sum(a[inds] / diff_old * (1 - sum(atnew))): %s" % sum(a[inds] / diff_old * (1 - sum(atnew)))
-                atnew[inds] = a[inds] / sum(a[inds]) * (1-sum(atnew))
-            print "sum atnew (inds): %s" % sum(atnew[inds])
-            print "sum atnew: %s" % sum(atnew)
-
-            if sum(atnew) < 1 - e or sum(atnew) > 1 + e:
-                print "sum(at) < 1 - e or sum(at) > 1 + e"
-                sys.exit()
-            for i in atnew:
-                if i > C or i < 0:
-                    print "i > C or i < 0"
-                    sys.exit()
-
-            if norm:
-                print "a acc. random algorithm setting"
-                r = int(math.floor(float(1)/C))
-                if 1 - int(math.floor(float(1)/C)) * C < e: r -= 1
-                a = zeros(len(X))
-                for i in range(r):
-                    a[i] = C
-                if r < int(math.floor(float(1)/C)):
-                    a[r] = (1 - r*C)/float(2)
-                    a[r+1] = (1 - r*C)/float(2)
-                else: a[r] = 1 - math.floor(float(1)/C)*C
-            a = atnew
-
+        print "a acc.  algorithm setting"
+        r = int(math.floor(float(1)/C))
+        a = zeros(len(X))
+        for i in range(r):
+            a[i] = C
+        a[r] = 1 - math.floor(float(1)/C)*C
         ac = 0                      # alpha of new point c
-        #print "a: %s" %a
 
         inds = np.all([a > e, a < C - e], axis=0)           # support vectors indeces
         indr = np.any([a <= e, a >= C - e], axis=0)         # error and non-support vectors indeces
@@ -204,15 +128,23 @@ class OCSVM(object):
         Kss = self.gram(X[inds]) # kernel of support vectors
         # calculate mu according to KKT-conditions
         mu = 1 - self.gram(X[inds][0], X[inds]).dot(a[inds])
+        print "mu: %s" % mu
         # calculate gradient
-        g = ones(l)
+        g = ones(l) * -1
+
         g[inds] = zeros(ls)
+
         if ls > 0:
             Kcs = self.gram(xc, X[inds])[0]
         if lr > 0:
             Krs = self.gram(X[indr], X[inds]) # kernel of error vectors, support vectors
+            print "Krs: %s" %Krs
             Kcr = self.gram(xc, X[indr])[0]
             g[indr] = - ones(lr) + Krs.dot(a[inds]) + ones((lr,1)) * mu
+
+        #test
+        mu = - max(a[indr][inde])
+
         Kcc = 1
         gc = - 1 + Kcs.dot(a[inds]) + mu
         print "gc: %s" %gc
@@ -228,40 +160,43 @@ class OCSVM(object):
             print "a: %s" % a
             print "a[inds]: %s" %a[inds]
             print "a[indr]: %s" %a[indr]
-            print "gc: %s" %gc
+            print "a[indo]: %s" %a[indo]
+            print "a[inde]: %s" %a[inde]
             print "ac: %s"%ac
+            print "g: %s"%g
+            print "gc: %s" %gc
+
 
             # calculate beta
-            if ls == 1: Q = inv(vstack([hstack([0,ones(ls)]),hstack([ones((ls,1)), Kss])]))
-            n = hstack([1, Kcs])
-            print "n: %s" %n
-            beta = - Q.dot(n)
-
-
-            if ls > 0: betas = beta[1:]
-            print "beta: %s" %beta
-            print "g[inds]: %s" %g[inds]
-            print "g[indr]: %s" %g[indr]
-
-
+            if ls > 0:
+                if ls == 1:
+                    Q = inv(vstack([hstack([0,ones(ls)]),hstack([ones((ls,1)), Kss])]))
+                n = hstack([1, Kcs])
+                beta = - Q.dot(n)
+                betas = beta[1:]
+                print "beta: %s" %beta
             # calculate gamma
             if lr > 0 and ls > 0:
                 gamma = vstack([hstack([1, Kcs]), hstack([ones((lr,1)), Krs])]).dot(beta) + hstack([Kcc, Kcr])
                 gammac = gamma[0]
                 gammar = gamma[1:]
-
+                print "gammar: %s" % gammar
+                print "gammac: %s" % gammac
             elif ls > 0:
-                # empty S set
-                gammac =hstack([1, Kcs]).dot(beta) + Kcc
-            else:
                 # empty R set
-                gammac = Kcc
+                gammac =hstack([1, Kcs]).dot(beta) + Kcc
+                print "gammac: %s" %gammac
+            else:
+                # empty S set
+                gammac = 1
                 gammar = ones(lr)
+                print "gammar: %s" %gammar
+                print "gammac: %s" %gammac
+
 
             # accounting
             #case 1: Some alpha_i in S reaches a bound
             if ls > 0:
-                #print "start:================= ls > 0 =================="
                 IS_plus = betas > e
                 IS_minus = betas < - e
                 IS_zero = np.any([betas <= e, betas >= -e], axis=0)
@@ -270,18 +205,14 @@ class OCSVM(object):
                 gsmax[IS_zero] = ones(len(betas[IS_zero])) * inf
                 gsmax[IS_plus] = ones(len(betas[IS_plus]))*C-a[inds][IS_plus]
                 gsmax[IS_minus] = - a[inds][IS_minus]
-                #print C
-                #print "a[inds]: %s"%a[inds]
-                #print "betas: %s" % betas
-                #print "gsmax: %s" %gsmax
                 gsmax = divide(gsmax, betas)
-                #print "gsmax/beta: %s" %gsmax
+
                 gsmin = absolute(gsmax).min()
                 ismin = where(absolute(gsmax) == gsmin)
-                #print "gsmin: %s" %gsmin
-                #print "ismin: %s" %ismin
-                #print "end:================= ls > 0 =================="
+
+
             else: gsmin = inf
+
             #case 2: Some g_i in R reaches zero
             if le > 0:
                 Ie_plus = gammar[inde] > e
@@ -289,37 +220,32 @@ class OCSVM(object):
                 gec = zeros(len(g[inde] > e))
                 gec[Ie_plus] = divide(-g[indr][inde][Ie_plus], gammar[inde][Ie_plus])
                 gec[Ie_inf] = inf
+
                 for i in range(0, len(gec)):
                     if gec[i] <= e:
                         gec[i] = inf
+
                 gemin = gec.min()
                 iemin = where(gec == gemin)
 
             else: gemin = inf
             if lo > 0:
-                #print "start:================= lo > 0 =================="
-                #print "gammar: %s" %gammar
-                #print "indo: %s"%indo
                 Io_minus = gammar[indo] < - e
                 Io_inf = gammar[indo] >= - e
-                #print "Io_minus: %s" %Io_minus
-                #print "Io_inf: %s"%Io_inf
-                #print "g[indr][indo][Io_minus]: \t%s" %g[indr][indo][Io_minus]
-                #print "gammar[indo][Io_minus]: \t%s" %gammar[indo][Io_minus]
+
                 goc = zeros(len(g[indo] > e))
                 goc[Io_minus] = divide(-g[indr][indo][Io_minus], gammar[indo][Io_minus])
                 goc[Io_inf] = inf
-                #print "goc: %s" %goc
+
                 for i in range(0, len(goc)):
                     if goc[i] <= e:
                         goc[i] = inf
                     if g[indr][indo][i] < 0:
                         goc[i] = inf
-                #print "goc: %s" %goc
+
+
                 gomin = goc.min()
                 iomin = where(goc == gomin)
-                #print "end:================= lo > 0 =================="
-
             else: gomin = inf
             # case 3: gc becomes zero
             if gammac > e: gcmin = - gc/gammac
@@ -329,9 +255,11 @@ class OCSVM(object):
 
             # determine minimum largest increment
             gmin = min([gsmin, gemin, gomin, gcmin, gacmin])
-            imin = where([gsmin, gemin, gomin, gcmin, gacmin] == gmin)[0][0]
             print "gsmin: %s, gemin: %s, gomin: %s, gcmin: %s, gacmin: %s" % (gsmin, gemin, gomin, gcmin, gacmin)
             print "gmin: %s" %gmin
+            print where([gsmin, gemin, gomin, gcmin, gacmin] == gmin)
+            imin = where([gsmin, gemin, gomin, gcmin, gacmin] == gmin)[0][0]
+
             # update a, g,
             print "start:================= update =================="
             print "before update sum(a) + ac: %s" % (sum(a) + ac)
@@ -350,6 +278,7 @@ class OCSVM(object):
             print "end:================= update =================="
 
             if imin == 0: # min = gsmin => move k from s to r
+                # if there are more than 1 minimum, just take 1
                 if len(ismin[0]) > 1:
                     ismin = [ismin[0][0]]
                 print "move k from s to r"
@@ -359,6 +288,7 @@ class OCSVM(object):
                 Xk = X[inds][ismin]
                 ak = a[inds][ismin]
                 gk = g[inds][ismin]
+
                 # delete the elements from X,a and g => add it to the end of X,a,g
                 inds_ind = [c for c,val in enumerate(inds) if val]
                 ind_del = inds_ind[ismin[0]]
@@ -387,7 +317,7 @@ class OCSVM(object):
 
                 #decrement Q, delete row ismin and column ismin
 
-                if ls > 0:
+                if ls > 1:
                     ismin = ismin[0][0] + 1
                     for i in range(Q.shape[0]):
                         for j in range(Q.shape[1]):
@@ -401,7 +331,7 @@ class OCSVM(object):
 
             elif imin == 1:
                 print "move k from e (r) to s"
-
+                # if there are more than 1 minimum, just take 1
                 if len(iemin[0]) > 1:
                     iemin = [iemin[0][0]]
 
@@ -409,8 +339,6 @@ class OCSVM(object):
                 Xk = X[indr][inde][iemin]
                 ak = a[indr][inde][iemin]
                 gk = g[indr][inde][iemin]
-                gammak = gammar[iemin]
-                as_old = a[inds]
                 Xs_old = X[inds]
 
                 # delete the elements from X,a and g => add it to the end of X,a,g
@@ -433,11 +361,7 @@ class OCSVM(object):
                 indo = delete(indo, iemin)
 
                 if ls > 0:
-                    #print "Q: %s" % Q
                     nk = hstack((1, self.gram(Xk, Xs_old)[0]))
-                    #print "nk: %s" %nk
-                    #print "nk.dot(Q).dot(nk): %s" % nk.dot(Q).dot(nk)
-
                     betak = - Q.dot(nk)
                     k = 1 - nk.dot(Q).dot(nk)
                     Q = hstack((vstack((Q, zeros(Q.shape[1]))),zeros((Q.shape[0] + 1,1)))) \
@@ -447,10 +371,8 @@ class OCSVM(object):
                 print "start:============= move k from o (r) to s ============="
                 if len(iomin[0]) > 1:
                     iomin = [iomin[0][0]]
-                #print "iomin: %s" %iomin
                 Xk = X[indr][indo][iomin]
                 ak = a[indr][indo][iomin]
-                print "ak: %s" % ak
                 gk = g[indr][indo][iomin]
                 Xs_old = X[inds]
 
@@ -475,11 +397,7 @@ class OCSVM(object):
                 indo = delete(indo, iomin)
 
                 if ls > 0:
-                    #print "Q: %s" % Q
                     nk = hstack((1, self.gram(Xk, Xs_old)[0]))
-                    #print "nk: %s" %nk
-                    #print "nk.dot(Q).dot(nk): %s" % nk.dot(Q).dot(nk)
-
                     betak = - Q.dot(nk)
                     k = 1 - nk.dot(Q).dot(nk)
                     Q = hstack((vstack((Q, zeros(Q.shape[1]))),zeros((Q.shape[0] + 1,1)))) \
@@ -505,12 +423,6 @@ class OCSVM(object):
                 Krs = self.gram(X[indr], X[inds])               # kernel of error vectors, support vectors
                 Kcr = self.gram(xc, X[indr])[0]
 
-
-            #print "Q: %s" %Q
-            # update
-            #mu = 1 - self.gram(X[inds][0], X[inds]).dot(a[inds])
-
-            #if loop_count == 2: continue
             loop_count += 1
         print "----------------- end incremental loop -----------------"
         print "C: %s" % C
