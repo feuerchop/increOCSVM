@@ -441,8 +441,8 @@ class OCSVM(object):
         print "as: %s" % self._data.alpha_s()
         #print self._data.Xs()
         if len(self._data.alpha_s()) == 0: sys.exit()
-
-
+    def bookkeeping(self, a, C):
+        return 0
     def perturbc(self, C_new, C_old, a, X):
         e = eps = 1e-5
 
@@ -565,7 +565,7 @@ class OCSVM(object):
                  beta = -Rs*Q[:,indss]
                  gamma = self.gram(X[:,indss], X[:,indss]) + Q[:,indss].dot(beta)
 
-              #TODO: expand Rs and Q
+
               #updateRQ(beta,gamma,indss)
 
            else:
@@ -573,7 +573,8 @@ class OCSVM(object):
 
                   # compress Rs and Q
                   num_MVs = num_MVs - 1
-                  updateRQ(indco)
+                  #TODO: expand Rs and Q
+                  #updateRQ(indco)
 
            # update SQl and Syl when the status of indss changes from ERROR to MARGIN
            if cstatus == self._ERROR and nstatus == self._MARGIN:
@@ -598,8 +599,15 @@ class OCSVM(object):
         if (len(beta) > 1): # if there are margin vectors
             beta_s = beta[1:]
             flags = beta_s < 0
-            delta_mr, i = self.min_delta(flags, a[inds], zeros(len(a[inds])), beta_s)
+            delta_mr, i_mr = self.min_delta(flags, a[inds], zeros(len(a[inds])), beta_s)
             if (delta_mr < inf):
+                count = -1
+                for j, bool in enumerate(inds):
+                    if bool:
+                        count += 1
+                    if count == i_mr:
+                        i = j
+                        break
                 indss[1] = i
                 cstatus[1] = self._MARGIN;
                 nstatus[1] = self._RESERVE;
@@ -617,7 +625,15 @@ class OCSVM(object):
                 delta_me = inf*ones(len(v))
                 delta_me[not_z] = C[inds][not_z] - divide(a[inds][not_z],v(not_z))
                 delta_m = min(delta_me)
-                i = where(delta_me == delta_m)
+                i_s = where(delta_me == delta_m)
+                bool = 0
+
+                for j, b in enumerate(inds):
+                    if b:
+                        b += 1
+                    if b == i_s:
+                        i = j
+                        break
                 if (delta_me < inf):
                     indss[2] = i;
                     cstatus[2] = self._MARGIN;
@@ -630,8 +646,17 @@ class OCSVM(object):
         # change in p_c that causes an error vector to change to a margin vector
         gamma_e = gamma[indr][inde]
         flags = gamma_e > 0
-        [delta_em,i] = self._min_delta(flags,g[indr][inde],zeros(g[indr][inde]),gamma_e);
+        delta_em, ie = self._min_delta(flags,g[indr][inde],zeros(g[indr][inde]),gamma_e);
         if (delta_em < inf):
+            count = 0
+            for j, bool in enumerate(indr):
+                if bool:
+                    if inde[count]:
+                        count += 1
+                    if count - 1 == ie:
+                        i = j
+                        break
+
             indss[3] = i
             cstatus[3] = self._ERROR
             nstatus[3] = self._MARGIN
@@ -639,18 +664,28 @@ class OCSVM(object):
         # change in p_c that causes a reserve vector to change to a margin vector
         gamma_r = gamma[indr][indo]
         flags = np.all([g[indr][indo] >= 0, gamma_r < 0])
-        [delta_rm,i] = self.min_delta(flags,g[indr][indo],zeros(len(g[indr[indo]])),gamma_r)
+        delta_rm,io = self.min_delta(flags,g[indr][indo],zeros(len(g[indr[indo]])),gamma_r)
         if (delta_rm < inf):
+            ind = ones(len(a[indr][indo])) * -1
+            count = 0
+            for j,bool in enumerate(indr):
+                if bool:
+                    if inde[count]:
+                        count += 1
+                    if count -1 == io:
+                        i = j
+                        break
             indss[4] = i
             cstatus[4] = self._RESERVE
             nstatus[4] = self._MARGIN
 
         # minimum acceptable value for p_c
-        [min_dpc,min_ind] = min([delta_p_c,delta_mr,delta_me,delta_em,delta_rm]);
+        min_dpc = min([delta_p_c,delta_mr,delta_me,delta_em,delta_rm]);
+        min_ind = where([delta_p_c,delta_mr,delta_me,delta_em,delta_rm] == min_dpc)
         indss = indss[min_ind]
         cstatus = cstatus[min_ind]
         nstatus = nstatus[min_ind]
-        return indss, cstatus, nstatus
+        return min_dpc, indss, cstatus, nstatus
 
     def min_delta(self, flags, psi_initial, psi_final, psi_sens):
         if len(psi_sens[flags]) > 0:
@@ -664,9 +699,7 @@ class OCSVM(object):
                 k = i[where(abs(psi_sens(i)) == max_sens)][0]
             else:
                 k = i[0]
-
         else:
-
            min_d = inf
            k = -1
         return min_d,k
