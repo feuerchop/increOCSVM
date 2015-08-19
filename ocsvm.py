@@ -4,7 +4,7 @@ import cvxopt.solvers
 import kernel
 from numpy.linalg import inv
 from sklearn.metrics.pairwise import pairwise_kernels
-from numpy import vstack, hstack, ones, zeros, absolute, where, divide, inf, delete, outer
+from numpy import vstack, hstack, ones, zeros, absolute, where, divide, inf, delete, outer, transpose
 import data
 import sys
 import math
@@ -18,6 +18,11 @@ class OCSVM(object):
     _kernel = None
     _nu = None
     _gamma = None
+    # flags for example state
+    _MARGIN    = 1;
+    _ERROR     = 2;
+    _RESERVE   = 3;
+    _UNLEARNED = 4;
 
     #Class constructor: kernel function & nu & sigma
     def __init__(self, metric, nu, gamma):
@@ -51,7 +56,7 @@ class OCSVM(object):
                 rho_x = x_i
                 break
         #compute error assuming non zero rho
-        self._rho = np.sum([a_i * self._kernel(x_i,rho_x) for a_i, x_i in zip(alpha,sv)])
+        self._rho = (np.sum([a_i * self._kernel(x_i,rho_x) for a_i, x_i in zip(alpha,sv)]))
 
     #compute Gram matrix
     def gram(self, X, Y=None):
@@ -63,17 +68,20 @@ class OCSVM(object):
     def alpha(self, X):
         n_samples, n_features = X.shape
         K = self.gram(X)
+        #K = self.gram(X) * (self._nu*len(X))
 
         P = cvxopt.matrix(K)
         q = cvxopt.matrix(zeros(n_samples))
         A = cvxopt.matrix(ones((n_samples,1)),(1,n_samples))
         b = cvxopt.matrix(1.0)
+        #b = cvxopt.matrix(self._nu*len(X))
 
         G_1 = cvxopt.matrix(np.diag(ones(n_samples) * -1))
         h_1 = cvxopt.matrix(zeros(n_samples))
 
         G_2 = cvxopt.matrix(np.diag(ones(n_samples)))
         h_2 = cvxopt.matrix(ones(n_samples) * 1/(self._nu*len(X)))
+        #h_2 = cvxopt.matrix(ones(n_samples))
 
         G = cvxopt.matrix(vstack((G_1, G_2)))
         h = cvxopt.matrix(vstack((h_1, h_2)))
@@ -107,12 +115,7 @@ class OCSVM(object):
         C = 1/(self._nu*(len(X)+1))
         print "C: %s" %C
         a = self._data.alpha()
-        print "a acc.  algorithm setting"
-        r = int(math.floor(float(1)/C))
-        a = zeros(len(X))
-        for i in range(r):
-            a[i] = C
-        a[r] = 1 - math.floor(float(1)/C)*C
+
         ac = 0                      # alpha of new point c
 
         inds = np.all([a > e, a < C - e], axis=0)           # support vectors indeces
@@ -143,7 +146,7 @@ class OCSVM(object):
             g[indr] = - ones(lr) + Krs.dot(a[inds]) + ones((lr,1)) * mu
 
         #test
-        mu = - max(a[indr][inde])
+        #mu = - max(a[indr][inde])
 
         Kcc = 1
         gc = - 1 + Kcs.dot(a[inds]) + mu
@@ -439,10 +442,231 @@ class OCSVM(object):
         #print self._data.Xs()
         if len(self._data.alpha_s()) == 0: sys.exit()
 
-    def getMinTrain(self, nu):
-        for i in range(1,30):
-            a_s = 1 - math.floor(nu*(i+1)) * float(1)/(nu*(i+1))
-            C = float(1)/(nu*(i+1))
-            if a_s < C and a_s > 0 and math.floor(nu*(i+1)) < i:
-                return (i, C, a_s)
 
+    def perturbc(self, C_new, C_old, a, X):
+        e = eps = 1e-5
+
+        inds = np.all([a > e, a < C_old - e], axis=0)           # support vectors indeces
+        indr = np.any([a <= e, a >= C_old - e], axis=0)         # error and non-support vectors indeces
+        inde = a[indr] >= C_old - e                             # error vectors indeces in R
+
+        # calculate Q and Rs
+        Q = vstack((hstack((0, ones(len(a)))), hstack((ones(1,len(a)), self.gram(X, X[inds])))))
+        Rs = inv(vstack((hstack((0, ones(len(a)))), hstack((ones(1,len(a)), self.gram(X[inds]))))))
+
+        # create a vector containing the regularization parameter
+        # for each example if necessary
+        if len(C_new) == 1:             # same regularization parameter for all examples
+            C_new = C_new*ones(len(a))
+        C = C_old * ones(len(a))
+        # compute the regularization sensitivities
+        l = C_new-C
+        # if there are no error vectors initially...
+        if (len(a[indr][inde]) == 0):
+           # find the subset of the above examples that could become error vectors
+           delta_p = divide(C-a,l)
+           delta_p[delta_p <= 0] = inf
+
+           # determine the minimum acceptable change in p and adjust the regularization parameters
+           p = min(delta_p)[0]
+           C = C + l*p
+
+           # if one example becomes an error vector, perform the necessary bookkeeping
+           if (p < 1):
+               i = where(delta_p == p)
+               a[i] = C[i]
+               ai = -1
+               # get index of i in inds
+               for i, p_del in enumerate(delta_p):
+                   if a[i] > e and a[i] < C_old:
+                       ai += 1
+                   if p_del == p:
+                        break
+               # decrement Rs
+               if Rs.shape[0] > 2:
+                   ai += 1
+                   for i in range(Rs.shape[0]):
+                        for j in range(Rs.shape[1]):
+                            if i != ai and j != ai:
+                                Q[i][j] = Q[i][j] - Q[i][ai]*Q[ai][j]/Q[ai][ai]
+                   Rs = delete(Rs, ai, 0)
+                   Rs = delete(Rs, ai, 1)
+               else:
+                   Rs = inf
+               Q = delete(Q, ai, 0)
+        else:
+            p = 0
+
+        # if there are error vectors to adjust...
+        if (p < 1):
+            SQl = transpose(self.gram(X, X[indr][inde]).dot(l[indr][inde]))
+            Syl = sum(l[indr][inde])
+
+        print 'p = %s' % p
+
+        # change the regularization parameters incrementally
+        disp_p_delta = 0.2
+        disp_p_count = 1
+        num_MVs = len(a[inds])
+        perturbations = 0
+        while (p < 1):
+           perturbations = perturbations + 1
+
+           # compute beta and gamma
+           if (num_MVs > 0):
+
+              v = zeros(num_MVs+1)
+              if (p < 1 - eps):
+                  v[1] = - Syl - sum(a)/(1-p)
+              else:
+                 v[1] = - Syl
+              v[1:] = -SQl[inds]
+              beta = Rs*v
+              ind_temp = indr
+              if (len(a[ind_temp]) > 0):
+                 gamma = Q[:,ind_temp].dot(beta) + SQl(ind_temp)
+           else:
+              beta = 0
+              gamma = SQl
+
+           # minimum acceptable parameter change
+           min_delta_p, indss, cstatus, nstatus = self.min_delta_p_c(p,gamma,beta,l)
+
+           # update a, b, g and p
+           if len(a[indr][inde]) > 0:
+               a[indr][inde] += l[[indr][inde]]*min_delta_p
+           if (num_MVs > 0):
+               a[inds] += + beta[1:]*min_delta_p
+
+           b = b + beta[1]*min_delta_p
+           g = g + gamma*min_delta_p
+           p = p + min_delta_p
+           C = C + l*min_delta_p
+
+           # perform bookkeeping
+           #TODO: Bookeeping
+           indco = self.bookkeeping(indss,cstatus,nstatus)
+
+           # update SQl and Syl when the status of indss changes from MARGIN to ERROR
+           if cstatus == self._MARGIN and nstatus == self._ERROR:
+               SQl = SQl + Q[indco,:].dot(l(indss))
+               Syl = Syl + l(indss)
+
+           # set g(ind{MARGIN}) to zero
+           g[inds] = 0
+
+           # update Rs and Q if necessary
+           if (nstatus == self._MARGIN):
+
+              num_MVs = num_MVs + 1
+              if (num_MVs > 1):
+
+                 # compute beta and gamma for indss
+                 beta = -Rs*Q[:,indss]
+                 gamma = self.gram(X[:,indss], X[:,indss]) + Q[:,indss].dot(beta)
+
+              #TODO: expand Rs and Q
+              #updateRQ(beta,gamma,indss)
+
+           else:
+               if cstatus == self._MARGIN:
+
+                  # compress Rs and Q
+                  num_MVs = num_MVs - 1
+                  updateRQ(indco)
+
+           # update SQl and Syl when the status of indss changes from ERROR to MARGIN
+           if cstatus == self._ERROR and nstatus == self._MARGIN:
+              SQl = SQl - Q[num_MVs+1,:].dot(l[indss])
+              Syl = Syl - l[indss]
+
+           if p >= disp_p_delta*disp_p_count:
+              disp_p_count = disp_p_count + 1
+              #s = sprintf('p = #.2f',p)
+              #disp(s)
+
+    def min_delta_p_c(self, p_c, gamma, beta, l, inds, a, C, indr, inde, g, indo):
+        eps = 1e-5
+        indss = zeros(5)
+        cstatus = zeros(5)
+        nstatus = zeros(5)
+
+        # upper limit on change in p_c assuming no other examples change status
+        delta_p_c = 1 - p_c
+
+        # change in p_c that causes a margin vector to change to a reserve vector
+        if (len(beta) > 1): # if there are margin vectors
+            beta_s = beta[1:]
+            flags = beta_s < 0
+            delta_mr, i = self.min_delta(flags, a[inds], zeros(len(a[inds])), beta_s)
+            if (delta_mr < inf):
+                indss[1] = i
+                cstatus[1] = self._MARGIN;
+                nstatus[1] = self._RESERVE;
+        else:
+           delta_mr = inf;
+
+
+        # change in p_c that causes a margin vector to change to an error vector
+        if (len(beta) > 1):  # if there are margin vectors
+            l_s = l[inds]
+            v = beta_s - l_s
+            flags = v > eps
+            if len(v[flags]) > 0:
+                not_z = v > 0
+                delta_me = inf*ones(len(v))
+                delta_me[not_z] = C[inds][not_z] - divide(a[inds][not_z],v(not_z))
+                delta_m = min(delta_me)
+                i = where(delta_me == delta_m)
+                if (delta_me < inf):
+                    indss[2] = i;
+                    cstatus[2] = self._MARGIN;
+                    nstatus[2] = self._ERROR;
+            else:
+                delta_me = inf;
+        else:
+            delta_me = inf;
+
+        # change in p_c that causes an error vector to change to a margin vector
+        gamma_e = gamma[indr][inde]
+        flags = gamma_e > 0
+        [delta_em,i] = self._min_delta(flags,g[indr][inde],zeros(g[indr][inde]),gamma_e);
+        if (delta_em < inf):
+            indss[3] = i
+            cstatus[3] = self._ERROR
+            nstatus[3] = self._MARGIN
+
+        # change in p_c that causes a reserve vector to change to a margin vector
+        gamma_r = gamma[indr][indo]
+        flags = np.all([g[indr][indo] >= 0, gamma_r < 0])
+        [delta_rm,i] = self.min_delta(flags,g[indr][indo],zeros(len(g[indr[indo]])),gamma_r)
+        if (delta_rm < inf):
+            indss[4] = i
+            cstatus[4] = self._RESERVE
+            nstatus[4] = self._MARGIN
+
+        # minimum acceptable value for p_c
+        [min_dpc,min_ind] = min([delta_p_c,delta_mr,delta_me,delta_em,delta_rm]);
+        indss = indss[min_ind]
+        cstatus = cstatus[min_ind]
+        nstatus = nstatus[min_ind]
+        return indss, cstatus, nstatus
+
+    def min_delta(self, flags, psi_initial, psi_final, psi_sens):
+        if len(psi_sens[flags]) > 0:
+            # find the parameters to check
+            ind = flags
+            deltas = divide(psi_final[ind] - psi_initial[ind], psi_sens[ind])
+            min_d = min(deltas)
+            i = where(deltas == min_d)[0]
+            if len(i) > 1:
+                max_sens = max(abs(psi_sens(i)))
+                k = i[where(abs(psi_sens(i)) == max_sens)][0]
+            else:
+                k = i[0]
+
+        else:
+
+           min_d = inf
+           k = -1
+        return min_d,k
