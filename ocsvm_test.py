@@ -73,8 +73,8 @@ def incrementExample():
     X = 0.3 * np.random.randn(10, 2)
     #X_train = np.r_[X + 2, X-2]
     X_train = X
-    pickle.dump(X_train, open("/Users/LT/Documents/Uni/MA/increOCSVM/Xtrain.p", "w+"))
-    #X_train = pickle.load(open("/Users/LT/Documents/Uni/MA/increOCSVM/Xtrain.p", 'r+'))
+    #pickle.dump(X_train, open("/Users/LT/Documents/Uni/MA/increOCSVM/Xtrain.p", "w+"))
+    X_train = pickle.load(open("/Users/LT/Documents/Uni/MA/increOCSVM/Xtrain.p", 'r+'))
     #print X_train
     # Generate some regular novel observations
     X = 0.3 * np.random.randn(5, 2)
@@ -82,34 +82,39 @@ def incrementExample():
     X_test = X
     # Generate some abnormal novel observations
     X_outliers = np.random.uniform(low=-4, high=4, size=(5, 2))
-    pickle.dump(X_outliers, open("/Users/LT/Documents/Uni/MA/increOCSVM/Xoutliers.p", "w+"))
+    #pickle.dump(X_outliers, open("/Users/LT/Documents/Uni/MA/increOCSVM/Xoutliers.p", "w+"))
 
-    #X_outliers = pickle.load(open("/Users/LT/Documents/Uni/MA/increOCSVM/Xoutliers.p", 'r+'))
-
+    X_outliers = pickle.load(open("/Users/LT/Documents/Uni/MA/increOCSVM/Xoutliers.p", 'r+'))
     #print X_outliers
-    clf1 = ocsvm.OCSVM("rbf", nu=0.1, gamma=0.1)
+    clf1 = ocsvm.OCSVM("rbf", nu=0.3, gamma=0.1)
+
 
     #clf1.train(X_train[0:1])
     clf1.train(np.vstack((X_train,X_outliers[0])))
     plot(clf1, X_train, X_test, X_outliers, 100, False)
+    plt.title("All data trained with SVM")
+    print "sum(alpha): %s" % sum(clf1._data.alpha())
     print "standard alpha: %s" %clf1._data.alpha()
     print "standard alpha_s: %s" %clf1._data.alpha_s()
-    print "standard X_s: %s "%clf1._data.Xs()
+    #print "standard X_s: %s "%clf1._data.Xs()
     #plt.show()
-
+    #sys.exit()
     # Train the data
-    clf = ocsvm.OCSVM("rbf", nu=0.1, gamma=0.1)
+    clf = ocsvm.OCSVM("rbf", nu=0.3, gamma=0.1)
     #clf.train(np.vstack((X_train[1:],X_outliers[1:3]))) # testing with outliers when training
     clf.train(X_train)
-    #plt.figure()
-    #plot(clf, X_train, X_test, X_outliers[1:], 100, False)
-
+    plt.figure()
+    plt.title("Leave one out train with SVM")
+    plot(clf, X_train, X_test, X_outliers[1:], 100, False)
+    #plt.show()
     #plot(clf, X_train[1:], X_test, X_outliers[-1:], 100, False)
     #
     clf.increment(X_outliers[0])
+    #clf.increment_norm(X_outliers[0])
 
     #Plot the data
     plt.figure()
+    plt.title("Incremental training of new variable")
     plot(clf, X_train, X_test, X_outliers, 100, False)
 
     # Train the data

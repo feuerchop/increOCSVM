@@ -16,7 +16,7 @@ class OCSVM(object):
     # define global variables
     _rho = None
     _kernel = None
-    _nu = None
+    _v = None
     _gamma = None
     # flags for example state
     _MARGIN    = 1;
@@ -28,7 +28,7 @@ class OCSVM(object):
     def __init__(self, metric, nu, gamma):
         if metric == "rbf":
             self._kernel = kernel.Kernel.gaussian(gamma)
-        self._nu = nu
+        self._v = nu
         self._gamma = gamma
         self._data = data.Data()
 
@@ -36,7 +36,7 @@ class OCSVM(object):
     # Please check libsvm what they provide for output, e.g., I need to access to the sv_idx all the time
     def train(self, X):
         self._data.set_X(X)
-        self._data.set_C(1/(self._nu*len(X)))
+        self._data.set_C(1)
         # get lagrangian multiplier
         self._data.set_alpha(self.alpha(self._data.X()))
         # defines necessary parameter for prediction
@@ -52,7 +52,7 @@ class OCSVM(object):
         #for computing rho we need an x_i with corresponding a_i < 1/nu and a > 0
         rho_x = 0
         for a_i, x_i in zip(alpha, sv):
-            if a_i > 0 and a_i < 1/self._nu:
+            if a_i > 0 and a_i < 1/self._v:
                 rho_x = x_i
                 break
         #compute error assuming non zero rho
@@ -67,21 +67,21 @@ class OCSVM(object):
     #compute Lagrangian multipliers
     def alpha(self, X):
         n_samples, n_features = X.shape
-        K = self.gram(X)
-        #K = self.gram(X) * (self._nu*len(X))
+        #K = self.gram(X)
+        K = self.gram(X) * (self._v*len(X))
 
         P = cvxopt.matrix(K)
         q = cvxopt.matrix(zeros(n_samples))
         A = cvxopt.matrix(ones((n_samples,1)),(1,n_samples))
-        b = cvxopt.matrix(1.0)
-        #b = cvxopt.matrix(self._nu*len(X))
+        #b = cvxopt.matrix(1.0)
+        b = cvxopt.matrix(self._v*len(X))
 
         G_1 = cvxopt.matrix(np.diag(ones(n_samples) * -1))
         h_1 = cvxopt.matrix(zeros(n_samples))
 
         G_2 = cvxopt.matrix(np.diag(ones(n_samples)))
-        h_2 = cvxopt.matrix(ones(n_samples) * 1/(self._nu*len(X)))
-        #h_2 = cvxopt.matrix(ones(n_samples))
+        #h_2 = cvxopt.matrix(ones(n_samples) * 1/(self._v*len(X)))
+        h_2 = cvxopt.matrix(ones(n_samples))
 
         G = cvxopt.matrix(vstack((G_1, G_2)))
         h = cvxopt.matrix(vstack((h_1, h_2)))
@@ -112,11 +112,15 @@ class OCSVM(object):
         e = 1e-4
         # initialize X, a, C, g, indeces, kernel values
         X = self._data.X()                                  # data points
-        C = 1/(self._nu*(len(X)+1))
+        C = 1/(self._v*(len(X)+1))
+        C = 1
         print "C: %s" %C
+        print "C old: %s" % (1/(self._v*len(X)))
         a = self._data.alpha()
+        print "a: %s" %a
+        print "v: %s" %self._v
 
-        ac = 0                      # alpha of new point c
+        ac = self._v                    # alpha of new point c
 
         inds = np.all([a > e, a < C - e], axis=0)           # support vectors indeces
         indr = np.any([a <= e, a >= C - e], axis=0)         # error and non-support vectors indeces
@@ -152,7 +156,8 @@ class OCSVM(object):
         gc = - 1 + Kcs.dot(a[inds]) + mu
         print "gc: %s" %gc
         # initial calculation for beta
-        Q = inv(vstack([hstack([0,ones(ls)]),hstack([ones((ls,1)), Kss])]))
+        Q = vstack([hstack([0,ones(ls)]),hstack([ones((ls,1)), Kss])])
+        R = inv(Q)
 
 
         loop_count = 1
@@ -173,9 +178,10 @@ class OCSVM(object):
             # calculate beta
             if ls > 0:
                 if ls == 1:
-                    Q = inv(vstack([hstack([0,ones(ls)]),hstack([ones((ls,1)), Kss])]))
+                    Q = vstack([hstack([0,ones(ls)]),hstack([ones((ls,1)), Kss])])
+                    R = inv(Q)
                 n = hstack([1, Kcs])
-                beta = - Q.dot(n)
+                beta = - R.dot(n)
                 betas = beta[1:]
                 print "beta: %s" %beta
             # calculate gamma
@@ -200,6 +206,9 @@ class OCSVM(object):
             # accounting
             #case 1: Some alpha_i in S reaches a bound
             if ls > 0:
+
+                print "betas: %s" % betas
+                print "as: %s" % a[inds]
                 IS_plus = betas > e
                 IS_minus = betas < - e
                 IS_zero = np.any([betas <= e, betas >= -e], axis=0)
@@ -208,11 +217,11 @@ class OCSVM(object):
                 gsmax[IS_zero] = ones(len(betas[IS_zero])) * inf
                 gsmax[IS_plus] = ones(len(betas[IS_plus]))*C-a[inds][IS_plus]
                 gsmax[IS_minus] = - a[inds][IS_minus]
+                print "gsmax: %s" % gsmax
                 gsmax = divide(gsmax, betas)
 
                 gsmin = absolute(gsmax).min()
                 ismin = where(absolute(gsmax) == gsmin)
-
 
             else: gsmin = inf
 
@@ -221,6 +230,8 @@ class OCSVM(object):
                 Ie_plus = gammar[inde] > e
                 Ie_inf = gammar[inde] <= e
                 gec = zeros(len(g[inde] > e))
+                print "-g[indr][inde][Ie_plus]: %s" % -g[indr][inde][Ie_plus]
+
                 gec[Ie_plus] = divide(-g[indr][inde][Ie_plus], gammar[inde][Ie_plus])
                 gec[Ie_inf] = inf
 
@@ -257,22 +268,27 @@ class OCSVM(object):
             gacmin = C - ac
 
             # determine minimum largest increment
-            gmin = min([gsmin, gemin, gomin, gcmin, gacmin])
+            all_deltas = [gsmin, gemin, gomin, gcmin, gacmin]
+            gmin = min(all_deltas)
             print "gsmin: %s, gemin: %s, gomin: %s, gcmin: %s, gacmin: %s" % (gsmin, gemin, gomin, gcmin, gacmin)
-            print "gmin: %s" %gmin
-            print where([gsmin, gemin, gomin, gcmin, gacmin] == gmin)
-            imin = where([gsmin, gemin, gomin, gcmin, gacmin] == gmin)[0][0]
 
+            print "gmin: %s" %gmin
+            #print where(all_deltas == gmin)
+            #imin = where([gsmin, gemin, gomin, gcmin, gacmin] == gmin)[0][0]
+            for i, val in enumerate(all_deltas):
+                if val == gmin:
+                    imin = i
+                    break
             # update a, g,
             print "start:================= update =================="
             print "before update sum(a) + ac: %s" % (sum(a) + ac)
             print "betas*gmin: %s and sum(betas*gmin): %s" % (betas*gmin, sum(betas*gmin))
             print "a[inds]: %s" % a[inds]
             print "ac: %s" % ac
-
             ac += gmin
-            a[inds] = a[inds] + betas*gmin
-            if lr > 0: g[indr] = g[indr] + gammar * gmin
+            if imin == 4: a[inds] += betas*gmin
+            else: a[inds] += betas*gmin
+            if lr > 0: g[indr] += gammar * gmin
             gc = gc + gammac * gmin
             print "after update sum(a): %s" % (sum(a) + ac)
             print "a[inds]: %s" % a[inds]
@@ -318,19 +334,19 @@ class OCSVM(object):
                     inde = hstack((inde, True))
                     a[len(a)-1] = C
 
-                #decrement Q, delete row ismin and column ismin
+                #decrement R, delete row ismin and column ismin
 
                 if ls > 1:
                     ismin = ismin[0][0] + 1
-                    for i in range(Q.shape[0]):
-                        for j in range(Q.shape[1]):
+                    for i in range(R.shape[0]):
+                        for j in range(R.shape[1]):
                             if i != ismin and j != ismin:
-                                Q[i][j] = Q[i][j] - Q[i][ismin]*Q[ismin][j]/Q[ismin][ismin]
-                    #if debug: print "Q after double loop: %s" % Q
-                    Q = delete(Q, ismin, 0)
-                    Q = delete(Q, ismin, 1)
+                                R[i][j] = R[i][j] - R[i][ismin]*R[ismin][j]/R[ismin][ismin]
+                    #if debug: print "R after double loop: %s" % R
+                    R = delete(R, ismin, 0)
+                    R = delete(R, ismin, 1)
                 else:
-                    Q = inf
+                    R = inf
 
             elif imin == 1:
                 print "move k from e (r) to s"
@@ -365,9 +381,9 @@ class OCSVM(object):
 
                 if ls > 0:
                     nk = hstack((1, self.gram(Xk, Xs_old)[0]))
-                    betak = - Q.dot(nk)
-                    k = 1 - nk.dot(Q).dot(nk)
-                    Q = hstack((vstack((Q, zeros(Q.shape[1]))),zeros((Q.shape[0] + 1,1)))) \
+                    betak = - R.dot(nk)
+                    k = 1 - nk.dot(R).dot(nk)
+                    R = hstack((vstack((R, zeros(R.shape[1]))),zeros((R.shape[0] + 1,1)))) \
                         + 1/k * outer(hstack((betak,1)), hstack((betak,1)))
 
             elif imin == 2: # min = gemin | gomin => move k from r to s
@@ -401,9 +417,9 @@ class OCSVM(object):
 
                 if ls > 0:
                     nk = hstack((1, self.gram(Xk, Xs_old)[0]))
-                    betak = - Q.dot(nk)
-                    k = 1 - nk.dot(Q).dot(nk)
-                    Q = hstack((vstack((Q, zeros(Q.shape[1]))),zeros((Q.shape[0] + 1,1)))) \
+                    betak = - R.dot(nk)
+                    k = 1 - nk.dot(R).dot(nk)
+                    R = hstack((vstack((R, zeros(R.shape[1]))),zeros((R.shape[0] + 1,1)))) \
                         + 1/k * outer(hstack((betak,1)), hstack((betak,1)))
             else: # k = c => terminate
                 print "k = c => terminate"
@@ -439,61 +455,60 @@ class OCSVM(object):
         self.predictor()
         print "a: %s" % self._data.alpha()
         print "as: %s" % self._data.alpha_s()
-        #print self._data.Xs()
-        if len(self._data.alpha_s()) == 0: sys.exit()
-    def bookkeeping(self, a, C):
-        return 0
-    def perturbc(self, C_new, C_old, a, X):
-        e = eps = 1e-5
 
+    def perturbc(self, C_new, C_old, a, X):
+        print "perturbc"
+
+        e = eps = 1e-5
+        print "a: %s" % a
         inds = np.all([a > e, a < C_old - e], axis=0)           # support vectors indeces
         indr = np.any([a <= e, a >= C_old - e], axis=0)         # error and non-support vectors indeces
         inde = a[indr] >= C_old - e                             # error vectors indeces in R
-
+        indo = a[indr] <= e                             # error vectors indeces in R
         # calculate Q and Rs
-        Q = vstack((hstack((0, ones(len(a)))), hstack((ones(1,len(a)), self.gram(X, X[inds])))))
-        Rs = inv(vstack((hstack((0, ones(len(a)))), hstack((ones(1,len(a)), self.gram(X[inds]))))))
+        print ones((len(a),1)).shape
+        print self.gram(X[inds], X).shape
+        Q = vstack((hstack((0, ones(len(a)))), hstack((ones((len(a[inds]),1)), self.gram(X[inds], X)))))
+        Rs = inv(vstack((hstack((0, ones(len(a[inds])))), hstack((ones((len(a[inds]),1)), self.gram(X[inds]))))))
 
         # create a vector containing the regularization parameter
         # for each example if necessary
-        if len(C_new) == 1:             # same regularization parameter for all examples
-            C_new = C_new*ones(len(a))
+        C_new = C_new*ones(len(a))
         C = C_old * ones(len(a))
         # compute the regularization sensitivities
         l = C_new-C
         # if there are no error vectors initially...
-        if (len(a[indr][inde]) == 0):
-           # find the subset of the above examples that could become error vectors
-           delta_p = divide(C-a,l)
-           delta_p[delta_p <= 0] = inf
+        if len(a[indr][inde]) == 0:
+            # find the subset of the above examples that could become error vectors
+            delta_p = divide(C-a,l)
+            delta_p[delta_p <= 0] = inf
 
-           # determine the minimum acceptable change in p and adjust the regularization parameters
-           p = min(delta_p)[0]
-           C = C + l*p
-
-           # if one example becomes an error vector, perform the necessary bookkeeping
-           if (p < 1):
-               i = where(delta_p == p)
-               a[i] = C[i]
-               ai = -1
-               # get index of i in inds
-               for i, p_del in enumerate(delta_p):
-                   if a[i] > e and a[i] < C_old:
-                       ai += 1
-                   if p_del == p:
+            # determine the minimum acceptable change in p and adjust the regularization parameters
+            p = min(delta_p)[0]
+            C = C + l*p
+            # if one example becomes an error vector, perform the necessary bookkeeping
+            if p < 1:
+                i = where(delta_p == p)
+                a[i] = C[i]
+                ai = -1
+                # get index of i in inds
+                for i, p_del in enumerate(delta_p):
+                    if a[i] > e and a[i] < C_old:
+                        ai += 1
+                    if p_del == p:
                         break
-               # decrement Rs
-               if Rs.shape[0] > 2:
-                   ai += 1
-                   for i in range(Rs.shape[0]):
+                # decrement Rs
+                if Rs.shape[0] > 2:
+                    ai += 1
+                    for i in range(Rs.shape[0]):
                         for j in range(Rs.shape[1]):
                             if i != ai and j != ai:
                                 Q[i][j] = Q[i][j] - Q[i][ai]*Q[ai][j]/Q[ai][ai]
-                   Rs = delete(Rs, ai, 0)
-                   Rs = delete(Rs, ai, 1)
-               else:
-                   Rs = inf
-               Q = delete(Q, ai, 0)
+                    Rs = delete(Rs, ai, 0)
+                    Rs = delete(Rs, ai, 1)
+                else:
+                    Rs = inf
+                Q = delete(Q, ai, 0)
         else:
             p = 0
 
@@ -509,82 +524,125 @@ class OCSVM(object):
         disp_p_count = 1
         num_MVs = len(a[inds])
         perturbations = 0
-        while (p < 1):
-           perturbations = perturbations + 1
+        while p < 1:
+            perturbations = perturbations + 1
 
-           # compute beta and gamma
-           if (num_MVs > 0):
+            # compute beta and gamma
+            if (num_MVs > 0):
 
-              v = zeros(num_MVs+1)
-              if (p < 1 - eps):
-                  v[1] = - Syl - sum(a)/(1-p)
-              else:
-                 v[1] = - Syl
-              v[1:] = -SQl[inds]
-              beta = Rs*v
-              ind_temp = indr
-              if (len(a[ind_temp]) > 0):
-                 gamma = Q[:,ind_temp].dot(beta) + SQl(ind_temp)
-           else:
-              beta = 0
-              gamma = SQl
+                v = zeros(num_MVs+1)
+                if (p < 1 - eps):
+                    v[1] = - Syl - sum(a)/(1-p)
+                else:
+                    v[1] = - Syl
+                v[1:] = -SQl[inds]
+                beta = Rs.dot(v)
+                ind_temp = indr
+                if len(a[ind_temp]) > 0:
+                    print ind_temp
+                    print transpose(Q[:, ind_temp]).shape
+                    print beta.shape
+                    gamma = transpose(Q[:,ind_temp]).dot(beta) + SQl[ind_temp]
+            else:
+                beta = 0
+                gamma = SQl
 
-           # minimum acceptable parameter change
-           min_delta_p, indss, cstatus, nstatus = self.min_delta_p_c(p,gamma,beta,l)
+            # minimum acceptable parameter change
+            min_delta_p, indss, cstatus, nstatus = self.min_delta_p_c(p,gamma,beta,l,inds, a, C, indr, inde, g, indo)
 
-           # update a, b, g and p
-           if len(a[indr][inde]) > 0:
-               a[indr][inde] += l[[indr][inde]]*min_delta_p
-           if (num_MVs > 0):
-               a[inds] += + beta[1:]*min_delta_p
+            # update a, b, g and p
+            if len(a[indr][inde]) > 0:
+                a[indr][inde] += l[[indr][inde]]*min_delta_p
+            if (num_MVs > 0):
+                a[inds] += + beta[1:]*min_delta_p
 
-           b = b + beta[1]*min_delta_p
-           g = g + gamma*min_delta_p
-           p = p + min_delta_p
-           C = C + l*min_delta_p
+            b = b + beta[1]*min_delta_p
+            g = g + gamma*min_delta_p
+            p = p + min_delta_p
+            C = C + l*min_delta_p
 
-           # perform bookkeeping
-           #TODO: Bookeeping
-           indco = self.bookkeeping(indss,cstatus,nstatus)
+            # perform bookkeeping
+            #start: Bookeeping
+            # if the example is currently a margin vector, determine the row
+            # in the extended kernel matrix inverse that needs to be removed
+            if cstatus == self._MARGIN:
+                indco = where(a[inds] == a[indss])[0] + 1
+            else:
+                indco = -1
 
-           # update SQl and Syl when the status of indss changes from MARGIN to ERROR
-           if cstatus == self._MARGIN and nstatus == self._ERROR:
-               SQl = SQl + Q[indco,:].dot(l(indss))
-               Syl = Syl + l(indss)
+            # adjust coefficient to avoid numerical errors if necessary
+            if nstatus == self._RESERVE:
+                a[indss] = 0
+            elif nstatus == self._ERROR:
+                a[indss] = C[indss]
+            g_new = g[indss]
+            a_new = a[indss]
+            g = delete(g, indss)
+            a = delete(a, indss)
+            g = hstack((g, g_new))
+            a = hstack((a, a_new))
+            #change the status of the example
+            inds = np.all([a > e, a < C - e], axis=0)           # support vectors indeces
+            indr = np.any([a <= e, a >= C - e], axis=0)         # error and non-support vectors indeces
+            inde = a[indr] >= C - e                             # error vectors indeces in R
+            indo = a[indr] <= e                                 # error vectors indeces in R
 
-           # set g(ind{MARGIN}) to zero
-           g[inds] = 0
+            #end: Bookeeping
 
-           # update Rs and Q if necessary
-           if (nstatus == self._MARGIN):
+            # update SQl and Syl when the status of indss changes from MARGIN to ERROR
+            if cstatus == self._MARGIN and nstatus == self._ERROR:
+                SQl = SQl + Q[indco,:].dot(l(indss))
+                Syl = Syl + l(indss)
 
-              num_MVs = num_MVs + 1
-              if (num_MVs > 1):
+            # set g(ind{MARGIN}) to zero
+            g[inds] = 0
 
-                 # compute beta and gamma for indss
-                 beta = -Rs*Q[:,indss]
-                 gamma = self.gram(X[:,indss], X[:,indss]) + Q[:,indss].dot(beta)
+            # update Rs and Q if necessary
+            if nstatus == self._MARGIN:
+                num_MVs = num_MVs + 1
+                if (num_MVs > 1):
 
+                # compute beta and gamma for indss
+                    beta = -Rs*Q[:,indss]
+                    gamma = self.gram(X[:,indss], X[:,indss]) + Q[:,indss].dot(beta)
 
-              #updateRQ(beta,gamma,indss)
+                rows = Rs.shape[0]
 
-           else:
-               if cstatus == self._MARGIN:
+                if rows > 1:
+                    Rs = vstack((hstack((Rs, zeros(rows))), zeros(rows + 1))) \
+                         + 1/gamma * outer(hstack((beta,1)), hstack((beta,1)))
 
-                  # compress Rs and Q
-                  num_MVs = num_MVs - 1
-                  #TODO: expand Rs and Q
-                  #updateRQ(indco)
+                else:
+                    Rs = vstack((hstack(( - self.gram(X[:, indss], X[:, indss], 1))), hstack((1,0))))
+                X_new = X[indss]
+                X = delete(X, indss, axis=0)
+                X = vstack((X, X_new))
+                #TODO: optimize Q calculation
+                Q = vstack((hstack((0, ones(len(a)))), hstack((ones((len(a[inds]),1)), self.gram(X[inds], X)))))
+            else:
+                if cstatus == self._MARGIN:
+                    # compress Rs and Q
+                    num_MVs = num_MVs - 1
+                    # decrement Rs
+                    if Rs.shape[0] > 2:
+                        for i in range(Rs.shape[0]):
+                            for j in range(Rs.shape[1]):
+                                if i != indco and j != indco:
+                                    Q[i][j] = Q[i][j] - Q[i][indco]*Q[indco][j]/Q[indco][indco]
+                        Rs = delete(Rs, indco, 0)
+                        Rs = delete(Rs, indco, 1)
+                    else:
+                        Rs = inf
+                    Q = delete(Q, indco, 0)
 
-           # update SQl and Syl when the status of indss changes from ERROR to MARGIN
-           if cstatus == self._ERROR and nstatus == self._MARGIN:
-              SQl = SQl - Q[num_MVs+1,:].dot(l[indss])
-              Syl = Syl - l[indss]
+            # update SQl and Syl when the status of indss changes from ERROR to MARGIN
+            if cstatus == self._ERROR and nstatus == self._MARGIN:
+                SQl = SQl - Q[num_MVs,:].dot(l[indss])
+                Syl = Syl - l[indss]
 
-           if p >= disp_p_delta*disp_p_count:
-              disp_p_count = disp_p_count + 1
-              #s = sprintf('p = #.2f',p)
-              #disp(s)
+            if p >= disp_p_delta*disp_p_count:
+                disp_p_count = disp_p_count + 1
+        return a,X
 
     def min_delta_p_c(self, p_c, gamma, beta, l, inds, a, C, indr, inde, g, indo):
         eps = 1e-5

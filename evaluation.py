@@ -47,6 +47,7 @@ def getBestParas(X5fold):
                 clf = ocsvm.OCSVM("rbf", nu=n, gamma=g)
                 clf.train(np.asarray(X_tra))
                 train_predict = clf.predict(np.asarray(X_tra))
+
                 test_predict = clf.predict(np.asarray(X_lst))
                 prec, rec, f1score, err = score(label_tra, train_predict, label_lst, test_predict)
                 precision.append(prec)
@@ -70,7 +71,6 @@ def getBestParas(X5fold):
     print prec, rec, f1score, err
     print len(clf._data.alpha_s()), len(clf._data.alpha())
     #print clf._data.alpha()
-    print "C: " % clf._data.C()
     print "gold standard alpha s: %s, sum(as): %s" % (clf._data.alpha_s(), sum(clf._data.alpha_s()))
     print "f1: %s, precision: %s, recall: %s, nu: %s, gamma: %s, error: %s" % (best_paras[0], best_paras[1],
                                                                                best_paras[2], best_paras[3], best_paras[4], best_paras[5])
@@ -95,38 +95,41 @@ def plot(X, label):
     plt.scatter(X_minus[:, 0], X_minus[:, 1], c='red')
     plt.show()
 
-
-
 def score(labelTrain, predictTrain, labelTest, predictTest):
     tp = 0
     fp = 0
     fn = 0
-
+    tn = 0
     for i, label in enumerate(labelTrain):
+
         if label == predictTrain[i]:
             if label == 1:
                 tp += 1
+            else:
+                tn += 1
         elif label < predictTrain[i]:
             fp += 1
         else:
-            fn +=1
+            fn += 1
         for i, label in enumerate(labelTest):
             if label == predictTest[i]:
                 if label == 1:
                     tp += 1
+                else:
+                    tn += 1
             elif label < predictTest[i]:
                 fp += 1
             else:
                 fn +=1
-        if tp + fp > 0: prec = float(tp)/(tp+fp)
-        else: prec = 0
-        if tp + fn > 0: rec = float(tp)/(tp+fn)
-        else: rec = 0
-        if prec + rec > 0:
-            f1 = 2*prec*rec/(prec+rec)
-        else: f1 = 0
-        err = float(fp + fn) / len(labelTrain)
-        return prec, rec, f1, err
+    if tn + fn > 0: prec = float(tn)/(tn + fn)
+    else: prec = 0
+    if tn + fp > 0: rec = float(tn)/(tn + fp)
+    else: rec = 0
+    if prec + rec > 0:
+        f1 = 2*prec*rec/(prec+rec)
+    else: f1 = 0
+    err = float(fp + fn) / (len(labelTrain) + len(labelTest))
+    return prec, rec, f1, err
 
 def incrementEval(X5fold, nu, gamma):
     prec = 0
@@ -142,13 +145,13 @@ def incrementEval(X5fold, nu, gamma):
         test_predict = clf.predict(X_lst)
         p, r, f, e = score(label_tra, train_predict, label_lst, test_predict)
         print "prec: %s, rec: %s, f1score: %s, err: %s" % (p, r, f, e)
+
         #i += 1
         #if i == 3: break
         prec += p
         rec += r
         f1score += f
         err += e
-        break
     print "prec: %s, rec: %s, f1score: %s, err: %s" % (float(prec)/5, float(rec)/5, float(f1score)/5, float(err)/5)
 
     return clf, X_tra, X_lst, train_predict, test_predict
@@ -156,9 +159,9 @@ def incrementEval(X5fold, nu, gamma):
 
 def train(X_tra, n, g):
     clf = ocsvm.OCSVM("rbf", nu=n, gamma=g)
-    clf.train(X_tra[:-1])
+    clf.train(X_tra[0:3])
     print clf._data.alpha_s()
-    X_tra = X_tra[-1:]
+    X_tra = X_tra[3:]
     for i,x in enumerate(X_tra):
         print "========================== INCREMENTAL %s" %i
         clf.increment(x)
@@ -178,6 +181,5 @@ if __name__ == "__main__":
     bestParas = getBestParas(X5fold)
 
     clf, X_tra, X_lst, train_predict, test_predict = incrementEval(X5fold, bestParas[3], bestParas[4])
-    print clf._data.Xs()
     #plot(np.vstack((X_tra, X_lst)), np.hstack((train_predict, test_predict)))
 
