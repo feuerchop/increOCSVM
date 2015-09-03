@@ -2,125 +2,116 @@ __author__ = 'LT'
 import numpy as np
 import cvxopt.solvers
 import kernel
-from numpy.linalg import inv
+from time import gmtime, strftime
 from sklearn.metrics.pairwise import pairwise_kernels
 from numpy import vstack, hstack, ones, zeros, absolute, where, divide, inf, delete, outer, transpose
+from numpy.linalg import inv
 import data
 import sys
 import math
-
 #print(__doc__)
 
 #Trains an SVM
 class OCSVM(object):
     # define global variables
     _rho = None
-    _kernel = None
     _v = None
     _gamma = None
-    # flags for example state
-    _MARGIN    = 1;
-    _ERROR     = 2;
-    _RESERVE   = 3;
-    _UNLEARNED = 4;
 
     #Class constructor: kernel function & nu & sigma
     def __init__(self, metric, nu, gamma):
-        if metric == "rbf":
-            self._kernel = kernel.Kernel.gaussian(gamma)
         self._v = nu
         self._gamma = gamma
         self._data = data.Data()
 
-    #returns trained SVM predictor given features (X)
+    #returns trained SVM rho given features (X)
+    # TODO: we need to store the key properties of model after training
     # Please check libsvm what they provide for output, e.g., I need to access to the sv_idx all the time
-    def train(self, X):
+    def train(self, X, scale = 1):
         self._data.set_X(X)
-        self._data.set_C(1)
+        self._data.set_C(1/(self._v * len(X)) * scale)
         # get lagrangian multiplier
-        self._data.set_alpha(self.alpha(self._data.X()))
+        alpha = self.alpha(X, scale)
+        self._data.set_alpha(alpha)
         # defines necessary parameter for prediction
-        self.predictor()
+        self.rho()
 
-    #returns SVM predictors with given X and langrange mutlipliers
-    def predictor(self):
+    #returns SVM prediction with given X and langrange mutlipliers
+    def rho(self):
+        # compute rho assuming non zero rho, take average rho!
+        Xs = self._data.Xs()
+        #self._rho = sum(self._data.alpha().dot(self.gram(self._data.X(), Xs[0])))
+        #print "rho: %s" % self._rho
 
-        # define support vector and weights/alpha
-        alpha = self._data.alpha_s()
-        sv = self._data.Xs()
+        rho_all = self._data.alpha().dot(self.gram(self._data.X(), self._data.Xs()))
+        print "rho all: %s" % rho_all
+        self._rho = np.mean(rho_all)
+        print "rho_avg: %s" % (sum(rho_all)/len(rho_all))
 
-        #for computing rho we need an x_i with corresponding a_i < 1/nu and a > 0
-        rho_x = 0
-        for a_i, x_i in zip(alpha, sv):
-            if a_i > 0 and a_i < 1/self._v:
-                rho_x = x_i
-                break
-        #compute error assuming non zero rho
-        self._rho = (np.sum([a_i * self._kernel(x_i,rho_x) for a_i, x_i in zip(alpha,sv)]))
+        #test if all rhos are the same!!
+        '''
+        rho_all = self._data.alpha().dot(self.gram(self._data.X(), self._data.Xs())).tolist()
+        print self._data.C()
+        print "alpha: %s" % self._data.alpha_s()
+        print "rho_all: %s" % rho_all
+        avg_rho = sum(rho_all)/len(rho_all)
+        print "rho_avg: %s" % (sum(rho_all)/len(rho_all))
+
+        for i in range(len(Xs)):
+            print "decision function: %s" % self.decision_function(Xs[i])
+            print "avg decision function: %s" % (- avg_rho + self._data.alpha().dot(self.gram(self._data.X(), Xs[i])))
+        sys.exit()
+        '''
 
     #compute Gram matrix
     def gram(self, X, Y=None):
-        ## pairwise_kernels:
-        ## K(x, y) = exp(-gamma ||x-y||^2)
         return pairwise_kernels(X, Y, "rbf", gamma=self._gamma)
 
     #compute Lagrangian multipliers
-    def alpha(self, X):
+    def alpha(self, X, scale = 1):
         n_samples, n_features = X.shape
-        #K = self.gram(X)
-        K = self.gram(X) * (self._v*len(X))
+        K = 2 * self.gram(X) * scale
 
         P = cvxopt.matrix(K)
-        q = cvxopt.matrix(zeros(n_samples))
-        A = cvxopt.matrix(ones((n_samples,1)),(1,n_samples))
-        #b = cvxopt.matrix(1.0)
-        b = cvxopt.matrix(self._v*len(X))
+        q = cvxopt.matrix(np.zeros(n_samples))
+        A = cvxopt.matrix(np.ones((n_samples,1)),(1,n_samples))
+        b = cvxopt.matrix(1.0 * scale)
 
-        G_1 = cvxopt.matrix(np.diag(ones(n_samples) * -1))
-        h_1 = cvxopt.matrix(zeros(n_samples))
+        G_1 = cvxopt.matrix(np.diag(np.ones(n_samples) * -1))
+        h_1 = cvxopt.matrix(np.zeros(n_samples))
 
-        G_2 = cvxopt.matrix(np.diag(ones(n_samples)))
-        #h_2 = cvxopt.matrix(ones(n_samples) * 1/(self._v*len(X)))
-        h_2 = cvxopt.matrix(ones(n_samples))
+        G_2 = cvxopt.matrix(np.diag(np.ones(n_samples)))
+        h_2 = cvxopt.matrix(np.ones(n_samples) * 1/(self._v*len(X)) * scale)
 
-        G = cvxopt.matrix(vstack((G_1, G_2)))
-        h = cvxopt.matrix(vstack((h_1, h_2)))
+        G = cvxopt.matrix(np.vstack((G_1, G_2)))
+        h = cvxopt.matrix(np.vstack((h_1, h_2)))
+
         cvxopt.solvers.options['show_progress'] = False
+
         solution = cvxopt.solvers.qp(P, q, G, h, A, b)
         return np.ravel(solution['x'])
 
+    # Returns SVM predicton given feature vector
+    def predict(self, x):
+        distance = -1 * self._rho + self._data.alpha_s().dot(self.gram(self._data.Xs(),x))
+        return np.sign(distance)
+
     # Returns distance to boundary
     def decision_function(self, x):
-        #print self._rho
-        return -1 * self._rho + self._data.alpha_s().dot(self.gram(self._data.Xs(),x))
+        return - self._rho + self._data.alpha().dot(self.gram(self._data.X(), x))
 
-    def predict(self, x):
-        #print self._rho
-        df = -1 * self._rho + self._data.alpha_s().dot(self.gram(self._data.Xs(),x))
-        df_copy = df.copy()
-        for i, val in enumerate(df_copy):
-            if val > 0:
-                df[i] = 1
-            else: df[i] = -1
-        return df
-
-
-    ### incremental
-
-    def increment(self, xc):
+    def increment(self, xc, init_ac = 0, v = None):
 
         e = 1e-4
         # initialize X, a, C, g, indeces, kernel values
         X = self._data.X()                                  # data points
-        C = 1/(self._v*(len(X)+1))
-        C = 1
+        C = self._data.C()
         print "C: %s" %C
-        print "C old: %s" % (1/(self._v*len(X)))
         a = self._data.alpha()
-        print "a: %s" %a
-        print "v: %s" %self._v
+        #print "a: %s" %a
+        print "a: %s" % self._data.alpha_s()
 
-        ac = self._v                    # alpha of new point c
+        ac = init_ac
 
         inds = np.all([a > e, a < C - e], axis=0)           # support vectors indeces
         indr = np.any([a <= e, a >= C - e], axis=0)         # error and non-support vectors indeces
@@ -134,7 +125,10 @@ class OCSVM(object):
         lo = len(a[indo])                               # non-support vectors
         Kss = self.gram(X[inds]) # kernel of support vectors
         # calculate mu according to KKT-conditions
-        mu = 1 - self.gram(X[inds][0], X[inds]).dot(a[inds])
+        mu_all = - self.gram(X[inds], X).dot(a)
+        print "mu_all: %s" % mu_all
+        #mu = - self.gram(X[inds][0], X).dot(a)
+        mu = np.mean(mu_all)
         print "mu: %s" % mu
         # calculate gradient
         g = ones(l) * -1
@@ -145,15 +139,20 @@ class OCSVM(object):
             Kcs = self.gram(xc, X[inds])[0]
         if lr > 0:
             Krs = self.gram(X[indr], X[inds]) # kernel of error vectors, support vectors
-            print "Krs: %s" %Krs
+            Kr = self.gram(X[indr], X)
+            #print "Krs: %s" %Krs
             Kcr = self.gram(xc, X[indr])[0]
-            g[indr] = - ones(lr) + Krs.dot(a[inds]) + ones((lr,1)) * mu
+            g[indr] = Kr.dot(a) + ones((lr,1)) * mu
 
+        #print "KKT: %s" % self.KKT(X,a)
+        print "test"
+        print "a test: %s" % a[indr]
+        print "g test: %s" % g[indr]
         #test
         #mu = - max(a[indr][inde])
 
         Kcc = 1
-        gc = - 1 + Kcs.dot(a[inds]) + mu
+        gc = Kcs.dot(a[inds]) + mu
         print "gc: %s" %gc
         # initial calculation for beta
         Q = vstack([hstack([0,ones(ls)]),hstack([ones((ls,1)), Kss])])
@@ -164,15 +163,15 @@ class OCSVM(object):
 
         while gc < e and ac < C - e:
             print "--------------------------" + "increment/decrement loop " + str(loop_count) + "--------------------------"
-            print "sum(a): %s" % (sum(a) + ac)
-            print "a: %s" % a
-            print "a[inds]: %s" %a[inds]
-            print "a[indr]: %s" %a[indr]
-            print "a[indo]: %s" %a[indo]
-            print "a[inde]: %s" %a[inde]
+            print "sum(a + ac): %s" % (sum(a) + ac)
+            #print "a: %s" % a
+            #print "a[inds]: %s" %a[inds]
+            #print "a[indr]: %s" %a[indr]
+            #print "a[indo]: %s" %a[indo]
+            #print "a[inde]: %s" %a[inde]
             print "ac: %s"%ac
-            print "g: %s"%g
-            print "gc: %s" %gc
+            #print "g: %s"%g
+            #print "gc: %s" %gc
 
 
             # calculate beta
@@ -189,18 +188,18 @@ class OCSVM(object):
                 gamma = vstack([hstack([1, Kcs]), hstack([ones((lr,1)), Krs])]).dot(beta) + hstack([Kcc, Kcr])
                 gammac = gamma[0]
                 gammar = gamma[1:]
-                print "gammar: %s" % gammar
-                print "gammac: %s" % gammac
+                #print "gammar: %s" % gammar
+                #print "gammac: %s" % gammac
             elif ls > 0:
                 # empty R set
                 gammac =hstack([1, Kcs]).dot(beta) + Kcc
-                print "gammac: %s" %gammac
+                #print "gammac: %s" %gammac
             else:
                 # empty S set
                 gammac = 1
                 gammar = ones(lr)
-                print "gammar: %s" %gammar
-                print "gammac: %s" %gammac
+                #print "gammar: %s" %gammar
+                #print "gammac: %s" %gammac
 
 
             # accounting
@@ -217,7 +216,7 @@ class OCSVM(object):
                 gsmax[IS_zero] = ones(len(betas[IS_zero])) * inf
                 gsmax[IS_plus] = ones(len(betas[IS_plus]))*C-a[inds][IS_plus]
                 gsmax[IS_minus] = - a[inds][IS_minus]
-                print "gsmax: %s" % gsmax
+                #print "gsmax: %s" % gsmax
                 gsmax = divide(gsmax, betas)
 
                 gsmin = absolute(gsmax).min()
@@ -230,7 +229,7 @@ class OCSVM(object):
                 Ie_plus = gammar[inde] > e
                 Ie_inf = gammar[inde] <= e
                 gec = zeros(len(g[inde] > e))
-                print "-g[indr][inde][Ie_plus]: %s" % -g[indr][inde][Ie_plus]
+                #print "-g[indr][inde][Ie_plus]: %s" % -g[indr][inde][Ie_plus]
 
                 gec[Ie_plus] = divide(-g[indr][inde][Ie_plus], gammar[inde][Ie_plus])
                 gec[Ie_inf] = inf
@@ -450,11 +449,12 @@ class OCSVM(object):
         self._data.set_alpha(a)
         self._data.add(xc, ac)
         self._data.set_C(C)
-        self.predictor()
+        self.rho()
         print "sum(a) after: %s" % sum(self._data.alpha())
-        self.predictor()
-        print "a: %s" % self._data.alpha()
+        self.rho()
+        #print "a: %s" % self._data.alpha()
         print "as: %s" % self._data.alpha_s()
+        #g = self.gram(self._data.X()).dot(self._data.)
 
     def perturbc(self, C_new, C_old, a, X):
         print "perturbc"
@@ -761,3 +761,29 @@ class OCSVM(object):
            min_d = inf
            k = -1
         return min_d,k
+
+    def KKT(self, X, a):
+        e = 1e-5
+        inds = np.all([a > e, a < self._data.C() - e], axis=0)           # support vectors indeces
+        indr = np.any([a <= e, a >= self._data.C() - e], axis=0)         # error and non-support vectors indeces
+        inde = a[indr] >= self._data.C() - e                             # error vectors indeces in R
+        indo = a[indr] <= e                                              # non-support vectors indeces in R
+        mu = - self.gram(X[inds], X[inds]).dot(a[inds])
+        for i, m in enumerate(mu):
+            if i == 0: continue
+            if abs(m - mu[i-1]) > 1e-5:
+                return False
+        g = self.gram(X,X[inds]).dot(a[inds]) + ones((len(a),1)) * mu[0]
+        for i,gi in enumerate(g):
+            if gi <= e and gi >= -1:
+                if a[i] > self._data.C() or a[i] < e:
+                    print "ai: %s, gi: %s" % (a[i], gi)
+                    return False
+            elif gi > e:
+                if a[i] > e:
+                    print "ai: %s, gi: %s" % (a[i], gi)
+                    return False
+            elif gi < - e:
+                if a[i] < self._data.C() - e:
+                    print "ai: %s, gi: %s" % (a[i], gi)
+                    return False

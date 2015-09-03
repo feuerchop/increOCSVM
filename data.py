@@ -4,6 +4,7 @@ class Data(object):
     _X = None
     _alpha = None
     _C = None
+    _e = 1e-6
 
     def __init__(self):
         self._X = None
@@ -15,9 +16,6 @@ class Data(object):
     def set_alpha(self, alpha):
         self._alpha = alpha
 
-    def set_alpha_s(self,alpha_s):
-        self._alpha[self.get_sv()] = alpha_s
-
     def alpha(self):
         return self._alpha
 
@@ -26,7 +24,7 @@ class Data(object):
 
     # return data points corresponding to support vector
     def Xs(self):
-        return self._X[np.all([self._alpha > 1e-5, self._alpha < self.C() - 1e-5], axis=0)]
+        return self._X[self.get_sv()]
 
     # returns support vector
     def alpha_s(self):
@@ -43,6 +41,6 @@ class Data(object):
         self._alpha = np.hstack((self._alpha, alpha_c))
 
     def get_sv(self):
-        return np.all([self._alpha > 1e-5, self._alpha < self.C() - 1e-5], axis=0)
+        return np.all([self._alpha > self._e, self._alpha < self._C - self._e], axis=0)
 
 
