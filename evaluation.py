@@ -9,6 +9,7 @@ from operator import add, div
 
 from sklearn import decomposition
 from sklearn import datasets
+from sklearn import svm
 
 def get5FoldCV(filePath):
     X5fold = []
@@ -35,7 +36,7 @@ def loadData(filePath):
 
 def getBestParas(X5fold):
     nu = np.arange(0.2,1,0.2)
-    gamma = np.arange(0.2, 5, 0.2)
+    gamma = np.arange(0.2, 3, 0.2)
     best_paras = []
     for n in nu:
         for g in gamma:
@@ -44,18 +45,17 @@ def getBestParas(X5fold):
             f1 = []
             error = []
             for X_tra, label_tra, X_lst,label_lst in X5fold:
+                ### own implementation
                 clf = ocsvm.OCSVM("rbf", nu=n, gamma=g)
                 clf.train(np.asarray(X_tra), scale=n*len(X_tra))
                 clf._data.alpha()
                 train_predict = clf.predict(np.asarray(X_tra))
-                print clf._data.alpha()
                 test_predict = clf.predict(np.asarray(X_lst))
                 prec, rec, f1score, err = score(label_tra, train_predict, label_lst, test_predict)
                 precision.append(prec)
                 recall.append(rec)
                 f1.append(f1score)
                 error.append(err)
-                sys.exit()
             avgprec = float(sum(precision))/len(precision)
             avgrec = float(sum(recall))/len(recall)
             avgf1 = float(sum(f1))/len(f1)
@@ -78,6 +78,16 @@ def getBestParas(X5fold):
     print "gold standard alpha s: %s, sum(as): %s" % (clf._data.alpha_s(), sum(clf._data.alpha_s()))
     print "f1: %s, precision: %s, recall: %s, nu: %s, gamma: %s, error: %s" % (best_paras[0], best_paras[1],
                                                                                best_paras[2], best_paras[3], best_paras[4], best_paras[5])
+    ### scikit-learn comparison
+    '''
+    clf_sci = svm.OneClassSVM(nu=best_paras[3], kernel="rbf", gamma=best_paras[4])
+    for X_tra, label_tra, X_lst,label_lst in X5fold:
+        clf_sci.fit(X_tra)
+        train_predict = clf_sci.predict(X_tra)
+        test_predict = clf_sci.predict(X_lst)
+        prec, rec, f1score, err = score(label_tra, train_predict, label_lst, test_predict)
+        print prec, rec, f1score, err
+    '''
     return best_paras
 
 def plot(X, label):
@@ -165,9 +175,9 @@ def incrementEval(X5fold, nu, gamma):
 
 def train(X_tra, n, g):
     clf = ocsvm.OCSVM("rbf", nu=n, gamma=g)
-    clf.train(X_tra[:-1], scale=n*len(X_tra[:-1]))
+    clf.train(X_tra[:-1], scale=n*len(X_tra[0:20]))
     print "alpha_s before increment: %s" % clf._data.alpha_s()
-    X_tra = X_tra[-1:]
+    X_tra = X_tra[20:]
     for i,x in enumerate(X_tra):
         print "========================== INCREMENTAL %s" %i
         clf.increment(x, init_ac=n)
@@ -186,6 +196,7 @@ if __name__ == "__main__":
     X5fold = get5FoldCV(ecoli05fold)
     print "find best parameter"
     bestParas = getBestParas(X5fold)
+    print "increment evaluation"
 
     clf, X_tra, X_lst, train_predict, test_predict = incrementEval(X5fold, 0.2, 3.2)
     #plot(np.vstack((X_tra, X_lst)), np.hstack((train_predict, test_predict)))
