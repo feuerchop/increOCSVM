@@ -43,7 +43,7 @@ def plot(predictor, X_train, X_test, X_outliers, grid_size, incremental):
 
 def standardExample():
     # Generate train data
-    X = 0.3 * np.random.randn(60, 2)
+    X = 0.3 * np.random.randn(100, 2)
     X_train = np.r_[X + 2, X-2]
     pickle.dump(X_train, open("/Users/LT/Documents/Uni/MA/increOCSVM/Xtrain.p", "w+"))
     #X_train = pickle.load(open("/Users/LT/Documents/Uni/MA/increOCSVM/Xtrain.p", 'r+'))
@@ -72,8 +72,11 @@ def standardExample():
 
     # new point
     X = 0.3 * np.random.randn(1, 2)
-    X_new = np.r_[X + 2, X-2]
+    X_new = np.r_[X + 5, X-5]
     print X_new[0]
+
+    mu_all = - clf.gram(clf._data.Xs(), clf._data.X()).dot(clf._data.alpha())
+    print mu_all
 
 def goldExample(X_train, X_test, X_outliers):
     plt.figure()
@@ -186,8 +189,8 @@ def incrementExample():
 
 if __name__ == "__main__":
 
-    incrementExample()
-    #standardExample()
+    #incrementExample()
+    standardExample()
 
 
 

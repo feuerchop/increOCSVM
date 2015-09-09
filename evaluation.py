@@ -5,11 +5,11 @@ import sys
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
 from operator import add, div
+from math import ceil
 
 
 from sklearn import decomposition
-from sklearn import datasets
-from sklearn import svm
+
 
 def get5FoldCV(filePath):
     X5fold = []
@@ -36,19 +36,26 @@ def loadData(filePath):
 
 def getBestParas(X5fold):
     nu = np.arange(0.2,1,0.2)
-    gamma = np.arange(0.2, 3, 0.2)
+    gamma = np.arange(0.2, 5, 0.2)
     best_paras = []
     for n in nu:
+
         for g in gamma:
+            print "nu: %s; gamma: %s" % (n,g)
             precision = []
             recall = []
             f1 = []
             error = []
+            i = 1
             for X_tra, label_tra, X_lst,label_lst in X5fold:
+                #print i
+                i += 1
                 ### own implementation
+                #print "predicting ..."
                 clf = ocsvm.OCSVM("rbf", nu=n, gamma=g)
+                #print "training ..."
                 clf.train(np.asarray(X_tra), scale=n*len(X_tra))
-                clf._data.alpha()
+                #print "evaluating ..."
                 train_predict = clf.predict(np.asarray(X_tra))
                 test_predict = clf.predict(np.asarray(X_lst))
                 prec, rec, f1score, err = score(label_tra, train_predict, label_lst, test_predict)
@@ -60,6 +67,7 @@ def getBestParas(X5fold):
             avgrec = float(sum(recall))/len(recall)
             avgf1 = float(sum(f1))/len(f1)
             avgerror = float(sum(error)/len(error))
+            print "precision: %s, recall: %s, f1: %s, error: %s" % (avgprec, avgrec, avgf1, avgerror)
             if len(best_paras) == 0:
                 best_paras = [avgf1, avgprec, avgrec, n, g, avgerror]
             else:
@@ -134,7 +142,9 @@ def score(labelTrain, predictTrain, labelTest, predictTest):
         elif label < predictTest[i]:
             fp += 1
         else:
-            fn +=1
+            fn += 1
+    #print "tn: %s, tp: %s, fn: %s, fp: %s" % (tn, tp, fn, fp)
+    #print "train + test: %s" % (len(labelTest) + len(labelTrain))
     if tn + fn > 0: prec = float(tn)/(tn + fn)
     else: prec = 0
     if tn + fp > 0: rec = float(tn)/(tn + fp)
@@ -143,6 +153,7 @@ def score(labelTrain, predictTrain, labelTest, predictTest):
         f1 = 2*prec*rec/(prec+rec)
     else: f1 = 0
     err = float(fp + fn) / (len(labelTrain) + len(labelTest))
+    #print "err: %s" % err
     return prec, rec, f1, err
 
 def incrementEval(X5fold, nu, gamma):
@@ -153,40 +164,80 @@ def incrementEval(X5fold, nu, gamma):
     i = 0
 
     for X_tra, label_tra, X_lst,label_lst in X5fold:
-        nu_new = (len(X_tra) * nu) / (len(X_tra) - 1)
+        train_size = ceil(len(X_tra) * nu / 0.9)
+        nu_new = (len(X_tra) * nu) / train_size
+        print "Train data size: %s" % len(X_tra)
+        print "beginning train size: %s" % train_size
         print "nu new: %s" % nu_new
         clf_gold = ocsvm.OCSVM("rbf", nu=nu, gamma=gamma)
         clf_gold.train(np.asarray(X_tra), scale=len(X_tra) * nu)
-        print "gold alpha_s: %s" % clf_gold._data.alpha_s()
-        clf = train(np.asarray(X_tra), nu, gamma)
+        train_predict = clf_gold.predict(X_tra)
+        test_predict = clf_gold.predict(X_lst)
+        p, r, f, e = score(label_tra, train_predict, label_lst, test_predict)
+        print "batch -> prec: %s, rec: %s, f1score: %s, err: %s" % (p, r, f, e)
+        #print "gold alpha_s: %s" % clf_gold._data.alpha_s()
+        clf = train(np.asarray(X_tra), nu_new, gamma, size = train_size)
         train_predict = clf.predict(X_tra)
         test_predict = clf.predict(X_lst)
         p, r, f, e = score(label_tra, train_predict, label_lst, test_predict)
-        print "prec: %s, rec: %s, f1score: %s, err: %s" % (p, r, f, e)
+        print "incremental -> prec: %s, rec: %s, f1score: %s, err: %s" % (p, r, f, e)
 
         i += 1
         prec += p
         rec += r
         f1score += f
         err += e
-    print "prec: %s, rec: %s, f1score: %s, err: %s" % (float(prec)/i, float(rec)/i, float(f1score)/i, float(err)/i)
+    print "f1score: %s, prec: %s, rec: %s, err: %s" % (float(f1score)/i, float(prec)/i, float(rec)/i, float(err)/i)
 
     return clf, X_tra, X_lst, train_predict, test_predict
 
-def train(X_tra, n, g):
+def train(X_tra, n, g, size = 1):
+    #print "train"
+    #print g
     clf = ocsvm.OCSVM("rbf", nu=n, gamma=g)
-    clf.train(X_tra[:-1], scale=n*len(X_tra[0:20]))
-    print "alpha_s before increment: %s" % clf._data.alpha_s()
-    X_tra = X_tra[20:]
+    print clf._gamma
+    clf.train(X_tra[0:size], scale=n*len(X_tra[0:size]))
+    #print "alpha_s before increment: %s" % clf._data.alpha_s()
+    X_tra = X_tra[size:]
+    #print "increment"
     for i,x in enumerate(X_tra):
-        print "========================== INCREMENTAL %s" %i
-        clf.increment(x, init_ac=n)
-
+        #print "========================== INCREMENTAL %s" %i
+        clf.increment(x, init_ac=0)
     return clf
 
 
 
 if __name__ == "__main__":
+    ecoli0 = "/Users/LT/Documents/Uni/MA/increOCSVM/imbalanced_data/page-blocks0/"
+    ecoli0All = ecoli0 + "page-blocks0.dat"
+    X, label = loadData(ecoli0All)
+
+    #plot(np.asarray(X), np.asarray(label))
+    ecoli05fold = "/Users/LT/Documents/Uni/MA/increOCSVM/imbalanced_data/page-blocks0/page-blocks0-5-fold/page-blocks0-5-"
+    X5fold = get5FoldCV(ecoli05fold)
+    print "find best parameter"
+    #bestParas = getBestParas(X5fold)
+    print "increment evaluation"
+
+    clf, X_tra, X_lst, train_predict, test_predict = incrementEval(X5fold, 0.2, 0.0005)
+    sys.exit()
+
+    ecoli0 = "/Users/LT/Documents/Uni/MA/increOCSVM/imbalanced_data/segment0/"
+    ecoli0All = ecoli0 + "segment0.dat"
+    X, label = loadData(ecoli0All)
+
+    #plot(np.asarray(X), np.asarray(label))
+    ecoli05fold = "/Users/LT/Documents/Uni/MA/increOCSVM/imbalanced_data/segment0/segment0-5-fold/segment0-5-"
+    X5fold = get5FoldCV(ecoli05fold)
+    print "find best parameter"
+    #bestParas = getBestParas(X5fold)
+    print "increment evaluation"
+
+    clf, X_tra, X_lst, train_predict, test_predict = incrementEval(X5fold, 0.2, 0.0005)
+
+    sys.exit()
+
+    '''
     ecoli0 = "/Users/LT/Documents/Uni/MA/increOCSVM/imbalanced_data/ecoli-0_vs_1/"
     ecoli0All = ecoli0 + "ecoli-0_vs_1.dat"
     X, label = loadData(ecoli0All)
@@ -195,9 +246,14 @@ if __name__ == "__main__":
     ecoli05fold = "/Users/LT/Documents/Uni/MA/increOCSVM/imbalanced_data/ecoli-0_vs_1/ecoli-0_vs_1-5-fold/ecoli-0_vs_1-5-"
     X5fold = get5FoldCV(ecoli05fold)
     print "find best parameter"
-    bestParas = getBestParas(X5fold)
+    #bestParas = getBestParas(X5fold)
     print "increment evaluation"
 
-    clf, X_tra, X_lst, train_predict, test_predict = incrementEval(X5fold, 0.2, 3.2)
+    clf, X_tra, X_lst, train_predict, test_predict = incrementEval(X5fold, 0.8, 0.8)
+    '''
+
+
+
+
     #plot(np.vstack((X_tra, X_lst)), np.hstack((train_predict, test_predict)))
 

@@ -4,9 +4,10 @@ import cvxopt.solvers
 import kernel
 from time import gmtime, strftime
 from sklearn.metrics.pairwise import pairwise_kernels
-from numpy import vstack, hstack, ones, zeros, absolute, where, divide, inf, delete, outer, transpose
+from numpy import vstack, hstack, ones, zeros, absolute, where, divide, inf, delete, outer, transpose, diag
 from numpy.linalg import inv
 import data
+from scipy import linalg
 import sys
 import math
 #print(__doc__)
@@ -102,14 +103,14 @@ class OCSVM(object):
 
     def increment(self, xc, init_ac = 0, v = None):
 
-        e = 1e-4
+        e = 1e-6
         # initialize X, a, C, g, indeces, kernel values
         X = self._data.X()                                  # data points
         C = self._data.C()
-        print "C: %s" %C
+        #print "C: %s" %C
         a = self._data.alpha()
-        #print "a: %s" %a
-        print "a: %s" % self._data.alpha_s()
+        ##print "a: %s" %a
+        ##print "a: %s" % self._data.alpha_s()
 
         ac = init_ac
 
@@ -117,7 +118,7 @@ class OCSVM(object):
         indr = np.any([a <= e, a >= C - e], axis=0)         # error and non-support vectors indeces
         inde = a[indr] >= C - e                             # error vectors indeces in R
         indo = a[indr] <= e                                 # non-support vectors indeces in R
-
+        ##print "len a_inds: %s " % len(a[inds])
         l = len(a)
         ls = len(a[inds])                               # support vectors length
         lr = len(a[indr])                               # error and non-support vectors length
@@ -126,10 +127,11 @@ class OCSVM(object):
         Kss = self.gram(X[inds]) # kernel of support vectors
         # calculate mu according to KKT-conditions
         mu_all = - self.gram(X[inds], X).dot(a)
-        #print "mu_all: %s" % mu_all
+        ##print "a_inds: %s" % a[inds]
+        ##print "mu_all: %s" % mu_all
         #mu = - self.gram(X[inds][0], X).dot(a)
         mu = np.mean(mu_all)
-        #print "mu: %s" % mu
+        ##print "mu: %s" % mu
         # calculate gradient
         g = ones(l) * -1
 
@@ -140,38 +142,53 @@ class OCSVM(object):
         if lr > 0:
             Krs = self.gram(X[indr], X[inds]) # kernel of error vectors, support vectors
             Kr = self.gram(X[indr], X)
-            #print "Krs: %s" %Krs
+            ##print "Krs: %s" %Krs
             Kcr = self.gram(xc, X[indr])[0]
             g[indr] = Kr.dot(a) + ones((lr,1)) * mu
 
-        #print "KKT: %s" % self.KKT(X,a)
-        #print "test"
-        #print "a test: %s" % a[indr]
-        #print "g test: %s" % g[indr]
+        ##print "KKT: %s" % self.KKT(X,a)
+        ##print "test"
+        ##print "a test: %s" % a[indr]
+        ##print "g test: %s" % g[indr]
         #test
         #mu = - max(a[indr][inde])
 
         Kcc = 1
         gc = Kcs.dot(a[inds]) + mu
-        #print "gc: %s" %gc
+        ##print "gc: %s" %gc
         # initial calculation for beta
         Q = vstack([hstack([0,ones(ls)]),hstack([ones((ls,1)), Kss])])
-        R = inv(Q)
+        ##print Kss
+        ##print Q.shape
+        #R = inv(Q + diag(ones(Q.shape) * e))
+        try:
+            R = inv(Q)
+        except np.linalg.linalg.LinAlgError:
+            #print "singular matrix"
+            ##print self._gamma
+            ##print math.pow(np.linalg.norm(X[0] - X[1]), 2)
+            ##print (- math.pow(0.0005,2) * math.pow(np.linalg.norm(X[0] - X[1]), 2))
+            ##print self.gram( X[1], X[0])
+            ##print "Q with diag: %s" % (Q + diag(ones(Q.shape) * 1e-3))
+            #R = linalg.solve(Q + diag(ones(Q.shape) * 1e-3), ones(Q.shape))
+            ##print R
 
+            sys.exit()
+            #R = inv(Q + diag(ones(Q.shape) * 1e-3))
 
         loop_count = 1
 
         while gc < e and ac < C - e:
             #print "--------------------------" + "increment/decrement loop " + str(loop_count) + "--------------------------"
             #print "sum(a + ac): %s" % (sum(a) + ac)
-            #print "a: %s" % a
+            ##print "a: %s" % a
             #print "a[inds]: %s" %a[inds]
-            #print "a[indr]: %s" %a[indr]
-            #print "a[indo]: %s" %a[indo]
-            #print "a[inde]: %s" %a[inde]
-            #print "ac: %s"%ac
-            #print "g: %s"%g
-            #print "gc: %s" %gc
+            ##print "a[indr]: %s" %a[indr]
+            ##print "a[indo]: %s" %a[indo]
+            ##print "a[inde]: %s" %a[inde]
+            ##print "ac: %s"%ac
+            ##print "g: %s"%g
+            ##print "gc: %s" %gc
 
 
             # calculate beta
@@ -182,32 +199,32 @@ class OCSVM(object):
                 n = hstack([1, Kcs])
                 beta = - R.dot(n)
                 betas = beta[1:]
-                print "beta: %s" %beta
+                ##print "beta: %s" %beta
             # calculate gamma
             if lr > 0 and ls > 0:
                 gamma = vstack([hstack([1, Kcs]), hstack([ones((lr,1)), Krs])]).dot(beta) + hstack([Kcc, Kcr])
                 gammac = gamma[0]
                 gammar = gamma[1:]
-                #print "gammar: %s" % gammar
-                #print "gammac: %s" % gammac
+                ##print "gammar: %s" % gammar
+                ##print "gammac: %s" % gammac
             elif ls > 0:
                 # empty R set
                 gammac =hstack([1, Kcs]).dot(beta) + Kcc
-                #print "gammac: %s" %gammac
+                ##print "gammac: %s" %gammac
             else:
                 # empty S set
                 gammac = 1
                 gammar = ones(lr)
-                #print "gammar: %s" %gammar
-                #print "gammac: %s" %gammac
+                ##print "gammar: %s" %gammar
+                ##print "gammac: %s" %gammac
 
 
             # accounting
             #case 1: Some alpha_i in S reaches a bound
             if ls > 0:
 
-                #print "betas: %s" % betas
-                #print "as: %s" % a[inds]
+                ##print "betas: %s" % betas
+                ##print "as: %s" % a[inds]
                 IS_plus = betas > e
                 IS_minus = betas < - e
                 IS_zero = np.any([betas <= e, betas >= -e], axis=0)
@@ -216,7 +233,7 @@ class OCSVM(object):
                 gsmax[IS_zero] = ones(len(betas[IS_zero])) * inf
                 gsmax[IS_plus] = ones(len(betas[IS_plus]))*C-a[inds][IS_plus]
                 gsmax[IS_minus] = - a[inds][IS_minus]
-                #print "gsmax: %s" % gsmax
+                ##print "gsmax: %s" % gsmax
                 gsmax = divide(gsmax, betas)
 
                 gsmin = absolute(gsmax).min()
@@ -229,7 +246,7 @@ class OCSVM(object):
                 Ie_plus = gammar[inde] > e
                 Ie_inf = gammar[inde] <= e
                 gec = zeros(len(g[inde] > e))
-                #print "-g[indr][inde][Ie_plus]: %s" % -g[indr][inde][Ie_plus]
+                ##print "-g[indr][inde][Ie_plus]: %s" % -g[indr][inde][Ie_plus]
 
                 gec[Ie_plus] = divide(-g[indr][inde][Ie_plus], gammar[inde][Ie_plus])
                 gec[Ie_inf] = inf
@@ -272,34 +289,38 @@ class OCSVM(object):
             #print "gsmin: %s, gemin: %s, gomin: %s, gcmin: %s, gacmin: %s" % (gsmin, gemin, gomin, gcmin, gacmin)
 
             #print "gmin: %s" %gmin
-            #print where(all_deltas == gmin)
+            ##print where(all_deltas == gmin)
             #imin = where([gsmin, gemin, gomin, gcmin, gacmin] == gmin)[0][0]
             for i, val in enumerate(all_deltas):
                 if val == gmin:
                     imin = i
                     break
+
             # update a, g,
-            #print "start:================= update =================="
-            #print "before update sum(a) + ac: %s" % (sum(a) + ac)
-            #print "betas*gmin: %s and sum(betas*gmin): %s" % (betas*gmin, sum(betas*gmin))
-            #print "a[inds]: %s" % a[inds]
-            #print "ac: %s" % ac
-            ac += gmin
-            if imin == 4: a[inds] += betas*gmin
-            else: a[inds] += betas*gmin
-            if lr > 0: g[indr] += gammar * gmin
-            gc = gc + gammac * gmin
-            #print "after update sum(a): %s" % (sum(a) + ac)
-            #print "a[inds]: %s" % a[inds]
-            #print "ac: %s" % ac
+            if ls > 0:
+                #print "start:================= update =================="
+                #print "before update sum(a) + ac: %s" % (sum(a) + ac)
+                #print "betas*gmin: %s and sum(betas*gmin): %s" % (betas*gmin, sum(betas*gmin))
+                #print "a[inds]: %s" % a[inds]
+                #print "ac: %s" % ac
+                ac += gmin
+                if imin == 4: a[inds] += betas*gmin
+                else: a[inds] += betas*gmin
+                if lr > 0: g[indr] += gammar * gmin
+                gc = gc + gammac * gmin
+                #print "after update sum(a): %s" % (sum(a) + ac)
+                #print "a[inds]: %s" % a[inds]
+                #print "ac: %s" % ac
 
-            #print "end:================= update =================="
-
+                #print "end:================= update =================="
+            else:
+                #TODO
+                x=1
             if imin == 0: # min = gsmin => move k from s to r
                 # if there are more than 1 minimum, just take 1
                 if len(ismin[0]) > 1:
                     ismin = [ismin[0][0]]
-                #print "move k from s to r"
+                ##print "move k from s to r"
                 #update indeces
 
                 # get x, a and g
@@ -336,19 +357,22 @@ class OCSVM(object):
                 #decrement R, delete row ismin and column ismin
 
                 if ls > 1:
-                    ismin = ismin[0][0] + 1
+                    #if isinstance(ismin[0], )
+                    if type(ismin[0]).__name__ == "ndarray":
+                        ismin = ismin[0][0] + 1
+                    else: ismin = ismin[0] + 1
                     for i in range(R.shape[0]):
                         for j in range(R.shape[1]):
                             if i != ismin and j != ismin:
                                 R[i][j] = R[i][j] - R[i][ismin]*R[ismin][j]/R[ismin][ismin]
-                    #if debug: #print "R after double loop: %s" % R
+                    #if debug: ##print "R after double loop: %s" % R
                     R = delete(R, ismin, 0)
                     R = delete(R, ismin, 1)
                 else:
                     R = inf
 
             elif imin == 1:
-                #print "move k from e (r) to s"
+                ##print "move k from e (r) to s"
                 # if there are more than 1 minimum, just take 1
                 if len(iemin[0]) > 1:
                     iemin = [iemin[0][0]]
@@ -386,7 +410,7 @@ class OCSVM(object):
                         + 1/k * outer(hstack((betak,1)), hstack((betak,1)))
 
             elif imin == 2: # min = gemin | gomin => move k from r to s
-                #print "start:============= move k from o (r) to s ============="
+                ##print "start:============= move k from o (r) to s ============="
                 if len(iomin[0]) > 1:
                     iomin = [iomin[0][0]]
                 Xk = X[indr][indo][iomin]
@@ -421,7 +445,7 @@ class OCSVM(object):
                     R = hstack((vstack((R, zeros(R.shape[1]))),zeros((R.shape[0] + 1,1)))) \
                         + 1/k * outer(hstack((betak,1)), hstack((betak,1)))
             else: # k = c => terminate
-                #print "k = c => terminate"
+                ##print "k = c => terminate"
                 break
 
 
@@ -442,22 +466,25 @@ class OCSVM(object):
                 Kcr = self.gram(xc, X[indr])[0]
 
             loop_count += 1
-        #print "----------------- end incremental loop -----------------"
-        #print "C: %s" % C
-        #print "ac: %s" %ac
+        ##print "----------------- end incremental loop -----------------"
+        ##print "C: %s" % C
+        ##print "ac: %s" %ac
         self._data.set_X(X)
         self._data.set_alpha(a)
         self._data.add(xc, ac)
         self._data.set_C(C)
+
+        # readjust _rho and _v
+        if abs(sum(self._data.alpha())/len(self._data.alpha()) - self._v) > e:
+            self._v = sum(self._data.alpha())/len(self._data.alpha())
         self.rho()
-        #print "sum(a) after: %s" % sum(self._data.alpha())
-        self.rho()
-        ##print "a: %s" % self._data.alpha()
-        #print "as: %s" % self._data.alpha_s()
+        ##print "sum(a) after: %s" % sum(self._data.alpha())
+        ###print "a: %s" % self._data.alpha()
+        ##print "as: %s" % self._data.alpha_s()
         #g = self.gram(self._data.X()).dot(self._data.)
 
     def perturbc(self, C_new, C_old, a, X):
-        print "perturbc"
+        #print "perturbc"
 
         e = eps = 1e-5
         print "a: %s" % a
