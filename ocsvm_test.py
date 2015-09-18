@@ -56,7 +56,7 @@ def standardExample():
     X_outliers = np.random.uniform(low=-4, high=4, size=(15, 2))
 
     # Train the data
-    clf = ocsvm.OCSVM("rbf", nu=0.1, gamma=0.1)
+    clf = ocsvm.OCSVM("rbf", nu=0.1, gamma=2.1)
     clf.train(X_train)
 
     #print "alpha_s: %s" % clf._data.alpha_s()
@@ -82,7 +82,7 @@ def goldExample(X_train, X_test, X_outliers):
     plt.figure()
     xx, yy = np.meshgrid(np.linspace(-5, 5, 500), np.linspace(-5, 5, 500))
     # fit the model
-    clf = svm.OneClassSVM(nu=0.1, kernel="rbf", gamma=0.1)
+    clf = svm.OneClassSVM(nu=0.1, kernel="rbf", gamma=2.1)
     clf.fit(X_train)
     y_pred_train = clf.predict(X_train)
     y_pred_test = clf.predict(X_test)
@@ -186,11 +186,46 @@ def incrementExample():
     plt.show()
     #plt.savefig('test.pdf')
 
+def gammaExample():
+    # Generate train data
+    X = 0.3 * np.random.randn(100, 2)
+    X_train = np.r_[X + 2, X-2]
+    pickle.dump(X_train, open("/Users/LT/Documents/Uni/MA/increOCSVM/Xtrain.p", "w+"))
+    #X_train = pickle.load(open("/Users/LT/Documents/Uni/MA/increOCSVM/Xtrain.p", 'r+'))
+
+    # Generate some regular novel observations
+    X = 0.3 * np.random.randn(15, 2)
+    X_test = np.r_[X + 2,X-2]
+
+    # Generate some abnormal novel observations
+    X_outliers = np.random.uniform(low=-4, high=4, size=(15, 2))
+
+    # Train the data
+    clf = ocsvm.OCSVM("rbf", nu=0.1, gamma=2.1)
+    clf.train(X_train)
+
+    #print "alpha_s: %s" % clf._data.alpha_s()
+
+
+    #Plot the data
+    plot(clf, X_train, X_test, X_outliers, 100, False)
+    plt.figure()
+    clf = ocsvm.OCSVM("rbf", nu=0.1, gamma=0.0005)
+    clf.train(X_train)
+
+    #Plot the data
+    plot(clf, X_train, X_test, X_outliers, 100, False)
+    plt.show()
+    #plt.savefig('test.pdf')
+
+
 
 if __name__ == "__main__":
 
     #incrementExample()
-    standardExample()
+    #standardExample()
+    gammaExample()
+
 
 
 

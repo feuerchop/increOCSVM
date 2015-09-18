@@ -4,9 +4,11 @@ import cvxopt.solvers
 import kernel
 from time import gmtime, strftime
 from sklearn.metrics.pairwise import pairwise_kernels
-from numpy import vstack, hstack, ones, zeros, absolute, where, divide, inf, delete, outer, transpose, diag
-from numpy.linalg import inv
+from numpy import vstack, hstack, ones, zeros, absolute, where, divide, inf, delete, outer, transpose, diag, tile
+from numpy.linalg import inv, eig
 import data
+from profilehooks import profile
+
 from scipy import linalg
 import sys
 import math
@@ -28,6 +30,7 @@ class OCSVM(object):
     #returns trained SVM rho given features (X)
     # TODO: we need to store the key properties of model after training
     # Please check libsvm what they provide for output, e.g., I need to access to the sv_idx all the time
+    @profile
     def train(self, X, scale = 1):
         self._data.set_X(X)
         self._data.set_C(1/(self._v * len(X)) * scale)
@@ -101,11 +104,13 @@ class OCSVM(object):
     def decision_function(self, x):
         return - self._rho + self._data.alpha().dot(self.gram(self._data.X(), x))
 
+    @profile
     def increment(self, xc, init_ac = 0, v = None):
 
         e = 1e-6
         # initialize X, a, C, g, indeces, kernel values
         X = self._data.X()                                  # data points
+        K_X = self.gram(vstack((xc,X)))
         C = self._data.C()
         #print "C: %s" %C
         a = self._data.alpha()
@@ -124,6 +129,8 @@ class OCSVM(object):
         lr = len(a[indr])                               # error and non-support vectors length
         le = len(a[inde])                               # error vectors lenght
         lo = len(a[indo])                               # non-support vectors
+
+        Kss = K_X[1:,1:][tile(inds, K_X.shape[0] - 1)]
         Kss = self.gram(X[inds]) # kernel of support vectors
         # calculate mu according to KKT-conditions
         mu_all = - self.gram(X[inds], X).dot(a)
@@ -164,32 +171,12 @@ class OCSVM(object):
         try:
             R = inv(Q)
         except np.linalg.linalg.LinAlgError:
-            #print "singular matrix"
-            ##print self._gamma
-            ##print math.pow(np.linalg.norm(X[0] - X[1]), 2)
-            ##print (- math.pow(0.0005,2) * math.pow(np.linalg.norm(X[0] - X[1]), 2))
-            ##print self.gram( X[1], X[0])
-            ##print "Q with diag: %s" % (Q + diag(ones(Q.shape) * 1e-3))
-            #R = linalg.solve(Q + diag(ones(Q.shape) * 1e-3), ones(Q.shape))
-            ##print R
-
-            sys.exit()
-            #R = inv(Q + diag(ones(Q.shape) * 1e-3))
-
+            print "singular matrix"
+            #eigQ = eig(Q)[0]
+            #eigQminus = eigQ[eigQ < 0]
+            R = inv(Q + diag(ones(Q.shape) * 1e-2))
         loop_count = 1
-
         while gc < e and ac < C - e:
-            #print "--------------------------" + "increment/decrement loop " + str(loop_count) + "--------------------------"
-            #print "sum(a + ac): %s" % (sum(a) + ac)
-            ##print "a: %s" % a
-            #print "a[inds]: %s" %a[inds]
-            ##print "a[indr]: %s" %a[indr]
-            ##print "a[indo]: %s" %a[indo]
-            ##print "a[inde]: %s" %a[inde]
-            ##print "ac: %s"%ac
-            ##print "g: %s"%g
-            ##print "gc: %s" %gc
-
 
             # calculate beta
             if ls > 0:
@@ -205,26 +192,20 @@ class OCSVM(object):
                 gamma = vstack([hstack([1, Kcs]), hstack([ones((lr,1)), Krs])]).dot(beta) + hstack([Kcc, Kcr])
                 gammac = gamma[0]
                 gammar = gamma[1:]
-                ##print "gammar: %s" % gammar
-                ##print "gammac: %s" % gammac
+
             elif ls > 0:
                 # empty R set
                 gammac =hstack([1, Kcs]).dot(beta) + Kcc
-                ##print "gammac: %s" %gammac
+
             else:
                 # empty S set
                 gammac = 1
                 gammar = ones(lr)
-                ##print "gammar: %s" %gammar
-                ##print "gammac: %s" %gammac
 
 
             # accounting
             #case 1: Some alpha_i in S reaches a bound
             if ls > 0:
-
-                ##print "betas: %s" % betas
-                ##print "as: %s" % a[inds]
                 IS_plus = betas > e
                 IS_minus = betas < - e
                 IS_zero = np.any([betas <= e, betas >= -e], axis=0)
@@ -246,7 +227,6 @@ class OCSVM(object):
                 Ie_plus = gammar[inde] > e
                 Ie_inf = gammar[inde] <= e
                 gec = zeros(len(g[inde] > e))
-                ##print "-g[indr][inde][Ie_plus]: %s" % -g[indr][inde][Ie_plus]
 
                 gec[Ie_plus] = divide(-g[indr][inde][Ie_plus], gammar[inde][Ie_plus])
                 gec[Ie_inf] = inf
@@ -286,11 +266,7 @@ class OCSVM(object):
             # determine minimum largest increment
             all_deltas = [gsmin, gemin, gomin, gcmin, gacmin]
             gmin = min(all_deltas)
-            #print "gsmin: %s, gemin: %s, gomin: %s, gcmin: %s, gacmin: %s" % (gsmin, gemin, gomin, gcmin, gacmin)
 
-            #print "gmin: %s" %gmin
-            ##print where(all_deltas == gmin)
-            #imin = where([gsmin, gemin, gomin, gcmin, gacmin] == gmin)[0][0]
             for i, val in enumerate(all_deltas):
                 if val == gmin:
                     imin = i
@@ -298,21 +274,11 @@ class OCSVM(object):
 
             # update a, g,
             if ls > 0:
-                #print "start:================= update =================="
-                #print "before update sum(a) + ac: %s" % (sum(a) + ac)
-                #print "betas*gmin: %s and sum(betas*gmin): %s" % (betas*gmin, sum(betas*gmin))
-                #print "a[inds]: %s" % a[inds]
-                #print "ac: %s" % ac
                 ac += gmin
                 if imin == 4: a[inds] += betas*gmin
                 else: a[inds] += betas*gmin
                 if lr > 0: g[indr] += gammar * gmin
                 gc = gc + gammac * gmin
-                #print "after update sum(a): %s" % (sum(a) + ac)
-                #print "a[inds]: %s" % a[inds]
-                #print "ac: %s" % ac
-
-                #print "end:================= update =================="
             else:
                 #TODO
                 x=1
@@ -320,7 +286,7 @@ class OCSVM(object):
                 # if there are more than 1 minimum, just take 1
                 if len(ismin[0]) > 1:
                     ismin = [ismin[0][0]]
-                ##print "move k from s to r"
+
                 #update indeces
 
                 # get x, a and g
@@ -410,7 +376,6 @@ class OCSVM(object):
                         + 1/k * outer(hstack((betak,1)), hstack((betak,1)))
 
             elif imin == 2: # min = gemin | gomin => move k from r to s
-                ##print "start:============= move k from o (r) to s ============="
                 if len(iomin[0]) > 1:
                     iomin = [iomin[0][0]]
                 Xk = X[indr][indo][iomin]
@@ -473,10 +438,9 @@ class OCSVM(object):
         self._data.set_alpha(a)
         self._data.add(xc, ac)
         self._data.set_C(C)
+        #print len(self._data.alpha_s())
+        #print self._data.alpha()
 
-        # readjust _rho and _v
-        if abs(sum(self._data.alpha())/len(self._data.alpha()) - self._v) > e:
-            self._v = sum(self._data.alpha())/len(self._data.alpha())
         self.rho()
         ##print "sum(a) after: %s" % sum(self._data.alpha())
         ###print "a: %s" % self._data.alpha()
