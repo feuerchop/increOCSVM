@@ -117,8 +117,8 @@ def incrementExample():
     X = 0.3 * np.random.randn(20, 2)
     X_train = np.r_[X + 2, X-2]
     #X_train = X
-    #pickle.dump(X_train, open("/Users/LT/Documents/Uni/MA/increOCSVM/Xtrain.p", "w+"))
-    X_train = pickle.load(open("/Users/LT/Documents/Uni/MA/increOCSVM/Xtrain.p", 'r+'))
+    pickle.dump(X_train, open("/Users/LT/Documents/Uni/MA/increOCSVM/Xtrain.p", "w+"))
+    #X_train = pickle.load(open("/Users/LT/Documents/Uni/MA/increOCSVM/Xtrain.p", 'r+'))
     #print X_train
     # Generate some regular novel observations
     X = 0.3 * np.random.randn(5, 2)
@@ -137,9 +137,9 @@ def incrementExample():
     clf1.train(np.vstack((X_train,X_outliers[0])), scale=0.1 * len(np.vstack((X_train,X_outliers[0]))))
     plot(clf1, X_train, X_test, X_outliers, 100, False)
     plt.title("All data trained with SVM")
-    print "sum(alpha): %s" % sum(clf1._data.alpha())
-    print "standard alpha: %s" %clf1._data.alpha()
-    print "standard alpha_s: %s" %clf1._data.alpha_s()
+    #print "sum(alpha): %s" % sum(clf1._data.alpha())
+    #print "standard alpha: %s" %clf1._data.alpha()
+    #print "standard alpha_s: %s" %clf1._data.alpha_s()
 
     #goldExample(X_train, X_test, X_outliers)
     #print "standard X_s: %s "%clf1._data.Xs()
@@ -222,9 +222,9 @@ def gammaExample():
 
 if __name__ == "__main__":
 
-    #incrementExample()
+    incrementExample()
     #standardExample()
-    gammaExample()
+    #gammaExample()
 
 
 
