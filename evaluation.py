@@ -350,14 +350,14 @@ def findBestParasBatch(path):
 
 
 if __name__ == "__main__":
-    findBestParasIncr("/mnt/project/predictppi/data/MA/increOCSVM/imbalanced_data/")
-    sys.exit()
+    #findBestParasIncr("/mnt/project/predictppi/data/MA/increOCSVM/imbalanced_data/")
+    #sys.exit()
     txtFiles = [root + "/" + file for root, dirs, files in os.walk("/Users/LT/Documents/Uni/MA/increOCSVM/imbalanced_data")
                 for file in files if file.endswith("-names.txt")]
     for f in txtFiles:
         path = f.replace(f.split("/")[-1:][0], "")
         datName = path.split("/")[-2:][0]
-        if "wisconsin" in datName:
+        if "haberman" in datName:
             print path
             datAll = path + datName + ".dat"
             if os.path.isfile(datAll):
@@ -368,7 +368,7 @@ if __name__ == "__main__":
             fiveFoldPath = path + datName + "-5-fold/" + datName + "-5-"
             X5fold = get5FoldCV(fiveFoldPath)
             nu = 0.8
-            gamma = 1.0
+            gamma = 1.6
             print "increment evaluation"
             clf, X_tra, X_lst, train_predict, test_predict = incrementEval(X5fold, nu, gamma)
 

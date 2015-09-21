@@ -117,8 +117,8 @@ def incrementExample():
     X = 0.3 * np.random.randn(20, 2)
     X_train = np.r_[X + 2, X-2]
     #X_train = X
-    pickle.dump(X_train, open("/Users/LT/Documents/Uni/MA/increOCSVM/Xtrain.p", "w+"))
-    #X_train = pickle.load(open("/Users/LT/Documents/Uni/MA/increOCSVM/Xtrain.p", 'r+'))
+    #pickle.dump(X_train, open("/Users/LT/Documents/Uni/MA/increOCSVM/Xtrain.p", "w+"))
+    X_train = pickle.load(open("/Users/LT/Documents/Uni/MA/increOCSVM/Xtrain.p", 'r+'))
     #print X_train
     # Generate some regular novel observations
     X = 0.3 * np.random.randn(5, 2)

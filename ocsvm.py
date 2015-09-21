@@ -30,7 +30,7 @@ class OCSVM(object):
     #returns trained SVM rho given features (X)
     # TODO: we need to store the key properties of model after training
     # Please check libsvm what they provide for output, e.g., I need to access to the sv_idx all the time
-    #@profile
+    @profile
     def train(self, X, scale = 1):
         self._data.set_X(X)
         self._data.set_C(1/(self._v * len(X)) * scale)
@@ -44,13 +44,14 @@ class OCSVM(object):
     def rho(self):
         # compute rho assuming non zero rho, take average rho!
         Xs = self._data.Xs()
-        #self._rho = sum(self._data.alpha().dot(self.gram(self._data.X(), Xs[0])))
-        #print "rho: %s" % self._rho
+        if self._data.K_X() != None:
+            inds = self._data.get_sv()
+            K_X_Xs = self._data.K_X()[:,inds]
+        else:
+            K_X_Xs = self.gram(self._data.X(), self._data.Xs())
+        rho_all = self._data.alpha().dot(K_X_Xs)
 
-        rho_all = self._data.alpha().dot(self.gram(self._data.X(), self._data.Xs()))
-        #print "rho all: %s" % rho_all
         self._rho = np.mean(rho_all)
-        #print "rho_avg: %s" % (sum(rho_all)/len(rho_all))
 
         #test if all rhos are the same!!
         '''
@@ -104,33 +105,41 @@ class OCSVM(object):
     def decision_function(self, x):
         return - self._rho + self._data.alpha().dot(self.gram(self._data.X(), x))
 
-    #@profile
+    @profile
     def increment(self, xc, init_ac = 0, v = None):
 
         e = 1e-6
         # initialize X, a, C, g, indeces, kernel values
         X = self._data.X()                                  # data points
-
         C = self._data.C()
         a = self._data.alpha()
-
         ac = init_ac
 
         inds = np.all([a > e, a < C - e], axis=0)           # support vectors indeces
         indr = np.any([a <= e, a >= C - e], axis=0)         # error and non-support vectors indeces
         inde = a[indr] >= C - e                             # error vectors indeces in R
         indo = a[indr] <= e                                 # non-support vectors indeces in R
-        ##print "len a_inds: %s " % len(a[inds])
+
         l = len(a)
         ls = len(a[inds])                               # support vectors length
         lr = len(a[indr])                               # error and non-support vectors length
         le = len(a[inde])                               # error vectors lenght
         lo = len(a[indo])                               # non-support vectors
-        # kernel of all data points including the new one
-        K_X_all = self.gram(vstack((xc,X)))
-        # kernel of all data points excluding the new one
-        K_X = K_X_all[1:,1:]
 
+        if self._data.K_X() != None:
+            K_X_old = self._data.K_X()
+            K_xc_X = self.gram(xc, X)[0]
+            K_X_all = zeros((K_X_old.shape[0]+1, K_X_old.shape[1]+1))
+            K_X_all[1:, 1:] = K_X_old
+            K_X_all[0, 0] = 1.0
+            K_X_all[0, 1:] = K_xc_X
+            K_X_all[1:, 0] = K_xc_X
+        else:
+             # kernel of all data points including the new one
+            K_X_all = self.gram(vstack((xc,X)))
+            # kernel of all data points excluding the new one
+
+        K_X = K_X_all[1:, 1:]
         # kernel of support vectors
         Kss = K_X[:,inds]
         Kss = Kss[inds,:]
@@ -149,29 +158,27 @@ class OCSVM(object):
             Kr = K_X[indr, :]
             Kcr = K_X_all[0, 1:][indr]
             g[indr] = Kr.dot(a) + ones((lr,1)) * mu
-
         Kcc = 1
         gc = Kcs.dot(a[inds]) + mu
-        ##print "gc: %s" %gc
-        # initial calculation for beta
-        Q = vstack([hstack([0,ones(ls)]),hstack([ones((ls,1)), Kss])])
-        ##print Kss
-        ##print Q.shape
-        #R = inv(Q + diag(ones(Q.shape) * e))
+        Q = ones((ls+1, ls+1))
+        Q[0, 0] = 0
+        Q[1:, 1:] = Kss
+
         try:
             R = inv(Q)
         except np.linalg.linalg.LinAlgError:
             print "singular matrix"
-            #eigQ = eig(Q)[0]
-            #eigQminus = eigQ[eigQ < 0]
-            R = inv(Q + diag(ones(Q.shape) * 1e-2))
+            R = inv(Q + diag(ones(ls+1) * 1e-2))
+
         loop_count = 1
         while gc < e and ac < C - e:
 
             # calculate beta
             if ls > 0:
                 if ls == 1:
-                    Q = vstack([hstack([0,ones(ls)]),hstack([ones((ls,1)), Kss])])
+                    Q = ones((ls+1, ls+1))
+                    Q[0, 0] = 0
+                    Q[1:, 1:] = Kss
                     R = inv(Q)
                 n = hstack([1, Kcs])
                 beta = - R.dot(n)
@@ -179,7 +186,10 @@ class OCSVM(object):
                 ##print "beta: %s" %beta
             # calculate gamma
             if lr > 0 and ls > 0:
-                gamma = vstack([hstack([1, Kcs]), hstack([ones((lr,1)), Krs])]).dot(beta) + hstack([Kcc, Kcr])
+                gamma = ones((lr+1,ls+1))
+                gamma[0, 1:] = Kcs
+                gamma[1:,1:] = Krs
+                gamma = gamma.dot(beta) + hstack([1, Kcr])
                 gammac = gamma[0]
                 gammar = gamma[1:]
 
@@ -204,7 +214,6 @@ class OCSVM(object):
                 gsmax[IS_zero] = ones(len(betas[IS_zero])) * inf
                 gsmax[IS_plus] = ones(len(betas[IS_plus]))*C-a[inds][IS_plus]
                 gsmax[IS_minus] = - a[inds][IS_minus]
-                ##print "gsmax: %s" % gsmax
                 gsmax = divide(gsmax, betas)
 
                 gsmin = absolute(gsmax).min()
@@ -330,14 +339,12 @@ class OCSVM(object):
                         for j in range(R.shape[1]):
                             if i != ismin and j != ismin:
                                 R[i][j] = R[i][j] - R[i][ismin]*R[ismin][j]/R[ismin][ismin]
-                    #if debug: ##print "R after double loop: %s" % R
                     R = delete(R, ismin, 0)
                     R = delete(R, ismin, 1)
                 else:
                     R = inf
 
             elif imin == 1:
-                ##print "move k from e (r) to s"
                 # if there are more than 1 minimum, just take 1
                 if len(iemin[0]) > 1:
                     iemin = [iemin[0][0]]
@@ -410,14 +417,15 @@ class OCSVM(object):
                     k = 1 - nk.dot(R).dot(nk)
                     R = hstack((vstack((R, zeros(R.shape[1]))),zeros((R.shape[0] + 1,1)))) \
                         + 1/k * outer(hstack((betak,1)), hstack((betak,1)))
+
                 # move element in kernel matrix
                 K_col = K_X_all[:, ind_del + 1]
                 K_col = K_col.reshape(len(K_col),1)
                 K_X_all = delete(K_X_all, ind_del + 1, axis=1)
-                K_X_all = hstack((K_X_all, K_row))
+                K_X_all = hstack((K_X_all, K_col))
                 K_row = K_X_all[ind_del + 1, :]
                 K_X_all = delete(K_X_all, ind_del + 1, axis=0)
-                K_X_all = vstack((K_X_all, K_col))
+                K_X_all = vstack((K_X_all, K_row))
                 K_X = K_X_all[1:,1:]
 
                 # set indeces new
@@ -427,9 +435,9 @@ class OCSVM(object):
                 indr = hstack((indr, False))
                 inde = delete(inde, iomin)
                 indo = delete(indo, iomin)
+
             else: # k = c => terminate
                 break
-
 
             #update length of sets
             ls = len(a[inds])                               # support vectors length
@@ -457,8 +465,19 @@ class OCSVM(object):
         self._data.add(xc, ac)
         # set C if necessary
         self._data.set_C(C)
+
+        # move element in kernel matrix
+        K_col = K_X_all[:, 0]
+        K_col = K_col.reshape(len(K_col),1)
+        K_X_all = delete(K_X_all, 0, axis=1)
+        K_X_all = hstack((K_X_all, K_col))
+        K_row = K_X_all[0, :]
+        K_X_all = delete(K_X_all, 0, axis=0)
+        K_X_all = vstack((K_X_all, K_row))
+        self._data.set_K_X(K_X_all)
         # update rho
         self.rho()
+
 
 
     def perturbc(self, C_new, C_old, a, X):
