@@ -4,7 +4,8 @@ import cvxopt.solvers
 import kernel
 from time import gmtime, strftime
 from sklearn.metrics.pairwise import pairwise_kernels
-from numpy import vstack, hstack, ones, zeros, absolute, where, divide, inf, delete, outer, transpose, diag, tile
+from numpy import vstack, hstack, ones, zeros, absolute, where, divide, inf, delete, outer, transpose, diag, tile, arange, concatenate
+
 from numpy.linalg import inv, eig
 import data
 from profilehooks import profile
@@ -115,12 +116,19 @@ class OCSVM(object):
         a = self._data.alpha()
         ac = init_ac
 
-        inds = np.all([a > e, a < C - e], axis=0)           # support vectors indeces
-        indr = np.any([a <= e, a >= C - e], axis=0)         # error and non-support vectors indeces
-        inde = a[indr] >= C - e                             # error vectors indeces in R
-        indo = a[indr] <= e                                 # non-support vectors indeces in R
+
+        inds = [i for i, bool in enumerate(np.all([a > e, a < C - e], axis=0)) if bool]
+        indr = [i for i, bool in enumerate(np.any([a <= e, a >= C - e], axis=0)) if bool]
+
+        inde = [i for i, bool in enumerate(a[indr] >= C - e) if bool]
+
+        indo = [i for i, bool in enumerate(a[indr] <= e) if bool]
+        inde_bool = [True for i, val in enumerate(indr) if val in inde]
+        indo_bool = [True for i, val in enumerate(indr) if val in indo]
 
         l = len(a)
+        indices = arange(l)
+        indices_all = arange(l+1)
         ls = len(a[inds])                               # support vectors length
         lr = len(a[indr])                               # error and non-support vectors length
         le = len(a[inde])                               # error vectors lenght
@@ -135,7 +143,8 @@ class OCSVM(object):
             K_X_all[0, 1:] = K_xc_X
             K_X_all[1:, 0] = K_xc_X
         else:
-             # kernel of all data points including the new one
+            # kernel of all data points including the new one
+
             K_X_all = self.gram(vstack((xc,X)))
             # kernel of all data points excluding the new one
 
@@ -167,12 +176,13 @@ class OCSVM(object):
         try:
             R = inv(Q)
         except np.linalg.linalg.LinAlgError:
-            print "singular matrix"
+            #print "singular matrix"
             R = inv(Q + diag(ones(ls+1) * 1e-2))
 
         loop_count = 1
         while gc < e and ac < C - e:
-
+            #print "a[inds]: %s" % a[inds]
+            #print "loop count: %s" % loop_count
             # calculate beta
             if ls > 0:
                 if ls == 1:
@@ -180,7 +190,8 @@ class OCSVM(object):
                     Q[0, 0] = 0
                     Q[1:, 1:] = Kss
                     R = inv(Q)
-                n = hstack([1, Kcs])
+                n = ones(ls+1)
+                n[1:] = Kcs
                 beta = - R.dot(n)
                 betas = beta[1:]
                 ##print "beta: %s" %beta
@@ -189,23 +200,27 @@ class OCSVM(object):
                 gamma = ones((lr+1,ls+1))
                 gamma[0, 1:] = Kcs
                 gamma[1:,1:] = Krs
-                gamma = gamma.dot(beta) + hstack([1, Kcr])
+                tmp = ones(lr+1)
+                tmp[1:] = Kcr
+                gamma = gamma.dot(beta) + tmp
                 gammac = gamma[0]
                 gammar = gamma[1:]
 
             elif ls > 0:
                 # empty R set
-                gammac =hstack([1, Kcs]).dot(beta) + Kcc
+                gammac = ones(ls + 1)
+                gammac[1:] = Kcs
+                gammac = gammac.dot(beta) + Kcc
 
             else:
                 # empty S set
                 gammac = 1
                 gammar = ones(lr)
 
-
             # accounting
             #case 1: Some alpha_i in S reaches a bound
             if ls > 0:
+
                 IS_plus = betas > e
                 IS_minus = betas < - e
                 IS_zero = np.any([betas <= e, betas >= -e], axis=0)
@@ -215,19 +230,19 @@ class OCSVM(object):
                 gsmax[IS_plus] = ones(len(betas[IS_plus]))*C-a[inds][IS_plus]
                 gsmax[IS_minus] = - a[inds][IS_minus]
                 gsmax = divide(gsmax, betas)
-
+                #print "gsmax: %s" % gsmax
                 gsmin = absolute(gsmax).min()
                 ismin = where(absolute(gsmax) == gsmin)
-
+                #print ismin
             else: gsmin = inf
 
             #case 2: Some g_i in R reaches zero
             if le > 0:
-                Ie_plus = gammar[inde] > e
-                Ie_inf = gammar[inde] <= e
+                Ie_plus = gammar[inde_bool] > e
+                Ie_inf = gammar[inde_bool] <= e
                 gec = zeros(len(g[inde] > e))
 
-                gec[Ie_plus] = divide(-g[indr][inde][Ie_plus], gammar[inde][Ie_plus])
+                gec[Ie_plus] = divide(-g[inde][Ie_plus], gammar[inde_bool][Ie_plus])
                 gec[Ie_inf] = inf
 
                 for i in range(0, len(gec)):
@@ -239,17 +254,19 @@ class OCSVM(object):
 
             else: gemin = inf
             if lo > 0:
-                Io_minus = gammar[indo] < - e
-                Io_inf = gammar[indo] >= - e
+                #print indr
+                #print indo
+                Io_minus = gammar[indo_bool] < - e
+                Io_inf = gammar[indo_bool] >= - e
 
                 goc = zeros(len(g[indo] > e))
-                goc[Io_minus] = divide(-g[indr][indo][Io_minus], gammar[indo][Io_minus])
+                goc[Io_minus] = divide(-g[indo][Io_minus], gammar[indo_bool][Io_minus])
                 goc[Io_inf] = inf
 
                 for i in range(0, len(goc)):
                     if goc[i] <= e:
                         goc[i] = inf
-                    if g[indr][indo][i] < 0:
+                    if g[indo][i] < 0:
                         goc[i] = inf
 
 
@@ -278,55 +295,23 @@ class OCSVM(object):
                 else: a[inds] += betas*gmin
                 if lr > 0: g[indr] += gammar * gmin
                 gc = gc + gammac * gmin
-            else:
-                #TODO
-                x=1
+            # else??
             if imin == 0: # min = gsmin => move k from s to r
                 # if there are more than 1 minimum, just take 1
                 if len(ismin[0]) > 1:
                     ismin = [ismin[0][0]]
-
-                #update indeces
-
-                # get x, a and g
-                Xk = X[inds][ismin]
                 ak = a[inds][ismin]
-                gk = g[inds][ismin]
 
                 # delete the elements from X,a and g => add it to the end of X,a,g
-                inds_ind = [c for c,val in enumerate(inds) if val]
-                ind_del = inds_ind[ismin[0]]
-                X = delete(X, ind_del, axis=0)
-                a = delete(a, ind_del)
-                g = delete(g, ind_del)
-                X = vstack((X, Xk))
-                a = hstack((a, ak))
-                g = hstack((g, gk))
-                # move element in kernel matrix
-                K_col = K_X_all[:, ind_del + 1]
-                K_col = K_col.reshape(len(K_col),1)
-                K_X_all = delete(K_X_all, ind_del + 1, axis=1)
-                K_X_all = hstack((K_X_all, K_col))
-                K_row = K_X_all[ind_del + 1, :]
-                K_X_all = delete(K_X_all, ind_del + 1, axis=0)
-                K_X_all = vstack((K_X_all, K_row))
-                K_X = K_X_all[1:,1:]
-
-                # set indeces new
-                indr = delete(indr, ind_del)
-                indr = hstack((indr,True))
-
-                inds = delete(inds, ind_del)
-                inds = hstack((inds, False))
-
+                #print "ismin: %s" % ismin
+                #print "inds: %s" % inds
+                ind_del = inds[ismin[0]]
+                inds.remove(ind_del)
+                indr.append(ind_del)
                 if ak < e:
-                    indo = hstack((indo, True))
-                    inde = hstack((inde, False))
-                    a[len(a)-1] = 0
+                    indo.append(ind_del)
                 else:
-                    indo = hstack((indo, False))
-                    inde = hstack((inde, True))
-                    a[len(a)-1] = C
+                    inde.append(ind_del)
 
                 #decrement R, delete row ismin and column ismin
 
@@ -339,106 +324,63 @@ class OCSVM(object):
                         for j in range(R.shape[1]):
                             if i != ismin and j != ismin:
                                 R[i][j] = R[i][j] - R[i][ismin]*R[ismin][j]/R[ismin][ismin]
+
                     R = delete(R, ismin, 0)
                     R = delete(R, ismin, 1)
                 else:
                     R = inf
+
 
             elif imin == 1:
                 # if there are more than 1 minimum, just take 1
                 if len(iemin[0]) > 1:
                     iemin = [iemin[0][0]]
 
-                # get x, a and g
-                Xk = X[indr][inde][iemin]
-                ak = a[indr][inde][iemin]
-                gk = g[indr][inde][iemin]
-                Xs_old = X[inds]
-
                 # delete the elements from X,a and g => add it to the end of X,a,g
-                indr_ind = [c for c,val in enumerate(indr) if val]
-                indr_ind = [val for c, val in enumerate(indr_ind) if inde[c]]
-                ind_del = indr_ind[iemin[0]]
-                X = delete(X, ind_del, axis=0)
-                a = delete(a, ind_del)
-                g = delete(g, ind_del)
-                X = vstack((X, Xk))
-                a = hstack((a, ak))
-                g = hstack((g, gk))
+
+                ind_del = inde[iemin[0]]
 
                 if ls > 0:
-                    nk = hstack((1, K_X[ind_del][inds]))
+                    nk = ones(ls+1)
+                    nk[1:] = K_X[ind_del][inds]
                     betak = - R.dot(nk)
                     k = 1 - nk.dot(R).dot(nk)
-                    R = hstack((vstack((R, zeros(R.shape[1]))),zeros((R.shape[0] + 1,1)))) \
-                        + 1/k * outer(hstack((betak,1)), hstack((betak,1)))
 
-                # set indeces new
-                inds = delete(inds, ind_del)
-                inds = hstack((inds,True))
-                indr = delete(indr, ind_del)
-                indr = hstack((indr, False))
-                inde = delete(inde, iemin)
-                indo = delete(indo, iemin)
-
-                # move element in kernel matrix
-                K_col = K_X_all[:, ind_del + 1]
-                K_col = K_col.reshape(len(K_col),1)
-                K_X_all = delete(K_X_all, ind_del + 1, axis=1)
-                K_X_all = hstack((K_X_all, K_col))
-                K_row = K_X_all[ind_del + 1, :]
-                K_X_all = delete(K_X_all, ind_del + 1, axis=0)
-                K_X_all = vstack((K_X_all, K_row))
-                K_X = K_X_all[1:,1:]
+                    betak1 = ones(R.shape[0] + 1)
+                    betak1[:-1] = betak
+                    R_old = R
+                    R = zeros((R.shape[0] + 1, R.shape[1] + 1))
+                    R[:-1,:-1] = R_old
+                    R += 1/k * outer(betak1, betak1)
+                inds.append(ind_del)
+                indr.remove(ind_del)
+                inde.remove(ind_del)
 
             elif imin == 2: # min = gemin | gomin => move k from r to s
                 if len(iomin[0]) > 1:
                     iomin = [iomin[0][0]]
-                Xk = X[indr][indo][iomin]
-                ak = a[indr][indo][iomin]
-                gk = g[indr][indo][iomin]
-                Xs_old = X[inds]
 
                 # delete the elements from X,a and g => add it to the end of X,a,g
-                indr_ind = [c for c,val in enumerate(indr) if val]
-                indr_ind = [val for c, val in enumerate(indr_ind) if indo[c]]
-
-                ind_del = indr_ind[iomin[0]]
-                X = delete(X, ind_del, axis=0)
-                a = delete(a, ind_del)
-                g = delete(g, ind_del)
-                X = vstack((X, Xk))
-                a = hstack((a, ak))
-                g = hstack((g, gk))
-
+                ind_del = indo[iomin[0]]
                 if ls > 0:
-                    nk = hstack((1, K_X[ind_del][inds]))
+                    nk = ones(ls+1)
+                    nk[1:] = K_X[ind_del][inds]
                     betak = - R.dot(nk)
                     k = 1 - nk.dot(R).dot(nk)
-                    R = hstack((vstack((R, zeros(R.shape[1]))),zeros((R.shape[0] + 1,1)))) \
-                        + 1/k * outer(hstack((betak,1)), hstack((betak,1)))
+                    betak1 = ones(R.shape[0] + 1)
+                    betak1[:-1] = betak
+                    R_old = R
+                    R = zeros((R.shape[0] + 1, R.shape[1] + 1))
+                    R[:-1,:-1] = R_old
+                    R += 1/k * outer(betak1, betak1)
 
-                # move element in kernel matrix
-                K_col = K_X_all[:, ind_del + 1]
-                K_col = K_col.reshape(len(K_col),1)
-                K_X_all = delete(K_X_all, ind_del + 1, axis=1)
-                K_X_all = hstack((K_X_all, K_col))
-                K_row = K_X_all[ind_del + 1, :]
-                K_X_all = delete(K_X_all, ind_del + 1, axis=0)
-                K_X_all = vstack((K_X_all, K_row))
-                K_X = K_X_all[1:,1:]
-
-                # set indeces new
-                inds = delete(inds, ind_del)
-                inds = hstack((inds,True))
-                indr = delete(indr, ind_del)
-                indr = hstack((indr, False))
-                inde = delete(inde, iomin)
-                indo = delete(indo, iomin)
-
+                indo.remove(ind_del)
+                indr.remove(ind_del)
+                inds.append(ind_del)
             else: # k = c => terminate
                 break
-
+            inde_bool = [True for i, val in enumerate(indr) if val in inde]
+            indo_bool = [True for i, val in enumerate(indr) if val in indo]
             #update length of sets
             ls = len(a[inds])                               # support vectors length
             lr = len(a[indr])                               # error and non-support vectors length
@@ -465,8 +407,6 @@ class OCSVM(object):
         self._data.add(xc, ac)
         # set C if necessary
         self._data.set_C(C)
-
-        # move element in kernel matrix
         K_col = K_X_all[:, 0]
         K_col = K_col.reshape(len(K_col),1)
         K_X_all = delete(K_X_all, 0, axis=1)
@@ -474,11 +414,11 @@ class OCSVM(object):
         K_row = K_X_all[0, :]
         K_X_all = delete(K_X_all, 0, axis=0)
         K_X_all = vstack((K_X_all, K_row))
+        #sys.exit()
         self._data.set_K_X(K_X_all)
+
         # update rho
         self.rho()
-
-
 
     def perturbc(self, C_new, C_old, a, X):
         #print "perturbc"
