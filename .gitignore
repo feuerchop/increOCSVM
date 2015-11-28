@@ -55,3 +55,19 @@ docs/_build/
 
 # PyBuilder
 target/
+
+*.dat
+
+*.dat
+
+raw_data/digits_handwriting/t10k-images-idx3-ubyte
+
+raw_data/digits_handwriting/train-images-idx3-ubyte
+
+raw_data/digits_handwriting/t10k-labels-idx1-ubyte
+
+raw_data/digits_handwriting/train-labels-idx1-ubyte
+
+raw_data/datasets.xlsx
+
+precision_recall_curves.png

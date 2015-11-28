@@ -5,7 +5,6 @@ import numpy.linalg as la
 
 # implements lists of kernels
 class Kernel(object):
-
     @staticmethod
     def gaussian(gamma):
         return lambda x, y: \

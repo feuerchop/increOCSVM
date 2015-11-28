@@ -1,0 +1,1246 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ChangeListManager">
+    <list default="true" id="522f6766-d395-4f30-86ff-151964da944c" name="Default" comment="">
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/raw_data/Xoutliers.p" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/raw_data/Xtrain.p" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/Xoutliers.p" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/Xtrain.p" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/imbalanced_data/ecoli-0_vs_1/ecoli-0_vs_1-5-fold/ecoli-0_vs_1-5-1tra.dat" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/imbalanced_data/ecoli-0_vs_1/ecoli-0_vs_1-5-fold/ecoli-0_vs_1-5-1tst.dat" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/imbalanced_data/ecoli-0_vs_1/ecoli-0_vs_1-5-fold/ecoli-0_vs_1-5-2tra.dat" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/imbalanced_data/ecoli-0_vs_1/ecoli-0_vs_1-5-fold/ecoli-0_vs_1-5-2tst.dat" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/imbalanced_data/ecoli-0_vs_1/ecoli-0_vs_1-5-fold/ecoli-0_vs_1-5-3tra.dat" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/imbalanced_data/ecoli-0_vs_1/ecoli-0_vs_1-5-fold/ecoli-0_vs_1-5-3tst.dat" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/imbalanced_data/ecoli-0_vs_1/ecoli-0_vs_1-5-fold/ecoli-0_vs_1-5-4tra.dat" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/imbalanced_data/ecoli-0_vs_1/ecoli-0_vs_1-5-fold/ecoli-0_vs_1-5-4tst.dat" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/imbalanced_data/ecoli-0_vs_1/ecoli-0_vs_1-5-fold/ecoli-0_vs_1-5-5tra.dat" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/imbalanced_data/ecoli-0_vs_1/ecoli-0_vs_1-5-fold/ecoli-0_vs_1-5-5tst.dat" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/imbalanced_data/ecoli-0_vs_1/ecoli-0_vs_1-names.txt" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/imbalanced_data/ecoli-0_vs_1/ecoli-0_vs_1.dat" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/imbalanced_data/ecoli1/ecoli1-5-fold/ecoli1-5-1tra.dat" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/imbalanced_data/ecoli1/ecoli1-5-fold/ecoli1-5-1tst.dat" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/imbalanced_data/ecoli1/ecoli1-5-fold/ecoli1-5-2tra.dat" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/imbalanced_data/ecoli1/ecoli1-5-fold/ecoli1-5-2tst.dat" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/imbalanced_data/ecoli1/ecoli1-5-fold/ecoli1-5-3tra.dat" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/imbalanced_data/ecoli1/ecoli1-5-fold/ecoli1-5-3tst.dat" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/imbalanced_data/ecoli1/ecoli1-5-fold/ecoli1-5-4tra.dat" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/imbalanced_data/ecoli1/ecoli1-5-fold/ecoli1-5-4tst.dat" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/imbalanced_data/ecoli1/ecoli1-5-fold/ecoli1-5-5tra.dat" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/imbalanced_data/ecoli1/ecoli1-5-fold/ecoli1-5-5tst.dat" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/imbalanced_data/ecoli1/ecoli1-names.txt" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/imbalanced_data/ecoli1/ecoli1.dat" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/imbalanced_data/ecoli2/ecoli2-5-fold/ecoli2-5-1tra.dat" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/imbalanced_data/ecoli2/ecoli2-5-fold/ecoli2-5-1tst.dat" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/imbalanced_data/ecoli2/ecoli2-5-fold/ecoli2-5-2tra.dat" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/imbalanced_data/ecoli2/ecoli2-5-fold/ecoli2-5-2tst.dat" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/imbalanced_data/ecoli2/ecoli2-5-fold/ecoli2-5-3tra.dat" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/imbalanced_data/ecoli2/ecoli2-5-fold/ecoli2-5-3tst.dat" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/imbalanced_data/ecoli2/ecoli2-5-fold/ecoli2-5-4tra.dat" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/imbalanced_data/ecoli2/ecoli2-5-fold/ecoli2-5-4tst.dat" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/imbalanced_data/ecoli2/ecoli2-5-fold/ecoli2-5-5tra.dat" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/imbalanced_data/ecoli2/ecoli2-5-fold/ecoli2-5-5tst.dat" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/imbalanced_data/ecoli2/ecoli2-names.txt" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/imbalanced_data/ecoli2/ecoli2.dat" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/imbalanced_data/ecoli3/ecoli3-5-fold/ecoli3-5-1tra.dat" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/imbalanced_data/ecoli3/ecoli3-5-fold/ecoli3-5-1tst.dat" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/imbalanced_data/ecoli3/ecoli3-5-fold/ecoli3-5-2tra.dat" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/imbalanced_data/ecoli3/ecoli3-5-fold/ecoli3-5-2tst.dat" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/imbalanced_data/ecoli3/ecoli3-5-fold/ecoli3-5-3tra.dat" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/imbalanced_data/ecoli3/ecoli3-5-fold/ecoli3-5-3tst.dat" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/imbalanced_data/ecoli3/ecoli3-5-fold/ecoli3-5-4tra.dat" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/imbalanced_data/ecoli3/ecoli3-5-fold/ecoli3-5-4tst.dat" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/imbalanced_data/ecoli3/ecoli3-5-fold/ecoli3-5-5tra.dat" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/imbalanced_data/ecoli3/ecoli3-5-fold/ecoli3-5-5tst.dat" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/imbalanced_data/ecoli3/ecoli3-names.txt" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/imbalanced_data/ecoli3/ecoli3.dat" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/imbalanced_data/glass-0-1-2-3_vs_4-5-6/glass-0-1-2-3_vs_4-5-6-5-fold/glass-0-1-2-3_vs_4-5-6-5-1tra.dat" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/imbalanced_data/glass-0-1-2-3_vs_4-5-6/glass-0-1-2-3_vs_4-5-6-5-fold/glass-0-1-2-3_vs_4-5-6-5-1tst.dat" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/imbalanced_data/glass-0-1-2-3_vs_4-5-6/glass-0-1-2-3_vs_4-5-6-5-fold/glass-0-1-2-3_vs_4-5-6-5-2tra.dat" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/imbalanced_data/glass-0-1-2-3_vs_4-5-6/glass-0-1-2-3_vs_4-5-6-5-fold/glass-0-1-2-3_vs_4-5-6-5-2tst.dat" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/imbalanced_data/glass-0-1-2-3_vs_4-5-6/glass-0-1-2-3_vs_4-5-6-5-fold/glass-0-1-2-3_vs_4-5-6-5-3tra.dat" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/imbalanced_data/glass-0-1-2-3_vs_4-5-6/glass-0-1-2-3_vs_4-5-6-5-fold/glass-0-1-2-3_vs_4-5-6-5-3tst.dat" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/imbalanced_data/glass-0-1-2-3_vs_4-5-6/glass-0-1-2-3_vs_4-5-6-5-fold/glass-0-1-2-3_vs_4-5-6-5-4tra.dat" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/imbalanced_data/glass-0-1-2-3_vs_4-5-6/glass-0-1-2-3_vs_4-5-6-5-fold/glass-0-1-2-3_vs_4-5-6-5-4tst.dat" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/imbalanced_data/glass-0-1-2-3_vs_4-5-6/glass-0-1-2-3_vs_4-5-6-5-fold/glass-0-1-2-3_vs_4-5-6-5-5tra.dat" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/imbalanced_data/glass-0-1-2-3_vs_4-5-6/glass-0-1-2-3_vs_4-5-6-5-fold/glass-0-1-2-3_vs_4-5-6-5-5tst.dat" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/imbalanced_data/glass-0-1-2-3_vs_4-5-6/glass-0-1-2-3_vs_4-5-6-names.txt" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/imbalanced_data/glass-0-1-2-3_vs_4-5-6/glass-0-1-2-3_vs_4-5-6.dat" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/imbalanced_data/glass0/glass0-5-fold/glass0-5-1tra.dat" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/imbalanced_data/glass0/glass0-5-fold/glass0-5-1tst.dat" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/imbalanced_data/glass0/glass0-5-fold/glass0-5-2tra.dat" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/imbalanced_data/glass0/glass0-5-fold/glass0-5-2tst.dat" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/imbalanced_data/glass0/glass0-5-fold/glass0-5-3tra.dat" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/imbalanced_data/glass0/glass0-5-fold/glass0-5-3tst.dat" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/imbalanced_data/glass0/glass0-5-fold/glass0-5-4tra.dat" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/imbalanced_data/glass0/glass0-5-fold/glass0-5-4tst.dat" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/imbalanced_data/glass0/glass0-5-fold/glass0-5-5tra.dat" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/imbalanced_data/glass0/glass0-5-fold/glass0-5-5tst.dat" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/imbalanced_data/glass0/glass0-names.txt" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/imbalanced_data/glass0/glass0.dat" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/imbalanced_data/glass1/glass1-5-fold/glass1-5-1tra.dat" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/imbalanced_data/glass1/glass1-5-fold/glass1-5-1tst.dat" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/imbalanced_data/glass1/glass1-5-fold/glass1-5-2tra.dat" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/imbalanced_data/glass1/glass1-5-fold/glass1-5-2tst.dat" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/imbalanced_data/glass1/glass1-5-fold/glass1-5-3tra.dat" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/imbalanced_data/glass1/glass1-5-fold/glass1-5-3tst.dat" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/imbalanced_data/glass1/glass1-5-fold/glass1-5-4tra.dat" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/imbalanced_data/glass1/glass1-5-fold/glass1-5-4tst.dat" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/imbalanced_data/glass1/glass1-5-fold/glass1-5-5tra.dat" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/imbalanced_data/glass1/glass1-5-fold/glass1-5-5tst.dat" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/imbalanced_data/glass1/glass1-names.txt" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/imbalanced_data/glass1/glass1.dat" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/imbalanced_data/glass6/glass6-5-fold/glass6-5-1tra.dat" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/imbalanced_data/glass6/glass6-5-fold/glass6-5-1tst.dat" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/imbalanced_data/glass6/glass6-5-fold/glass6-5-2tra.dat" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/imbalanced_data/glass6/glass6-5-fold/glass6-5-2tst.dat" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/imbalanced_data/glass6/glass6-5-fold/glass6-5-3tra.dat" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/imbalanced_data/glass6/glass6-5-fold/glass6-5-3tst.dat" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/imbalanced_data/glass6/glass6-5-fold/glass6-5-4tra.dat" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/imbalanced_data/glass6/glass6-5-fold/glass6-5-4tst.dat" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/imbalanced_data/glass6/glass6-5-fold/glass6-5-5tra.dat" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/imbalanced_data/glass6/glass6-5-fold/glass6-5-5tst.dat" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/imbalanced_data/glass6/glass6-names.txt" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/imbalanced_data/glass6/glass6.dat" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/imbalanced_data/haberman/haberman-5-fold/haberman-5-1tra.dat" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/imbalanced_data/haberman/haberman-5-fold/haberman-5-1tst.dat" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/imbalanced_data/haberman/haberman-5-fold/haberman-5-2tra.dat" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/imbalanced_data/haberman/haberman-5-fold/haberman-5-2tst.dat" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/imbalanced_data/haberman/haberman-5-fold/haberman-5-3tra.dat" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/imbalanced_data/haberman/haberman-5-fold/haberman-5-3tst.dat" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/imbalanced_data/haberman/haberman-5-fold/haberman-5-4tra.dat" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/imbalanced_data/haberman/haberman-5-fold/haberman-5-4tst.dat" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/imbalanced_data/haberman/haberman-5-fold/haberman-5-5tra.dat" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/imbalanced_data/haberman/haberman-5-fold/haberman-5-5tst.dat" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/imbalanced_data/haberman/haberman-names.txt" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/imbalanced_data/haberman/haberman.dat" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/imbalanced_data/iris0/iris0-5-fold/iris0-5-1tra.dat" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/imbalanced_data/iris0/iris0-5-fold/iris0-5-1tst.dat" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/imbalanced_data/iris0/iris0-5-fold/iris0-5-2tra.dat" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/imbalanced_data/iris0/iris0-5-fold/iris0-5-2tst.dat" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/imbalanced_data/iris0/iris0-5-fold/iris0-5-3tra.dat" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/imbalanced_data/iris0/iris0-5-fold/iris0-5-3tst.dat" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/imbalanced_data/iris0/iris0-5-fold/iris0-5-4tra.dat" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/imbalanced_data/iris0/iris0-5-fold/iris0-5-4tst.dat" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/imbalanced_data/iris0/iris0-5-fold/iris0-5-5tra.dat" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/imbalanced_data/iris0/iris0-5-fold/iris0-5-5tst.dat" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/imbalanced_data/iris0/iris0-names.txt" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/imbalanced_data/iris0/iris0.dat" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/imbalanced_data/new-thyroid1/new-thyroid1-5-fold/new-thyroid1-5-1tra.dat" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/imbalanced_data/new-thyroid1/new-thyroid1-5-fold/new-thyroid1-5-1tst.dat" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/imbalanced_data/new-thyroid1/new-thyroid1-5-fold/new-thyroid1-5-2tra.dat" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/imbalanced_data/new-thyroid1/new-thyroid1-5-fold/new-thyroid1-5-2tst.dat" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/imbalanced_data/new-thyroid1/new-thyroid1-5-fold/new-thyroid1-5-3tra.dat" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/imbalanced_data/new-thyroid1/new-thyroid1-5-fold/new-thyroid1-5-3tst.dat" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/imbalanced_data/new-thyroid1/new-thyroid1-5-fold/new-thyroid1-5-4tra.dat" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/imbalanced_data/new-thyroid1/new-thyroid1-5-fold/new-thyroid1-5-4tst.dat" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/imbalanced_data/new-thyroid1/new-thyroid1-5-fold/new-thyroid1-5-5tra.dat" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/imbalanced_data/new-thyroid1/new-thyroid1-5-fold/new-thyroid1-5-5tst.dat" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/imbalanced_data/new-thyroid1/new-thyroid1-names.txt" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/imbalanced_data/new-thyroid1/new-thyroid1.dat" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/imbalanced_data/new-thyroid2/new-thyroid2-5-fold/newthyroid2-5-1tra.dat" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/imbalanced_data/new-thyroid2/new-thyroid2-5-fold/newthyroid2-5-1tst.dat" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/imbalanced_data/new-thyroid2/new-thyroid2-5-fold/newthyroid2-5-2tra.dat" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/imbalanced_data/new-thyroid2/new-thyroid2-5-fold/newthyroid2-5-2tst.dat" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/imbalanced_data/new-thyroid2/new-thyroid2-5-fold/newthyroid2-5-3tra.dat" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/imbalanced_data/new-thyroid2/new-thyroid2-5-fold/newthyroid2-5-3tst.dat" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/imbalanced_data/new-thyroid2/new-thyroid2-5-fold/newthyroid2-5-4tra.dat" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/imbalanced_data/new-thyroid2/new-thyroid2-5-fold/newthyroid2-5-4tst.dat" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/imbalanced_data/new-thyroid2/new-thyroid2-5-fold/newthyroid2-5-5tra.dat" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/imbalanced_data/new-thyroid2/new-thyroid2-5-fold/newthyroid2-5-5tst.dat" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/imbalanced_data/new-thyroid2/new-thyroid2-names.txt" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/imbalanced_data/new-thyroid2/newthyroid2.dat" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/imbalanced_data/page-blocks0/page-blocks0-5-fold/page-blocks0-5-1tra.dat" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/imbalanced_data/page-blocks0/page-blocks0-5-fold/page-blocks0-5-1tst.dat" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/imbalanced_data/page-blocks0/page-blocks0-5-fold/page-blocks0-5-2tra.dat" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/imbalanced_data/page-blocks0/page-blocks0-5-fold/page-blocks0-5-2tst.dat" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/imbalanced_data/page-blocks0/page-blocks0-5-fold/page-blocks0-5-3tra.dat" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/imbalanced_data/page-blocks0/page-blocks0-5-fold/page-blocks0-5-3tst.dat" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/imbalanced_data/page-blocks0/page-blocks0-5-fold/page-blocks0-5-4tra.dat" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/imbalanced_data/page-blocks0/page-blocks0-5-fold/page-blocks0-5-4tst.dat" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/imbalanced_data/page-blocks0/page-blocks0-5-fold/page-blocks0-5-5tra.dat" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/imbalanced_data/page-blocks0/page-blocks0-5-fold/page-blocks0-5-5tst.dat" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/imbalanced_data/page-blocks0/page-blocks0-names.txt" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/imbalanced_data/page-blocks0/page-blocks0.dat" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/imbalanced_data/pima/pima-5-fold/pima-5-1tra.dat" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/imbalanced_data/pima/pima-5-fold/pima-5-1tst.dat" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/imbalanced_data/pima/pima-5-fold/pima-5-2tra.dat" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/imbalanced_data/pima/pima-5-fold/pima-5-2tst.dat" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/imbalanced_data/pima/pima-5-fold/pima-5-3tra.dat" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/imbalanced_data/pima/pima-5-fold/pima-5-3tst.dat" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/imbalanced_data/pima/pima-5-fold/pima-5-4tra.dat" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/imbalanced_data/pima/pima-5-fold/pima-5-4tst.dat" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/imbalanced_data/pima/pima-5-fold/pima-5-5tra.dat" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/imbalanced_data/pima/pima-5-fold/pima-5-5tst.dat" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/imbalanced_data/pima/pima-names.txt" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/imbalanced_data/pima/pima.dat" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/imbalanced_data/segment0/segment0-5-fold/segment0-5-1tra.dat" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/imbalanced_data/segment0/segment0-5-fold/segment0-5-1tst.dat" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/imbalanced_data/segment0/segment0-5-fold/segment0-5-2tra.dat" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/imbalanced_data/segment0/segment0-5-fold/segment0-5-2tst.dat" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/imbalanced_data/segment0/segment0-5-fold/segment0-5-3tra.dat" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/imbalanced_data/segment0/segment0-5-fold/segment0-5-3tst.dat" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/imbalanced_data/segment0/segment0-5-fold/segment0-5-4tra.dat" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/imbalanced_data/segment0/segment0-5-fold/segment0-5-4tst.dat" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/imbalanced_data/segment0/segment0-5-fold/segment0-5-5tra.dat" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/imbalanced_data/segment0/segment0-5-fold/segment0-5-5tst.dat" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/imbalanced_data/segment0/segment0-names.txt" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/imbalanced_data/segment0/segment0.dat" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/imbalanced_data/vehicle0/vehicle0-5-fold/vehicle0-5-1tra.dat" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/imbalanced_data/vehicle0/vehicle0-5-fold/vehicle0-5-1tst.dat" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/imbalanced_data/vehicle0/vehicle0-5-fold/vehicle0-5-2tra.dat" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/imbalanced_data/vehicle0/vehicle0-5-fold/vehicle0-5-2tst.dat" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/imbalanced_data/vehicle0/vehicle0-5-fold/vehicle0-5-3tra.dat" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/imbalanced_data/vehicle0/vehicle0-5-fold/vehicle0-5-3tst.dat" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/imbalanced_data/vehicle0/vehicle0-5-fold/vehicle0-5-4tra.dat" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/imbalanced_data/vehicle0/vehicle0-5-fold/vehicle0-5-4tst.dat" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/imbalanced_data/vehicle0/vehicle0-5-fold/vehicle0-5-5tra.dat" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/imbalanced_data/vehicle0/vehicle0-5-fold/vehicle0-5-5tst.dat" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/imbalanced_data/vehicle0/vehicle0-names.txt" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/imbalanced_data/vehicle0/vehicle0.dat" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/imbalanced_data/vehicle1/vehicle1-5-fold/vehicle1-5-1tra.dat" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/imbalanced_data/vehicle1/vehicle1-5-fold/vehicle1-5-1tst.dat" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/imbalanced_data/vehicle1/vehicle1-5-fold/vehicle1-5-2tra.dat" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/imbalanced_data/vehicle1/vehicle1-5-fold/vehicle1-5-2tst.dat" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/imbalanced_data/vehicle1/vehicle1-5-fold/vehicle1-5-3tra.dat" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/imbalanced_data/vehicle1/vehicle1-5-fold/vehicle1-5-3tst.dat" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/imbalanced_data/vehicle1/vehicle1-5-fold/vehicle1-5-4tra.dat" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/imbalanced_data/vehicle1/vehicle1-5-fold/vehicle1-5-4tst.dat" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/imbalanced_data/vehicle1/vehicle1-5-fold/vehicle1-5-5tra.dat" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/imbalanced_data/vehicle1/vehicle1-5-fold/vehicle1-5-5tst.dat" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/imbalanced_data/vehicle1/vehicle1-names.txt" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/imbalanced_data/vehicle1/vehicle1.dat" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/imbalanced_data/vehicle2/vehicle2-5-fold/vehicle2-5-1tra.dat" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/imbalanced_data/vehicle2/vehicle2-5-fold/vehicle2-5-1tst.dat" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/imbalanced_data/vehicle2/vehicle2-5-fold/vehicle2-5-2tra.dat" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/imbalanced_data/vehicle2/vehicle2-5-fold/vehicle2-5-2tst.dat" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/imbalanced_data/vehicle2/vehicle2-5-fold/vehicle2-5-3tra.dat" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/imbalanced_data/vehicle2/vehicle2-5-fold/vehicle2-5-3tst.dat" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/imbalanced_data/vehicle2/vehicle2-5-fold/vehicle2-5-4tra.dat" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/imbalanced_data/vehicle2/vehicle2-5-fold/vehicle2-5-4tst.dat" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/imbalanced_data/vehicle2/vehicle2-5-fold/vehicle2-5-5tra.dat" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/imbalanced_data/vehicle2/vehicle2-5-fold/vehicle2-5-5tst.dat" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/imbalanced_data/vehicle2/vehicle2-names.txt" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/imbalanced_data/vehicle2/vehicle2.dat" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/imbalanced_data/vehicle3/vehicle3-5-fold/vehicle3-5-1tra.dat" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/imbalanced_data/vehicle3/vehicle3-5-fold/vehicle3-5-1tst.dat" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/imbalanced_data/vehicle3/vehicle3-5-fold/vehicle3-5-2tra.dat" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/imbalanced_data/vehicle3/vehicle3-5-fold/vehicle3-5-2tst.dat" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/imbalanced_data/vehicle3/vehicle3-5-fold/vehicle3-5-3tra.dat" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/imbalanced_data/vehicle3/vehicle3-5-fold/vehicle3-5-3tst.dat" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/imbalanced_data/vehicle3/vehicle3-5-fold/vehicle3-5-4tra.dat" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/imbalanced_data/vehicle3/vehicle3-5-fold/vehicle3-5-4tst.dat" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/imbalanced_data/vehicle3/vehicle3-5-fold/vehicle3-5-5tra.dat" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/imbalanced_data/vehicle3/vehicle3-5-fold/vehicle3-5-5tst.dat" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/imbalanced_data/vehicle3/vehicle3-names.txt" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/imbalanced_data/vehicle3/vehicle3.dat" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/imbalanced_data/wisconsin/wisconsin-5-fold/wisconsin-5-1tra.dat" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/imbalanced_data/wisconsin/wisconsin-5-fold/wisconsin-5-1tst.dat" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/imbalanced_data/wisconsin/wisconsin-5-fold/wisconsin-5-2tra.dat" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/imbalanced_data/wisconsin/wisconsin-5-fold/wisconsin-5-2tst.dat" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/imbalanced_data/wisconsin/wisconsin-5-fold/wisconsin-5-3tra.dat" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/imbalanced_data/wisconsin/wisconsin-5-fold/wisconsin-5-3tst.dat" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/imbalanced_data/wisconsin/wisconsin-5-fold/wisconsin-5-4tra.dat" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/imbalanced_data/wisconsin/wisconsin-5-fold/wisconsin-5-4tst.dat" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/imbalanced_data/wisconsin/wisconsin-5-fold/wisconsin-5-5tra.dat" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/imbalanced_data/wisconsin/wisconsin-5-fold/wisconsin-5-5tst.dat" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/imbalanced_data/wisconsin/wisconsin-names.txt" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/imbalanced_data/wisconsin/wisconsin.dat" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/imbalanced_data/yeast1/yeast1-5-fold/yeast1-5-1tra.dat" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/imbalanced_data/yeast1/yeast1-5-fold/yeast1-5-1tst.dat" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/imbalanced_data/yeast1/yeast1-5-fold/yeast1-5-2tra.dat" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/imbalanced_data/yeast1/yeast1-5-fold/yeast1-5-2tst.dat" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/imbalanced_data/yeast1/yeast1-5-fold/yeast1-5-3tra.dat" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/imbalanced_data/yeast1/yeast1-5-fold/yeast1-5-3tst.dat" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/imbalanced_data/yeast1/yeast1-5-fold/yeast1-5-4tra.dat" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/imbalanced_data/yeast1/yeast1-5-fold/yeast1-5-4tst.dat" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/imbalanced_data/yeast1/yeast1-5-fold/yeast1-5-5tra.dat" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/imbalanced_data/yeast1/yeast1-5-fold/yeast1-5-5tst.dat" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/imbalanced_data/yeast1/yeast1-names.txt" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/imbalanced_data/yeast1/yeast1.dat" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/imbalanced_data/yeast3/yeast3-5-fold/yeast3-5-1tra.dat" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/imbalanced_data/yeast3/yeast3-5-fold/yeast3-5-1tst.dat" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/imbalanced_data/yeast3/yeast3-5-fold/yeast3-5-2tra.dat" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/imbalanced_data/yeast3/yeast3-5-fold/yeast3-5-2tst.dat" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/imbalanced_data/yeast3/yeast3-5-fold/yeast3-5-3tra.dat" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/imbalanced_data/yeast3/yeast3-5-fold/yeast3-5-3tst.dat" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/imbalanced_data/yeast3/yeast3-5-fold/yeast3-5-4tra.dat" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/imbalanced_data/yeast3/yeast3-5-fold/yeast3-5-4tst.dat" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/imbalanced_data/yeast3/yeast3-5-fold/yeast3-5-5tra.dat" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/imbalanced_data/yeast3/yeast3-5-fold/yeast3-5-5tst.dat" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/imbalanced_data/yeast3/yeast3-names.txt" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/imbalanced_data/yeast3/yeast3.dat" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ocsvm_test.py" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/svm_demo.py" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test.pdf" afterPath="" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/data.py" afterPath="$PROJECT_DIR$/data.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/evaluation.py" afterPath="$PROJECT_DIR$/evaluation.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/kernel.py" afterPath="$PROJECT_DIR$/kernel.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/ocsvm.py" afterPath="$PROJECT_DIR$/ocsvm.py" />
+    </list>
+    <ignored path="increOCSVM.iws" />
+    <ignored path=".idea/workspace.xml" />
+    <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
+    <option name="TRACKING_ENABLED" value="true" />
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="ChangesViewManager" flattened_view="true" show_ignored="false" />
+  <component name="CreatePatchCommitExecutor">
+    <option name="PATCH_PATH" value="" />
+  </component>
+  <component name="DaemonCodeAnalyzer">
+    <disable_hints />
+  </component>
+  <component name="ExecutionTargetManager" SELECTED_TARGET="default_target" />
+  <component name="FavoritesManager">
+    <favorites_list name="increOCSVM" />
+  </component>
+  <component name="FileEditorManager">
+    <leaf>
+      <file leaf-file-name="evaluation_2.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/evaluation_2.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="-1.8888888" vertical-offset="3774" max-vertical-offset="5250">
+              <caret line="521" column="23" selection-start-line="0" selection-start-column="0" selection-end-line="610" selection-end-column="0" />
+              <folding>
+                <element signature="e#18#28#0" expanded="true" />
+                <element signature="e#648#907#0" expanded="false" />
+                <element signature="e#935#1024#0" expanded="false" />
+                <element signature="e#1075#1415#0" expanded="false" />
+                <element signature="e#1447#1607#0" expanded="false" />
+                <element signature="e#1649#1704#0" expanded="false" />
+                <element signature="e#1733#3335#0" expanded="false" />
+                <element signature="e#3618#4796#0" expanded="false" />
+                <element signature="e#5078#6256#0" expanded="false" />
+                <element signature="e#6306#7322#0" expanded="false" />
+                <element signature="e#7361#7414#0" expanded="false" />
+                <element signature="e#7543#7585#0" expanded="false" />
+                <element signature="e#12609#12725#0" expanded="false" />
+                <element signature="e#12750#12854#0" expanded="false" />
+                <element signature="e#15512#15586#0" expanded="false" />
+                <element signature="e#15792#15856#0" expanded="false" />
+                <element signature="e#15883#15955#0" expanded="false" />
+                <element signature="e#16128#17182#0" expanded="false" />
+                <element signature="e#17212#17272#0" expanded="false" />
+                <element signature="e#17321#19403#0" expanded="false" />
+                <element signature="e#19466#19938#0" expanded="false" />
+                <element signature="e#19995#20178#0" expanded="false" />
+                <element signature="e#20252#22019#0" expanded="false" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="ocsvm.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/ocsvm.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="-6.888889" vertical-offset="5229" max-vertical-offset="8595">
+              <caret line="362" column="31" selection-start-line="0" selection-start-column="0" selection-end-line="568" selection-end-column="18" />
+              <folding>
+                <element signature="e#18#36#0" expanded="true" />
+                <element signature="e#1824#1879#0" expanded="false" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="plot_data.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/plot_data.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="-32.444443" vertical-offset="3594" max-vertical-offset="5430">
+              <caret line="336" column="36" selection-start-line="336" selection-start-column="36" selection-end-line="336" selection-end-column="36" />
+              <folding>
+                <element signature="e#60#78#0" expanded="true" />
+                <element signature="e#167#241#0" expanded="false" />
+                <element signature="e#283#880#0" expanded="false" />
+                <element signature="e#922#1562#0" expanded="false" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="evaluation_performance.py" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/evaluation_performance.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="0.8777174" vertical-offset="8617" max-vertical-offset="10110">
+              <caret line="596" column="32" selection-start-line="596" selection-start-column="32" selection-end-line="596" selection-end-column="32" />
+              <folding>
+                <element signature="e#18#28#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="ocsvm_performance.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/ocsvm_performance.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="0.0" vertical-offset="1185" max-vertical-offset="8610">
+              <caret line="98" column="17" selection-start-line="98" selection-start-column="17" selection-end-line="98" selection-end-column="17" />
+              <folding>
+                <element signature="e#18#36#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="random-1000.output.txt" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/results/random/random-1000.output.txt">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="-29.444445" vertical-offset="0" max-vertical-offset="4110">
+              <caret line="53" column="79" selection-start-line="53" selection-start-column="77" selection-end-line="53" selection-end-column="79" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+    </leaf>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="IdeDocumentHistory">
+    <option name="CHANGED_PATHS">
+      <list>
+        <option value="$PROJECT_DIR$/minmax_test.py" />
+        <option value="$PROJECT_DIR$/ocsvm_test_old.py" />
+        <option value="$PROJECT_DIR$/ocsvm_old.py" />
+        <option value="$PROJECT_DIR$/Examples/animation.py" />
+        <option value="$PROJECT_DIR$/Examples/animation_contourf1.py" />
+        <option value="$PROJECT_DIR$/Examples/animation_contourf.py" />
+        <option value="$USER_HOME$/Downloads/increOCSVM-9c8083f0933710e5c08e1b671882437702b0c04c/ocsvm_test.py" />
+        <option value="$PROJECT_DIR$/ocsvm_save.py" />
+        <option value="$PROJECT_DIR$/ocsvm_test.py" />
+        <option value="$PROJECT_DIR$/examples/pca.py" />
+        <option value="$PROJECT_DIR$/test.py" />
+        <option value="$PROJECT_DIR$/data.py" />
+        <option value="$PROJECT_DIR$/evaluation.py" />
+        <option value="$PROJECT_DIR$/examples/plot_oneclass.py" />
+        <option value="$PROJECT_DIR$/evaluation_2.py.pageblocks0.0.75-30.py" />
+        <option value="$PROJECT_DIR$/mnist.py" />
+        <option value="$PROJECT_DIR$/kernel.py" />
+        <option value="$PROJECT_DIR$/examples/mnist.py" />
+        <option value="$PROJECT_DIR$/evaluation_2_mnist_2.py" />
+        <option value="$PROJECT_DIR$/evaluation_2_pageblocks0.py" />
+        <option value="$PROJECT_DIR$/test_sklearn.py" />
+        <option value="$PROJECT_DIR$/results/profile_page-blocks0/pageblocks0_2000_nu0.3_gamma-1.output.txt" />
+        <option value="$PROJECT_DIR$/ocsvm_mnist.py" />
+        <option value="$PROJECT_DIR$/results/profile_page-blocks0/pageblocks0_5000_nu0.3_gamma-1.output.txt" />
+        <option value="$PROJECT_DIR$/evaluation_2_mnist.py" />
+        <option value="$PROJECT_DIR$/examples/confusion_matrix.py" />
+        <option value="$PROJECT_DIR$/ocsvm.py" />
+        <option value="$PROJECT_DIR$/evaluation_2.py" />
+        <option value="$PROJECT_DIR$/ocsvm_performance.py" />
+        <option value="$PROJECT_DIR$/plot_data.py" />
+        <option value="$PROJECT_DIR$/evaluation_performance.py" />
+      </list>
+    </option>
+  </component>
+  <component name="ProjectFrameBounds">
+    <option name="y" value="23" />
+    <option name="width" value="1440" />
+    <option name="height" value="873" />
+  </component>
+  <component name="ProjectLevelVcsManager" settingsEditedManually="false">
+    <OptionsSetting value="true" id="Add" />
+    <OptionsSetting value="true" id="Remove" />
+    <OptionsSetting value="true" id="Checkout" />
+    <OptionsSetting value="true" id="Update" />
+    <OptionsSetting value="true" id="Status" />
+    <OptionsSetting value="true" id="Edit" />
+    <ConfirmationsSetting value="1" id="Add" />
+    <ConfirmationsSetting value="0" id="Remove" />
+  </component>
+  <component name="ProjectView">
+    <navigator currentView="ProjectPane" proportions="" version="1">
+      <flattenPackages />
+      <showMembers />
+      <showModules />
+      <showLibraryContents />
+      <hideEmptyPackages />
+      <abbreviatePackageNames />
+      <autoscrollToSource />
+      <autoscrollFromSource />
+      <sortByType />
+    </navigator>
+    <panes>
+      <pane id="Scope" />
+      <pane id="ProjectPane">
+        <subPane>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="increOCSVM" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="increOCSVM" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="increOCSVM" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+        </subPane>
+      </pane>
+    </panes>
+  </component>
+  <component name="PropertiesComponent">
+    <property name="options.lastSelected" value="vcs.Git" />
+    <property name="options.splitter.main.proportions" value="0.3" />
+    <property name="options.splitter.details.proportions" value="0.2" />
+    <property name="last_opened_file_path" value="/usr/bin/git" />
+    <property name="recentsLimit" value="5" />
+    <property name="FullScreen" value="false" />
+  </component>
+  <component name="PyConsoleOptionsProvider">
+    <option name="myPythonConsoleState">
+      <console-settings />
+    </option>
+  </component>
+  <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$" />
+      <recent name="$PROJECT_DIR$/datasets/segment1" />
+      <recent name="$PROJECT_DIR$/datasets/yeast1" />
+      <recent name="$PROJECT_DIR$/datasets/pima" />
+      <recent name="$PROJECT_DIR$/datasets/haberman" />
+    </key>
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/raw_data" />
+      <recent name="$PROJECT_DIR$/datasets" />
+      <recent name="$PROJECT_DIR$/results/page-blocks0" />
+      <recent name="$PROJECT_DIR$/results/yeast1" />
+      <recent name="$PROJECT_DIR$/results/segment0" />
+    </key>
+  </component>
+  <component name="RunManager" selected="Python.evaluation_performance">
+    <configuration default="false" name="evaluation_2" type="PythonConfigurationType" factoryName="Python" temporary="true">
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <module name="increOCSVM" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/evaluation_2.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <RunnerSettings RunnerId="PythonRunner" />
+      <ConfigurationWrapper RunnerId="PythonRunner" />
+      <method />
+    </configuration>
+    <configuration default="false" name="plot_data" type="PythonConfigurationType" factoryName="Python" temporary="true">
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <module name="increOCSVM" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/plot_data.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <RunnerSettings RunnerId="PythonRunner" />
+      <ConfigurationWrapper RunnerId="PythonRunner" />
+      <method />
+    </configuration>
+    <configuration default="false" name="evaluation_2_mnist" type="PythonConfigurationType" factoryName="Python" temporary="true">
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <module name="increOCSVM" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/evaluation_2_mnist.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <RunnerSettings RunnerId="PythonRunner" />
+      <ConfigurationWrapper RunnerId="PythonRunner" />
+      <method />
+    </configuration>
+    <configuration default="false" name="confusion_matrix" type="PythonConfigurationType" factoryName="Python" temporary="true">
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/examples" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <module name="increOCSVM" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/examples/confusion_matrix.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <RunnerSettings RunnerId="PythonRunner" />
+      <ConfigurationWrapper RunnerId="PythonRunner" />
+      <method />
+    </configuration>
+    <configuration default="false" name="evaluation_performance" type="PythonConfigurationType" factoryName="Python" temporary="true">
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <module name="increOCSVM" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/evaluation_performance.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <RunnerSettings RunnerId="PythonRunner" />
+      <ConfigurationWrapper RunnerId="PythonRunner" />
+      <method />
+    </configuration>
+    <configuration default="true" type="tests" factoryName="py.test">
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs />
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="" />
+      <option name="IS_MODULE_SDK" value="false" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <module name="increOCSVM" />
+      <option name="SCRIPT_NAME" value="" />
+      <option name="CLASS_NAME" value="" />
+      <option name="METHOD_NAME" value="" />
+      <option name="FOLDER_NAME" value="" />
+      <option name="TEST_TYPE" value="TEST_SCRIPT" />
+      <option name="PATTERN" value="" />
+      <option name="USE_PATTERN" value="false" />
+      <option name="testToRun" value="" />
+      <option name="keywords" value="" />
+      <option name="params" value="" />
+      <option name="USE_PARAM" value="false" />
+      <option name="USE_KEYWORD" value="false" />
+      <method />
+    </configuration>
+    <configuration default="true" type="tests" factoryName="Nosetests">
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs />
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="" />
+      <option name="IS_MODULE_SDK" value="false" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <module name="increOCSVM" />
+      <option name="SCRIPT_NAME" value="" />
+      <option name="CLASS_NAME" value="" />
+      <option name="METHOD_NAME" value="" />
+      <option name="FOLDER_NAME" value="" />
+      <option name="TEST_TYPE" value="TEST_SCRIPT" />
+      <option name="PATTERN" value="" />
+      <option name="USE_PATTERN" value="false" />
+      <option name="PARAMS" value="" />
+      <option name="USE_PARAM" value="false" />
+      <method />
+    </configuration>
+    <configuration default="true" type="PythonConfigurationType" factoryName="Python">
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="" />
+      <option name="IS_MODULE_SDK" value="false" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <module name="increOCSVM" />
+      <option name="SCRIPT_NAME" value="" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <method />
+    </configuration>
+    <configuration default="true" type="tests" factoryName="Unittests">
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs />
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="" />
+      <option name="IS_MODULE_SDK" value="false" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <module name="increOCSVM" />
+      <option name="SCRIPT_NAME" value="" />
+      <option name="CLASS_NAME" value="" />
+      <option name="METHOD_NAME" value="" />
+      <option name="FOLDER_NAME" value="" />
+      <option name="TEST_TYPE" value="TEST_SCRIPT" />
+      <option name="PATTERN" value="" />
+      <option name="USE_PATTERN" value="false" />
+      <option name="PUREUNITTEST" value="true" />
+      <option name="PARAMS" value="" />
+      <option name="USE_PARAM" value="false" />
+      <method />
+    </configuration>
+    <configuration default="true" type="tests" factoryName="Doctests">
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs />
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="" />
+      <option name="IS_MODULE_SDK" value="false" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <module name="increOCSVM" />
+      <option name="SCRIPT_NAME" value="" />
+      <option name="CLASS_NAME" value="" />
+      <option name="METHOD_NAME" value="" />
+      <option name="FOLDER_NAME" value="" />
+      <option name="TEST_TYPE" value="TEST_SCRIPT" />
+      <option name="PATTERN" value="" />
+      <option name="USE_PATTERN" value="false" />
+      <method />
+    </configuration>
+    <configuration default="true" type="tests" factoryName="Attests">
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs />
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="" />
+      <option name="IS_MODULE_SDK" value="false" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <module name="increOCSVM" />
+      <option name="SCRIPT_NAME" value="" />
+      <option name="CLASS_NAME" value="" />
+      <option name="METHOD_NAME" value="" />
+      <option name="FOLDER_NAME" value="" />
+      <option name="TEST_TYPE" value="TEST_SCRIPT" />
+      <option name="PATTERN" value="" />
+      <option name="USE_PATTERN" value="false" />
+      <method />
+    </configuration>
+    <list size="5">
+      <item index="0" class="java.lang.String" itemvalue="Python.evaluation_2" />
+      <item index="1" class="java.lang.String" itemvalue="Python.plot_data" />
+      <item index="2" class="java.lang.String" itemvalue="Python.evaluation_2_mnist" />
+      <item index="3" class="java.lang.String" itemvalue="Python.confusion_matrix" />
+      <item index="4" class="java.lang.String" itemvalue="Python.evaluation_performance" />
+    </list>
+    <recent_temporary>
+      <list size="5">
+        <item index="0" class="java.lang.String" itemvalue="Python.evaluation_performance" />
+        <item index="1" class="java.lang.String" itemvalue="Python.plot_data" />
+        <item index="2" class="java.lang.String" itemvalue="Python.evaluation_2" />
+        <item index="3" class="java.lang.String" itemvalue="Python.confusion_matrix" />
+        <item index="4" class="java.lang.String" itemvalue="Python.evaluation_2_mnist" />
+      </list>
+    </recent_temporary>
+  </component>
+  <component name="ShelveChangesManager" show_recycled="false" />
+  <component name="SvnConfiguration">
+    <configuration />
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="522f6766-d395-4f30-86ff-151964da944c" name="Default" comment="" />
+      <created>1435082958618</created>
+      <option name="number" value="Default" />
+      <updated>1435082958618</updated>
+    </task>
+    <servers />
+  </component>
+  <component name="TodoView" selected-index="0">
+    <todo-panel id="selected-file">
+      <are-packages-shown value="false" />
+      <are-modules-shown value="false" />
+      <flatten-packages value="false" />
+      <is-autoscroll-to-source value="false" />
+    </todo-panel>
+    <todo-panel id="all">
+      <are-packages-shown value="false" />
+      <are-modules-shown value="false" />
+      <flatten-packages value="false" />
+      <is-autoscroll-to-source value="false" />
+    </todo-panel>
+    <todo-panel id="default-changelist">
+      <are-packages-shown value="false" />
+      <are-modules-shown value="false" />
+      <flatten-packages value="false" />
+      <is-autoscroll-to-source value="false" />
+    </todo-panel>
+  </component>
+  <component name="ToolWindowManager">
+    <frame x="0" y="23" width="1440" height="873" extended-state="0" />
+    <editor active="true" />
+    <layout>
+      <window_info id="Changes" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32254046" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
+      <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32771084" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.31882203" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.39948782" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.44302177" sideWeight="0.5003524" order="10" side_tool="true" content_ui="tabs" />
+      <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
+      <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32891566" sideWeight="0.5" order="11" side_tool="false" content_ui="tabs" />
+      <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32409638" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
+      <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.24876674" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Application Servers" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.23890063" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Python Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.48143405" sideWeight="0.49964765" order="9" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.4225352" sideWeight="0.49964765" order="12" side_tool="false" content_ui="tabs" />
+      <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
+      <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="SLIDING" type="SLIDING" visible="false" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
+      <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
+      <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
+    </layout>
+    <layout-to-restore>
+      <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Changes" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32254046" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
+      <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
+      <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32771084" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3192771" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.39948782" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.44302177" sideWeight="0.5003524" order="10" side_tool="true" content_ui="tabs" />
+      <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
+      <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32891566" sideWeight="0.5" order="11" side_tool="false" content_ui="tabs" />
+      <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32409638" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
+      <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.24876674" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="SLIDING" type="SLIDING" visible="false" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
+      <window_info id="Application Servers" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.23890063" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Python Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4819427" sideWeight="0.49964765" order="9" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.10211706" sideWeight="0.49964765" order="12" side_tool="false" content_ui="tabs" />
+      <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
+      <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
+    </layout-to-restore>
+  </component>
+  <component name="Vcs.Log.UiProperties">
+    <option name="RECENTLY_FILTERED_USER_GROUPS">
+      <collection />
+    </option>
+    <option name="RECENTLY_FILTERED_BRANCH_GROUPS">
+      <collection />
+    </option>
+  </component>
+  <component name="VcsContentAnnotationSettings">
+    <option name="myLimit" value="2678400000" />
+  </component>
+  <component name="VcsManagerConfiguration">
+    <option name="myTodoPanelSettings">
+      <TodoPanelSettings />
+    </option>
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <option name="time" value="12" />
+    </breakpoint-manager>
+    <watches-manager />
+  </component>
+  <component name="editorHistoryManager">
+    <entry file="file://$PROJECT_DIR$/examples/svm_demo.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="843" max-vertical-offset="4575">
+          <caret line="40" column="34" selection-start-line="40" selection-start-column="23" selection-end-line="40" selection-end-column="34" />
+          <folding>
+            <element signature="e#26#47#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/examples/mnist.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="217" max-vertical-offset="840">
+          <caret line="48" column="10" selection-start-line="48" selection-start-column="10" selection-end-line="48" selection-end-column="10" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file:///Library/Python/2.7/site-packages/sklearn/utils/validation.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.33240223" vertical-offset="2371" max-vertical-offset="9390">
+          <caret line="173" column="0" selection-start-line="173" selection-start-column="0" selection-end-line="173" selection-end-column="0" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/evaluation.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="6810" max-vertical-offset="7575">
+          <caret line="410" column="4" selection-start-line="410" selection-start-column="4" selection-end-line="410" selection-end-column="4" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/results/random/random-3000.output.txt">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="5565">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/results/random/random-5000.output.txt">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="5565">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/results/random/random-10000.output.txt">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="5565">
+          <caret line="0" column="6" selection-start-line="0" selection-start-column="0" selection-end-line="1" selection-end-column="0" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/results/random/random-2000.output.txt">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="5565">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file:///Library/Python/2.7/site-packages/sklearn/datasets/base.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.33333334" vertical-offset="3582" max-vertical-offset="7710">
+          <caret line="262" column="4" selection-start-line="262" selection-start-column="4" selection-end-line="262" selection-end-column="4" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file:///Library/Python/2.7/site-packages/sklearn/metrics/classification.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.33333334" vertical-offset="2367" max-vertical-offset="24510">
+          <caret line="188" column="4" selection-start-line="188" selection-start-column="4" selection-end-line="188" selection-end-column="4" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/results/mnist/mnist-1000.output.txt">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="45" max-vertical-offset="5580">
+          <caret line="3" column="0" selection-start-line="3" selection-start-column="0" selection-end-line="3" selection-end-column="0" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/raw_data/imbalanced_data/yeast1/yeast1.dat">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.495" vertical-offset="27" max-vertical-offset="22545">
+          <caret line="15" column="56" selection-start-line="15" selection-start-column="56" selection-end-line="15" selection-end-column="56" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/raw_data/imbalanced_data/pima/pima.dat">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.3325" vertical-offset="182" max-vertical-offset="11805">
+          <caret line="21" column="34" selection-start-line="21" selection-start-column="30" selection-end-line="21" selection-end-column="34" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/raw_data/imbalanced_data/pima/pima-names.txt">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="510">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/results/mnist/mnist-5000.output.txt">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="4733" max-vertical-offset="5595">
+          <caret line="334" column="91" selection-start-line="334" selection-start-column="91" selection-end-line="334" selection-end-column="91" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/datasets/ecoli1/ecoli1.dat">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-86.111115" vertical-offset="0" max-vertical-offset="5295">
+          <caret line="155" column="47" selection-start-line="155" selection-start-column="47" selection-end-line="155" selection-end-column="47" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/results/mnist/mnist-2000.output.txt">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="5595">
+          <caret line="155" column="11" selection-start-line="155" selection-start-column="11" selection-end-line="155" selection-end-column="11" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/results/mnist/mnist-3000.output.txt">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="5595">
+          <caret line="19" column="74" selection-start-line="19" selection-start-column="74" selection-end-line="19" selection-end-column="74" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/datasets/pima/pima.dat">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="11805">
+          <caret line="178" column="27" selection-start-line="178" selection-start-column="27" selection-end-line="178" selection-end-column="27" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/results/influence_pima/influence_pima_0.5_0.003.output.txt">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="1170" max-vertical-offset="2790">
+          <caret line="88" column="36" selection-start-line="88" selection-start-column="31" selection-end-line="88" selection-end-column="36" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/results/influence_pima/influence_pima_0.5_0.001.output.txt">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="825" max-vertical-offset="2790">
+          <caret line="88" column="36" selection-start-line="88" selection-start-column="31" selection-end-line="88" selection-end-column="36" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/results/influence_pima/influence_pima_0.5_0.01.output.txt">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="1020" max-vertical-offset="2790">
+          <caret line="88" column="36" selection-start-line="88" selection-start-column="31" selection-end-line="88" selection-end-column="36" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/results/influence_pima/influence_pima_0.5_0.03.output.txt">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="825" max-vertical-offset="2790">
+          <caret line="88" column="36" selection-start-line="88" selection-start-column="31" selection-end-line="88" selection-end-column="36" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/results/influence_pima/influence_pima_0.5_0.1.output.txt">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="1163" max-vertical-offset="2790">
+          <caret line="88" column="36" selection-start-line="88" selection-start-column="31" selection-end-line="88" selection-end-column="36" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/results/influence_pima/influence_pima_0.5_0.3.output.txt">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.46758103" vertical-offset="945" max-vertical-offset="2790">
+          <caret line="88" column="36" selection-start-line="88" selection-start-column="31" selection-end-line="88" selection-end-column="36" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/results/influence_pima/influence_pima_0.5_1.output.txt">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.4114713" vertical-offset="990" max-vertical-offset="2790">
+          <caret line="88" column="36" selection-start-line="88" selection-start-column="31" selection-end-line="88" selection-end-column="36" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/results/influence_pima/influence_pima_0.5_3.output.txt">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.5885287" vertical-offset="848" max-vertical-offset="2790">
+          <caret line="88" column="36" selection-start-line="88" selection-start-column="31" selection-end-line="88" selection-end-column="36" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/results/influence_pima/influence_pima_0.5_10.output.txt">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.382793" vertical-offset="1028" max-vertical-offset="2805">
+          <caret line="89" column="36" selection-start-line="89" selection-start-column="31" selection-end-line="89" selection-end-column="36" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/results/influence_pima/influence_pima_0.5_30.output.txt">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.34130436" vertical-offset="1193" max-vertical-offset="2820">
+          <caret line="90" column="36" selection-start-line="90" selection-start-column="31" selection-end-line="90" selection-end-column="36" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/results/page-blocks0/page-blocks0_nu-0.5_gamma-0.003.txt">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-3.9565217" vertical-offset="2135" max-vertical-offset="2760">
+          <caret line="21" column="29" selection-start-line="21" selection-start-column="0" selection-end-line="22" selection-end-column="0" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/results/mnist/mnist-10000.output.txt">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-11.065217" vertical-offset="5135" max-vertical-offset="5595">
+          <caret line="3" column="10" selection-start-line="3" selection-start-column="10" selection-end-line="3" selection-end-column="10" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/results/page-blocks0/pageblocks0_3000_nu0.3_gamma-0.1.output.txt">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.29347825" vertical-offset="0" max-vertical-offset="460">
+          <caret line="9" column="18" selection-start-line="9" selection-start-column="0" selection-end-line="10" selection-end-column="0" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/results/profile_page-blocks0/pageblocks0_4000_nu0.3_gamma-1.output.txt">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="2.25" vertical-offset="2235" max-vertical-offset="5895">
+          <caret line="197" column="42" selection-start-line="197" selection-start-column="42" selection-end-line="197" selection-end-column="42" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/results/profile_page-blocks0/pageblocks0_5000_nu0.3_gamma-1.output.txt">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="1.75" vertical-offset="5200" max-vertical-offset="5895">
+          <caret line="384" column="22" selection-start-line="384" selection-start-column="22" selection-end-line="384" selection-end-column="22" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/results/profile_page-blocks0/pageblocks0_2000_nu0.3_gamma-1.output.txt">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-5.90625" vertical-offset="1890" max-vertical-offset="5865">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/results/profile_page-blocks0/pageblocks0_3000_nu0.3_gamma-1.output.txt">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.421875" vertical-offset="2220" max-vertical-offset="5865">
+          <caret line="157" column="28" selection-start-line="157" selection-start-column="0" selection-end-line="158" selection-end-column="0" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/results/profile_page-blocks0/pageblocks0_1000_nu0.3_gamma-1.output.txt">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="5.106383" vertical-offset="0" max-vertical-offset="5865">
+          <caret line="176" column="90" selection-start-line="176" selection-start-column="87" selection-end-line="176" selection-end-column="90" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/datasets/stats">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="1725">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/results/profile_mnist/mnist_1000_nu0.3_gamma-0.001.output.txt">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="5880">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/examples/confusion_matrix.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="2.4468086" vertical-offset="0" max-vertical-offset="1200">
+          <caret line="69" column="0" selection-start-line="69" selection-start-column="0" selection-end-line="69" selection-end-column="66" />
+          <folding>
+            <element signature="e#16#34#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/precision_recall_curves.png">
+      <provider selected="true" editor-type-id="images">
+        <state />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/results/random/random-1000.output.txt">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-29.444445" vertical-offset="0" max-vertical-offset="4110">
+          <caret line="53" column="79" selection-start-line="53" selection-start-column="77" selection-end-line="53" selection-end-column="79" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/evaluation_2.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-1.8888888" vertical-offset="3774" max-vertical-offset="5250">
+          <caret line="521" column="23" selection-start-line="0" selection-start-column="0" selection-end-line="610" selection-end-column="0" />
+          <folding>
+            <element signature="e#18#28#0" expanded="true" />
+            <element signature="e#648#907#0" expanded="false" />
+            <element signature="e#935#1024#0" expanded="false" />
+            <element signature="e#1075#1415#0" expanded="false" />
+            <element signature="e#1447#1607#0" expanded="false" />
+            <element signature="e#1649#1704#0" expanded="false" />
+            <element signature="e#1733#3335#0" expanded="false" />
+            <element signature="e#3618#4796#0" expanded="false" />
+            <element signature="e#5078#6256#0" expanded="false" />
+            <element signature="e#6306#7322#0" expanded="false" />
+            <element signature="e#7361#7414#0" expanded="false" />
+            <element signature="e#7543#7585#0" expanded="false" />
+            <element signature="e#12609#12725#0" expanded="false" />
+            <element signature="e#12750#12854#0" expanded="false" />
+            <element signature="e#15512#15586#0" expanded="false" />
+            <element signature="e#15792#15856#0" expanded="false" />
+            <element signature="e#15883#15955#0" expanded="false" />
+            <element signature="e#16128#17182#0" expanded="false" />
+            <element signature="e#17212#17272#0" expanded="false" />
+            <element signature="e#17321#19403#0" expanded="false" />
+            <element signature="e#19466#19938#0" expanded="false" />
+            <element signature="e#19995#20178#0" expanded="false" />
+            <element signature="e#20252#22019#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/evaluation_2_pageblocks0.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="6612" max-vertical-offset="8040">
+          <caret line="542" column="0" selection-start-line="542" selection-start-column="0" selection-end-line="542" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/ocsvm.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-6.888889" vertical-offset="5229" max-vertical-offset="8595">
+          <caret line="362" column="31" selection-start-line="0" selection-start-column="0" selection-end-line="568" selection-end-column="18" />
+          <folding>
+            <element signature="e#18#36#0" expanded="true" />
+            <element signature="e#1824#1879#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/plot_data.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-32.444443" vertical-offset="3594" max-vertical-offset="5430">
+          <caret line="336" column="36" selection-start-line="336" selection-start-column="36" selection-end-line="336" selection-end-column="36" />
+          <folding>
+            <element signature="e#60#78#0" expanded="true" />
+            <element signature="e#167#241#0" expanded="false" />
+            <element signature="e#283#880#0" expanded="false" />
+            <element signature="e#922#1562#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/ocsvm_performance.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="1185" max-vertical-offset="8610">
+          <caret line="98" column="17" selection-start-line="98" selection-start-column="17" selection-end-line="98" selection-end-column="17" />
+          <folding>
+            <element signature="e#18#36#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/evaluation_performance.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.8777174" vertical-offset="8617" max-vertical-offset="10110">
+          <caret line="596" column="32" selection-start-line="596" selection-start-column="32" selection-end-line="596" selection-end-column="32" />
+          <folding>
+            <element signature="e#18#28#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+  </component>
+</project>

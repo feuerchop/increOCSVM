@@ -1,0 +1,400 @@
+['../evaluation_2_pageblocks0.py', '4000']
+size: 4000
+2
+[ 0.10909115  0.86744463]
+Confusion matrix:
+[[  10  322]
+ [2735  933]]
+precision: 0.743426294821, recall: 0.254362050164, f1-score: 0.379037172456
+Wrote profile results to evaluation_2_pageblocks0.py.lprof
+Timer unit: 1e-06 s
+
+Total time: 39.765 s
+File: ../ocsvm.py
+Function: increment at line 97
+
+Line #      Hits         Time  Per Hit   % Time  Line Contents
+==============================================================
+    97                                               @profile
+    98                                               def increment(self, Xc, init_ac=0, break_count=-1):
+    99                                                   # epsilon
+   100         1            6      6.0      0.0          e = self._data._e
+   101         1            3      3.0      0.0          mu = 0
+   102                                           
+   103                                                   # initialize existing X, coefficients a, C
+   104         1            6      6.0      0.0          X_origin = self._data.X()
+   105         1            6      6.0      0.0          K_X_origin = self._data.K_X()
+   106         1            5      5.0      0.0          n_data = X_origin.shape[0]
+   107         1            3      3.0      0.0          n_feature = X_origin.shape[1]
+   108                                           
+   109         1            5      5.0      0.0          C = self._data.C()
+   110         1            5      5.0      0.0          a_origin = self._data.alpha()
+   111                                           
+   112                                                   # number of new incremental points
+   113         1            3      3.0      0.0          n_new = Xc.shape[0]
+   114                                           
+   115                                                   # number of all (new and existing) points
+   116         1            3      3.0      0.0          n_all = n_data + n_new
+   117                                           
+   118                                                   # concatenate all new points with all existing points
+   119         1            9      9.0      0.0          X = empty((n_new + n_data, n_feature))
+   120         1           95     95.0      0.0          X[0:n_new, :] = Xc
+   121         1           45     45.0      0.0          X[n_new:, :] = X_origin
+   122                                           
+   123                                                   # create kernel matrix for all new and existing points
+   124                                           
+   125                                                   # create of all data points
+   126         1            5      5.0      0.0          if K_X_origin == None:
+   127         1      1448648 1448648.0      3.6              K_X = self.gram(X)
+   128                                                   else:
+   129                                                       K_X = empty((n_all, n_all))
+   130                                                       K_X[n_new:, n_new:] = K_X_origin
+   131                                                       K_X_new = self.gram(Xc, X_origin)
+   132                                                       K_X[0:n_new, :] = K_X_new
+   133                                                       K_X[:, 0:n_new] = K_X_new.T
+   134                                           
+   135                                                   # creating coefficient vector alpha for all data points
+   136         1           24     24.0      0.0          a = empty(n_all)
+   137         1           14     14.0      0.0          a[n_new:] = a_origin
+   138         1           16     16.0      0.0          a[:n_new] = init_ac
+   139                                           
+   140                                                   # creating gradient vector
+   141         1           15     15.0      0.0          g = zeros(n_all)
+   142                                           
+   143                                                   # create sensitivity vector
+   144         1            6      6.0      0.0          gamma = empty(n_all)
+   145         1            4      4.0      0.0          check_gradient = False
+   146                                                   # loop through all new points to increment
+   147      2737         9501      3.5      0.0          for x_count in range(n_new):
+   148                                           
+   149                                                       #print "--------- START %s ---------" % x_count
+   150                                           
+   151      2736         9069      3.3      0.0              if x_count == break_count:
+   152                                                           self._data.set_X(X)
+   153                                                           self._data.set_alpha(a)
+   154                                                           self._data.set_C(C)
+   155                                                           self._data.set_K_X(K_X)
+   156                                                           self.rho()
+   157                                                           return False
+   158                                           
+   159                                                       # initialize X, a, C, g, indices, kernel values
+   160      2736         9033      3.3      0.0              start_origin = n_new - x_count
+   161      2736         8786      3.2      0.0              start_new = start_origin - 1
+   162                                           
+   163      2736         8847      3.2      0.0              if x_count == 0:
+   164         1            3      3.0      0.0                  inds = []
+   165         1            4      4.0      0.0                  indr = []
+   166         1            4      4.0      0.0                  inde = []
+   167         1            4      4.0      0.0                  indo = []
+   168      1265         3927      3.1      0.0                  for i in range(n_new, n_all):
+   169      1264         6364      5.0      0.0                      if e < a[i] < C - e:
+   170       166          542      3.3      0.0                          inds.append(i)
+   171                                                               else:
+   172      1098         3547      3.2      0.0                          indr.append(i)
+   173      1098         4524      4.1      0.0                          if a[i] <= e:
+   174         8           27      3.4      0.0                              indo.append(i)
+   175                                                                   else:
+   176      1090         3514      3.2      0.0                              inde.append(i)
+   177                                           
+   178         1            4      4.0      0.0                  ls = len(inds)                               # support vectors length
+   179         1            3      3.0      0.0                  lr = len(indr)                               # error and non-support vectors length
+   180         1            3      3.0      0.0                  le = len(inde)                               # error vectors lenght
+   181         1            4      4.0      0.0                  lo = len(indo)
+   182                                                           #mu_old = mu
+   183         1          179    179.0      0.0                  mu = - K_X[inds[0], :][start_origin:].dot(a[start_origin:])
+   184         1            4      4.0      0.0                  if lr > 0:
+   185         1       393836 393836.0      1.0                      g[indr] = K_X[indr, :][:, start_origin:].dot(a[start_origin:]) + mu
+   186                                                           # calculate mu according to KKT-conditions
+   187                                           
+   188                                           
+   189      2736        12938      4.7      0.0              c_inds = [start_new] + inds
+   190                                           
+   191                                                       # kernel of support vectors
+   192      2736      3450845   1261.3      8.7              Kss = K_X[:, inds][inds, :]
+   193                                                       #print "difference indo: %s" % unique(round(K_X[indo, :][:, start_origin:].dot(a[start_origin:]) + mu - g[indo],6))
+   194                                                       #check_gradient = True
+   195                                                       #if check_gradient:
+   196                                                           #g[indr] = K_X[indr, :][:, start_origin:].dot(a[start_origin:]) + mu
+   197                                                           #g[indo] += K_X[indo[0], :][start_origin:].dot(a[start_origin:]) + mu - g[indo[0]]
+   198                                                           #check_gradient = False
+   199                                                           #print "difference indo: %s" % unique(round(K_X[indo, :][:, start_origin:].dot(a[start_origin:]) + mu - g[indo],6))
+   200      2736        10596      3.9      0.0              if ls > 0:
+   201      2736       303776    111.0      0.8                  gc = K_X[start_new, start_origin:].dot(a[start_origin:]) + mu
+   202                                           
+   203      2736        10973      4.0      0.0              ac = a[start_new]
+   204                                           
+   205      2736         9127      3.3      0.0              if x_count == 0:
+   206         1           71     71.0      0.0                  Q = ones((ls+1, ls+1))
+   207         1            5      5.0      0.0                  Q[0, 0] = 0
+   208         1           57     57.0      0.0                  Q[1:, 1:] = Kss
+   209         1            3      3.0      0.0                  try:
+   210         1         3788   3788.0      0.0                      R = inv(Q)
+   211                                                           except np.linalg.linalg.LinAlgError:
+   212                                                               x = 1e-11
+   213                                                               found = False
+   214                                                               print "singular matrix"
+   215                                                               while not found:
+   216                                                                   try:
+   217                                                                       R = inv(Q + diag(ones(ls+1) * x))
+   218                                                                       found = True
+   219                                                                   except np.linalg.linalg.LinAlgError:
+   220                                                                       x = x*10
+   221      2736         8789      3.2      0.0              loop_count = 1
+   222                                                       #print "gc: %s, ac: %s" % (gc, ac)
+   223      6834        44712      6.5      0.1              while gc < e and ac < C - e:
+   224      5422        18310      3.4      0.0                  if ls == 0: check_gradient = True
+   225                                                           #print "-------------------- incremental %s-%s ---------" % (x_count, loop_count)
+   226                                                           #print "ac: %s" % ac
+   227                                                           #print "len inds: %s" % len(inds)
+   228      5422        17856      3.3      0.0                  if ls > 0:
+   229      5422       128154     23.6      0.3                      n = K_X[start_new, :][c_inds]
+   230                                                               #print R.shape
+   231                                                               #print n.shape
+   232                                           
+   233      5422        71041     13.1      0.2                      beta = - R.dot(n)
+   234      5422        25008      4.6      0.1                      betas = beta[1:]
+   235                                           
+   236                                                           # calculate gamma
+   237      5422        18334      3.4      0.0                  if lr > 0 and ls > 0:
+   238      5422     12263723   2261.8     30.8                      gamma_tmp = K_X[:, c_inds][start_new:]
+   239      5422       122676     22.6      0.3                      gamma_tmp[:, 0] = 1
+   240      5422      1025300    189.1      2.6                      gamma[start_new:] = gamma_tmp.dot(beta) + K_X[start_new, :][start_new:]
+   241      5422        27378      5.0      0.1                      gammac = gamma[start_new]
+   242                                           
+   243                                                           elif ls > 0:
+   244                                                               # empty R set
+   245                                                               gammac = K_X[start_new, :][c_inds].dot(beta) + 1
+   246                                           
+   247                                                           else:
+   248                                                               # empty S set
+   249                                                               gammac = 1
+   250                                                               gamma[indr] = 1
+   251                                                               #gamma[indo] = -1
+   252                                           
+   253                                                           # accounting
+   254                                                           #case 1: Some alpha_i in S reaches a bound
+   255      5422        19803      3.7      0.0                  if ls > 0:
+   256      5422        61004     11.3      0.2                      IS_plus = betas > e
+   257      5422        45657      8.4      0.1                      IS_minus = betas < - e
+   258      5422       100591     18.6      0.3                      gsmax = ones(ls)*inf
+   259                                                               #if np.isnan(np.min(gsmax)):
+   260                                                               #    gsmax = ones(ls)*inf
+   261      5422       173350     32.0      0.4                      gsmax[IS_plus] = -a[inds][IS_plus]
+   262      5422        59321     10.9      0.1                      gsmax[IS_plus] += C
+   263      5422       132725     24.5      0.3                      gsmax[IS_minus] = - a[inds][IS_minus]
+   264      5422        37562      6.9      0.1                      gsmax = divide(gsmax, betas)
+   265      5422        68961     12.7      0.2                      gsmin = min(absolute(gsmax))
+   266                                                               #print where(absolute(gsmax) == gsmin)
+   267      5422        72270     13.3      0.2                      ismin = where(absolute(gsmax) == gsmin)[0][0]
+   268                                           
+   269                                                           else: gsmin = inf
+   270                                           
+   271                                                           #case 2: Some g_i in E reaches zero
+   272      5422        19122      3.5      0.0                  if le > 0:
+   273                                           
+   274      5422      1285511    237.1      3.2                      gamma_inde = gamma[inde]
+   275      5422      1287187    237.4      3.2                      g_inde = g[inde]
+   276      5422        57922     10.7      0.1                      Ie_plus = gamma_inde > e
+   277                                           
+   278      5422        98227     18.1      0.2                      if len(g_inde[Ie_plus]) > 0:
+   279      5193       231490     44.6      0.6                          gec = divide(-g_inde[Ie_plus], gamma_inde[Ie_plus])
+   280      5193        77990     15.0      0.2                          gec[gec <= 0] = inf
+   281      5193       679498    130.8      1.7                          gemin = min(gec)
+   282      5193        27414      5.3      0.1                          if gemin < inf:
+   283      5193        97576     18.8      0.2                              iemin = where(gec == gemin)[0][0]
+   284       229          797      3.5      0.0                      else: gemin = inf
+   285                                                           else: gemin = inf
+   286                                                           #case 2: Some g_i in O reaches zero
+   287      5422        19406      3.6      0.0                  if lo > 0 and ls > 0:
+   288      5422      1278305    235.8      3.2                      gamma_indo = gamma[indo]
+   289      5422      1244890    229.6      3.1                      g_indo = g[indo]
+   290      5422        58361     10.8      0.1                      Io_minus = gamma_indo < - e
+   291      5422        79883     14.7      0.2                      if len(g_indo[Io_minus]) > 0:
+   292      4537       162574     35.8      0.4                          goc = divide(-g_indo[Io_minus], gamma_indo[Io_minus])
+   293      4537        56820     12.5      0.1                          goc[goc <= 0] = inf
+   294      4537       107286     23.6      0.3                          goc[g_indo[Io_minus] < 0] = inf
+   295      4537       295012     65.0      0.7                          gomin = min(goc)
+   296      4537        23575      5.2      0.1                          if gomin < inf:
+   297      4516        66940     14.8      0.2                              iomin = where(goc == gomin)[0][0]
+   298       885         3158      3.6      0.0                      else: gomin = inf
+   299                                                           else: gomin = inf
+   300                                           
+   301                                                           # case 3: gc becomes zero
+   302      5422        32018      5.9      0.1                  if gammac > e: gcmin = - gc/gammac
+   303       234          821      3.5      0.0                  else: gcmin = inf
+   304                                           
+   305                                                           # case 4
+   306      5422        27857      5.1      0.1                  if ls > 0: gacmin = C - ac
+   307                                                           else: gacmin = inf
+   308                                           
+   309                                                           # determine minimum largest increment
+   310      5422        23510      4.3      0.1                  all_deltas = [gsmin, gemin, gomin, gcmin, gacmin]
+   311      5422        25804      4.8      0.1                  gmin = min(all_deltas)
+   312      5422       112004     20.7      0.3                  imin = where(all_deltas == gmin)[0][0]
+   313                                                           # update a, g
+   314      5422        19307      3.6      0.0                  if ls > 0:
+   315      5422        27103      5.0      0.1                      mu += beta[0]*gmin
+   316      5422        22004      4.1      0.1                      ac += gmin
+   317      5422       230395     42.5      0.6                      a[inds] += betas*gmin
+   318                                                           else:
+   319                                                               mu += gmin
+   320      5422        20077      3.7      0.1                  if lr > 0:
+   321      5422      7428159   1370.0     18.7                      g[indr] += gamma[indr] * gmin
+   322      5422        27336      5.0      0.1                  gc += gammac * gmin
+   323      5422        29451      5.4      0.1                  if imin == 0: # min = gsmin => move k from s to r
+   324                                                               # if there are more than 1 minimum, just take 1
+   325      2126        43888     20.6      0.1                      ak = a[inds][ismin]
+   326                                           
+   327                                                               # delete the elements from X,a and g
+   328                                                               # => add it to the end of X,a,g
+   329      2126         8473      4.0      0.0                      ind_del = inds[ismin]
+   330      2126        20578      9.7      0.1                      inds.remove(ind_del)
+   331      2126        10034      4.7      0.0                      c_inds = [start_new] + inds
+   332      2126         8074      3.8      0.0                      indr.append(ind_del)
+   333      2126        10159      4.8      0.0                      if ak < e:
+   334      1703         6202      3.6      0.0                          indo.append(ind_del)
+   335      1703         6190      3.6      0.0                          lo += 1
+   336                                                               else:
+   337       423         1530      3.6      0.0                          inde.append(ind_del)
+   338       423         1538      3.6      0.0                          le += 1
+   339                                           
+   340      2126         7538      3.5      0.0                      lr += 1
+   341                                                               #decrement R, delete row ismin and column ismin
+   342                                           
+   343      2126         7407      3.5      0.0                      if ls > 2:
+   344      2126        10630      5.0      0.0                          ismin += 1
+   345      2126        19553      9.2      0.0                          R_new = zeros((ls,ls))
+   346      2126        34959     16.4      0.1                          R_new[0:ismin, 0:ismin] = R[0:ismin, 0:ismin]
+   347      2126        25943     12.2      0.1                          R_new[ismin:, 0:ismin] = R[ismin+1:,0:ismin]
+   348      2126        23957     11.3      0.1                          R_new[0:ismin, ismin:] = R[0:ismin, ismin+1:]
+   349      2126        26355     12.4      0.1                          R_new[ismin:, ismin:] = R[ismin+1:, ismin+1:]
+   350      2126        13547      6.4      0.0                          betak = zeros(ls)
+   351      2126        17470      8.2      0.0                          betak[:ismin] = R[ismin, :ismin]
+   352      2126        19157      9.0      0.0                          betak[ismin:] = R[ismin, ismin+1:]
+   353      2126       132413     62.3      0.3                          R_new -= outer(betak, betak)/R[ismin,ismin]
+   354      2126         8954      4.2      0.0                          R = R_new
+   355                                                               elif ls == 2:
+   356                                                                   R = ones((2, 2))
+   357                                                                   R[1,1] = 0
+   358                                                                   R[0,0] = -1
+   359                                                               else:
+   360                                                                   R = inf
+   361      2126         8211      3.9      0.0                      ls -= 1
+   362                                           
+   363      3296        15643      4.7      0.0                  elif imin == 1:
+   364                                                               # delete the elements from X,a and g => add it to the end of X,a,g
+   365                                                               ### old version find index to delete
+   366                                                               #Ieplus_l = [i for i,b in enumerate(Ie_plus) if b]
+   367                                                               #ind_del = inde[Ieplus_l[iemin]]
+   368                                                               ### old version find index to delete
+   369      1581       377755    238.9      0.9                      ind_del = np.asarray(inde)[Ie_plus][iemin]
+   370      1581         5795      3.7      0.0                      if ls > 0:
+   371      1581        37692     23.8      0.1                          nk = K_X[ind_del, :][[ind_del] + inds]
+   372      1581        21997     13.9      0.1                          betak = - R.dot(nk)
+   373      1581        17089     10.8      0.0                          betak1 = ones(ls + 2)
+   374      1581         8647      5.5      0.0                          betak1[:-1] = betak
+   375      1581         6655      4.2      0.0                          R_old = R
+   376      1581        11229      7.1      0.0                          R = zeros((ls +2, ls +2))
+   377      1581        16066     10.2      0.0                          R[:-1, :-1] = R_old
+   378      1581        80132     50.7      0.2                          R += 1/(1 - nk.dot(R_old).dot(nk)) * outer(betak1, betak1)
+   379                                                               else:
+   380                                                                   R = ones((2, 2))
+   381                                                                   R[1,1] = 0
+   382                                                                   R[0,0] = -1
+   383      1581         6817      4.3      0.0                      inds.append(ind_del)
+   384      1581         7551      4.8      0.0                      c_inds = [start_new] + inds
+   385      1581      1216329    769.3      3.1                      indr.remove(ind_del)
+   386      1581       974189    616.2      2.4                      inde.remove(ind_del)
+   387      1581         5954      3.8      0.0                      ls += 1
+   388      1581         6037      3.8      0.0                      lr -= 1
+   389      1581         6009      3.8      0.0                      le -= 1
+   390                                           
+   391      1715         7864      4.6      0.0                  elif imin == 2: # min = gemin | gomin => move k from r to s
+   392                                           
+   393                                                               # delete the elements from X,a and g => add it to the end of X,a,g
+   394                                           
+   395                                                               ### old version find index to delete
+   396                                                               #Io_minus_l = [i for i,b in enumerate(Io_minus) if b]
+   397                                                               #ind_del = indo[Io_minus_l[iomin]]
+   398                                                               ### old version find index to delete
+   399       391        86970    222.4      0.2                      ind_del = np.asarray(indo)[Io_minus][iomin]
+   400       391         1484      3.8      0.0                      if ls > 0:
+   401       391         4396     11.2      0.0                          nk = ones(ls+1)
+   402       391        10673     27.3      0.0                          nk[1:] = K_X[ind_del,:][inds]
+   403       391         7384     18.9      0.0                          betak = - R.dot(nk)
+   404       391         6154     15.7      0.0                          k = 1 - nk.dot(R).dot(nk)
+   405       391         3936     10.1      0.0                          betak1 = ones(ls+2)
+   406       391         1999      5.1      0.0                          betak1[:-1] = betak
+   407       391         1646      4.2      0.0                          R_old = R
+   408       391         4235     10.8      0.0                          R = zeros((ls+2, ls+2))
+   409       391         6280     16.1      0.0                          R[:-1,:-1] = R_old
+   410       391        23786     60.8      0.1                          R += 1/k * outer(betak1, betak1)
+   411                                                               else:
+   412                                                                   R = ones((2, 2))
+   413                                                                   R[1,1] = 0
+   414                                                                   R[0,0] = -1
+   415                                           
+   416       391       144150    368.7      0.4                      indo.remove(ind_del)
+   417       391       501444   1282.5      1.3                      indr.remove(ind_del)
+   418       391         1645      4.2      0.0                      inds.append(ind_del)
+   419       391         2079      5.3      0.0                      c_inds = [start_new] + inds
+   420       391         1531      3.9      0.0                      lo -= 1
+   421       391         1471      3.8      0.0                      lr -= 1
+   422       391         1502      3.8      0.0                      ls += 1
+   423      1324         6171      4.7      0.0                  elif imin == 3:
+   424         2            7      3.5      0.0                      if ls > 0:
+   425         2           24     12.0      0.0                          nk = ones(ls+1)
+   426         2           45     22.5      0.0                          nk[1:] = K_X[start_new, :][inds]
+   427                                           
+   428         2           27     13.5      0.0                          betak = - R.dot(nk)
+   429         2           25     12.5      0.0                          k = 1 - nk.dot(R).dot(nk)
+   430         2           20     10.0      0.0                          betak1 = ones(ls + 2)
+   431         2           10      5.0      0.0                          betak1[:-1] = betak
+   432         2            8      4.0      0.0                          R_old = R
+   433         2           11      5.5      0.0                          R = zeros((ls +2, ls +2))
+   434         2           19      9.5      0.0                          R[:-1,:-1] = R_old
+   435         2           77     38.5      0.0                          R += 1/k * outer(betak1, betak1)
+   436                                                               else:
+   437                                                                   R = ones((2, 2))
+   438                                                                   R[1,1] = 0
+   439                                                                   R[0,0] = -1
+   440         2            7      3.5      0.0                      break
+   441                                                           else:
+   442      1322         5073      3.8      0.0                      break
+   443      4098        14279      3.5      0.0                  loop_count += 1
+   444                                           
+   445      2736        11094      4.1      0.0              a[start_new] = ac
+   446      2736        10655      3.9      0.0              g[start_new] = gc
+   447      2736        13174      4.8      0.0              if ac < e:
+   448      1412         5738      4.1      0.0                  indr.append(start_new)
+   449      1412         5366      3.8      0.0                  indo.append(start_new)
+   450      1412         5218      3.7      0.0                  lr += 1
+   451      1412         4463      3.2      0.0                  lo += 1
+   452      1324         6733      5.1      0.0              elif ac > C - e:
+   453      1322         5624      4.3      0.0                  indr.append(start_new)
+   454      1322         5215      3.9      0.0                  inde.append(start_new)
+   455      1322         5121      3.9      0.0                  lr += 1
+   456      1322         4425      3.3      0.0                  le += 1
+   457                                                       else:
+   458         2            8      4.0      0.0                  inds.append(start_new)
+   459         2           12      6.0      0.0                  if R.shape[0] != len(inds) + 1:
+   460                                                               nk = ones(ls+1)
+   461                                                               nk[1:] = K_X[start_new, :][inds[:-1]]
+   462                                                               betak = - R.dot(nk)
+   463                                                               k = 1 - nk.dot(R).dot(nk)
+   464                                                               betak1 = ones(ls + 2)
+   465                                                               betak1[:-1] = betak
+   466                                                               R_old = R
+   467                                                               R = zeros((ls +2, ls +2))
+   468                                                               R[:-1,:-1] = R_old
+   469                                                               R += 1/k * outer(betak1, betak1)
+   470                                           
+   471         2            8      4.0      0.0                  ls += 1
+   472                                           
+   473                                                    # update X, a
+   474         1           12     12.0      0.0          self._data.set_X(X)
+   475         1            6      6.0      0.0          self._data.set_alpha(a)
+   476         1            6      6.0      0.0          self._data.set_C(C)
+   477         1            7      7.0      0.0          self._data.set_K_X(K_X)
+   478         1         1235   1235.0      0.0          self.rho()
+
