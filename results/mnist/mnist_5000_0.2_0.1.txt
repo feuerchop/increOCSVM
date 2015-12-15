@@ -1,0 +1,39 @@
+mnist classes = 2
+size: 5000
+(597,)
+(4403,)
+data size: 5000, nu: 0.2, gamma: 0.1
+============ 1. Fold of CV ============
+1) Incremental OCSVM
+Confusion matrix:
+Prediction     1
+Target          
+-1           597
+ 1          4403
+precision: 0.8806, recall: 1.0, f1-score: 0.936509624588
+Number of support vectors: 4000
+-----------
+2) cvxopt-OCSVM
+Confusion matrix:
+Prediction     1
+Target          
+-1           597
+ 1          4403
+precision: 0.8806, recall: 1.0, f1-score: 0.936509624588
+Number of support vectors: 4000
+---------
+3) sklearn-OCSVM
+Confusion matrix:
+Prediction    -1     1
+Target                
+-1           395   202
+ 1          2805  1598
+Number of support vectors: 4000
+precision: 0.887777777778, recall: 0.362934362934, f1-score: 0.515234563921
+========================================
+Average Incremental OCSVM results:
+precision: 0.888017917133, recall: 0.360208948444, f1-score: 0.512522216836
+Average cvxopt-OCSVM results:
+precision: 0.8806, recall: 1.0, f1-score: 0.936509624588
+Average sklearn-OCSVM results:
+precision: 0.887777777778, recall: 0.362934362934, f1-score: 0.515234563921

@@ -1,0 +1,196 @@
+/usr/bin/python /Users/LT/Documents/Uni/MA/increOCSVM/evaluation_tmp.py
+data size: 1484, nu: 0.1, gamma: 1
+============ 1. Fold of CV ============
+1) Incremental OCSVM
+singular matrix
+None
+Confusion matrix:
+Prediction   -1    1
+Target              
+-1          949  106
+ 1          392   37
+precision: 0.258741258741, recall: 0.0862470862471, f1-score: 0.129370629371
+Number of support vectors: 5
+-----------
+2) cvxopt-OCSVM
+Confusion matrix:
+Prediction   -1    1
+Target              
+-1          943  112
+ 1          391   38
+precision: 0.253333333333, recall: 0.0885780885781, f1-score: 0.131260794473
+Number of support vectors: 7
+---------
+3) sklearn-OCSVM
+Confusion matrix:
+Prediction   -1    1
+Target              
+-1          946  109
+ 1          391   38
+Number of support vectors: 121
+precision: 0.258503401361, recall: 0.0885780885781, f1-score: 0.131944444444
+========================================
+Average Incremental OCSVM results:
+precision: 0.258741258741, recall: 0.0862470862471, f1-score: 0.129370629371
+Average cvxopt-OCSVM results:
+precision: 0.253333333333, recall: 0.0885780885781, f1-score: 0.131260794473
+Average sklearn-OCSVM results:
+precision: 0.258503401361, recall: 0.0885780885781, f1-score: 0.131944444444
+
+*** PROFILER RESULTS ***
+incremental_ocsvm (/Users/LT/Documents/Uni/MA/increOCSVM/evaluation_tmp.py:185)
+function called 1 times
+
+         33447 function calls in 2.002 seconds
+
+   Ordered by: cumulative time, internal time, call count
+   List reduced from 136 to 40 due to restriction <40>
+
+   ncalls  tottime  percall  cumtime  percall filename:lineno(function)
+        1    0.000    0.000    2.002    2.002 evaluation_tmp.py:185(incremental_ocsvm)
+        1    1.624    1.624    1.984    1.984 ocsvm.py:98(increment)
+     1229    0.117    0.000    0.117    0.000 {method 'remove' of 'list' objects}
+        2    0.000    0.000    0.063    0.031 ocsvm.py:58(gram)
+        2    0.000    0.000    0.063    0.031 pairwise.py:1164(pairwise_kernels)
+        2    0.000    0.000    0.063    0.031 pairwise.py:949(_parallel_pairwise)
+        2    0.024    0.012    0.063    0.031 pairwise.py:740(rbf_kernel)
+     4292    0.050    0.000    0.050    0.000 {method 'dot' of 'numpy.ndarray' objects}
+     4210    0.050    0.000    0.050    0.000 {min}
+        2    0.012    0.006    0.038    0.019 pairwise.py:136(euclidean_distances)
+      704    0.020    0.000    0.026    0.000 numeric.py:966(outer)
+        2    0.000    0.000    0.025    0.013 extmath.py:171(safe_sparse_dot)
+        2    0.025    0.013    0.025    0.013 {numpy.core._dotblas.dot}
+     1621    0.007    0.000    0.022    0.000 numeric.py:136(ones)
+     1818    0.004    0.000    0.020    0.000 numeric.py:392(asarray)
+        1    0.000    0.000    0.018    0.018 ocsvm.py:35(fit)
+        1    0.001    0.001    0.018    0.018 ocsvm.py:62(alpha)
+     1839    0.017    0.000    0.017    0.000 {numpy.core.multiarray.array}
+        1    0.000    0.000    0.015    0.015 coneprog.py:4159(qp)
+        1    0.002    0.002    0.015    0.015 coneprog.py:1441(coneqp)
+     4178    0.010    0.000    0.010    0.000 {numpy.core.multiarray.where}
+     1621    0.009    0.000    0.009    0.000 {numpy.core.multiarray.copyto}
+       11    0.000    0.000    0.008    0.001 coneprog.py:1984(kktsolver)
+       11    0.001    0.000    0.008    0.001 misc.py:1389(factor)
+     1624    0.006    0.000    0.006    0.000 {numpy.core.multiarray.empty}
+       11    0.004    0.000    0.004    0.000 {cvxopt.base.syrk}
+     1037    0.003    0.000    0.003    0.000 {numpy.core.multiarray.zeros}
+     1409    0.002    0.000    0.002    0.000 {method 'ravel' of 'numpy.ndarray' objects}
+       22    0.002    0.000    0.002    0.000 {cvxopt.lapack.potrf}
+       20    0.000    0.000    0.002    0.000 coneprog.py:2333(f4)
+       20    0.000    0.000    0.002    0.000 coneprog.py:2291(f4_no_ir)
+     2253    0.001    0.000    0.001    0.000 {len}
+      128    0.001    0.000    0.001    0.000 {cvxopt.base.gemv}
+       21    0.000    0.000    0.001    0.000 misc.py:1489(solve)
+       11    0.001    0.000    0.001    0.000 {cvxopt.base.gemm}
+     3606    0.001    0.000    0.001    0.000 {method 'append' of 'list' objects}
+        1    0.000    0.000    0.001    0.001 ocsvm.py:45(rho)
+       22    0.000    0.000    0.001    0.000 coneprog.py:1900(fG)
+        1    0.001    0.001    0.001    0.001 misc.py:20(<module>)
+       22    0.000    0.000    0.001    0.000 misc.py:801(sgemv)
+
+
+
+*** PROFILER RESULTS ***
+cvxopt_ocsvm (/Users/LT/Documents/Uni/MA/increOCSVM/evaluation_tmp.py:181)
+function called 1 times
+
+         2714 function calls in 4.717 seconds
+
+   Ordered by: cumulative time, internal time, call count
+   List reduced from 117 to 40 due to restriction <40>
+
+   ncalls  tottime  percall  cumtime  percall filename:lineno(function)
+        1    0.000    0.000    4.717    4.717 evaluation_tmp.py:181(cvxopt_ocsvm)
+        1    0.007    0.007    4.717    4.717 ocsvm.py:35(fit)
+        1    0.157    0.157    4.709    4.709 ocsvm.py:62(alpha)
+        1    0.006    0.006    4.478    4.478 coneprog.py:4159(qp)
+        1    0.008    0.008    4.472    4.472 coneprog.py:1441(coneqp)
+       14    0.000    0.000    4.136    0.295 coneprog.py:1984(kktsolver)
+       14    0.087    0.006    4.135    0.295 misc.py:1389(factor)
+       14    2.330    0.166    2.330    0.166 {cvxopt.base.syrk}
+       14    1.159    0.083    1.159    0.083 {cvxopt.base.gemm}
+       28    0.528    0.019    0.528    0.019 {cvxopt.lapack.potrf}
+      164    0.245    0.001    0.245    0.001 {cvxopt.base.gemv}
+       27    0.002    0.000    0.217    0.008 misc.py:1489(solve)
+       26    0.000    0.000    0.214    0.008 coneprog.py:2333(f4)
+       26    0.001    0.000    0.214    0.008 coneprog.py:2291(f4_no_ir)
+       28    0.000    0.000    0.085    0.003 coneprog.py:1900(fG)
+       28    0.001    0.000    0.085    0.003 misc.py:801(sgemv)
+       54    0.053    0.001    0.053    0.001 {cvxopt.blas.trsv}
+        2    0.000    0.000    0.046    0.023 ocsvm.py:58(gram)
+        2    0.000    0.000    0.046    0.023 pairwise.py:1164(pairwise_kernels)
+        2    0.000    0.000    0.046    0.023 pairwise.py:949(_parallel_pairwise)
+        2    0.016    0.008    0.046    0.023 pairwise.py:740(rbf_kernel)
+       14    0.031    0.002    0.031    0.002 {cvxopt.blas.trsm}
+        2    0.014    0.007    0.030    0.015 pairwise.py:136(euclidean_distances)
+        2    0.000    0.000    0.018    0.009 shape_base.py:179(vstack)
+        2    0.017    0.009    0.017    0.009 {numpy.core.multiarray.concatenate}
+        2    0.000    0.000    0.015    0.007 extmath.py:171(safe_sparse_dot)
+        2    0.015    0.007    0.015    0.007 {numpy.core._dotblas.dot}
+       14    0.000    0.000    0.013    0.001 coneprog.py:1847(fP)
+       14    0.013    0.001    0.013    0.001 {cvxopt.base.symv}
+        2    0.006    0.003    0.010    0.005 twodim_base.py:221(diag)
+       13    0.004    0.000    0.005    0.000 misc.py:422(update_scaling)
+        4    0.004    0.001    0.004    0.001 {numpy.core.multiarray.zeros}
+       97    0.002    0.000    0.002    0.000 {range}
+      239    0.001    0.000    0.001    0.000 {cvxopt.blas.axpy}
+        1    0.000    0.000    0.001    0.001 ocsvm.py:45(rho)
+       78    0.001    0.000    0.001    0.000 {cvxopt.misc_solvers.scale2}
+      107    0.001    0.000    0.001    0.000 {cvxopt.blas.copy}
+       79    0.001    0.000    0.001    0.000 {cvxopt.misc_solvers.scale}
+       30    0.000    0.000    0.001    0.000 {numpy.core.multiarray.array}
+       17    0.000    0.000    0.001    0.000 misc.py:757(snrm2)
+
+
+
+*** PROFILER RESULTS ***
+sklearn_ocsvm (/Users/LT/Documents/Uni/MA/increOCSVM/evaluation_tmp.py:177)
+function called 1 times
+
+         57 function calls in 0.016 seconds
+
+   Ordered by: cumulative time, internal time, call count
+
+   ncalls  tottime  percall  cumtime  percall filename:lineno(function)
+        1    0.000    0.000    0.016    0.016 evaluation_tmp.py:177(sklearn_ocsvm)
+        1    0.000    0.000    0.016    0.016 classes.py:941(fit)
+        1    0.000    0.000    0.016    0.016 base.py:99(fit)
+        1    0.000    0.000    0.016    0.016 base.py:211(_dense_fit)
+        1    0.016    0.016    0.016    0.016 {sklearn.svm.libsvm.fit}
+        1    0.000    0.000    0.000    0.000 validation.py:268(check_array)
+        1    0.000    0.000    0.000    0.000 validation.py:43(_assert_all_finite)
+        1    0.000    0.000    0.000    0.000 {method 'sum' of 'numpy.ndarray' objects}
+        1    0.000    0.000    0.000    0.000 _methods.py:23(_sum)
+        1    0.000    0.000    0.000    0.000 {method 'reduce' of 'numpy.ufunc' objects}
+        1    0.000    0.000    0.000    0.000 validation.py:126(_shape_repr)
+        1    0.000    0.000    0.000    0.000 {method 'copy' of 'numpy.ndarray' objects}
+        1    0.000    0.000    0.000    0.000 {method 'randint' of 'mtrand.RandomState' objects}
+        1    0.000    0.000    0.000    0.000 numeric.py:136(ones)
+        1    0.000    0.000    0.000    0.000 shape_base.py:60(atleast_2d)
+        1    0.000    0.000    0.000    0.000 {method 'join' of 'str' objects}
+        1    0.000    0.000    0.000    0.000 base.py:193(_validate_targets)
+        1    0.000    0.000    0.000    0.000 getlimits.py:244(__init__)
+        5    0.000    0.000    0.000    0.000 {numpy.core.multiarray.array}
+        2    0.000    0.000    0.000    0.000 numeric.py:392(asarray)
+        3    0.000    0.000    0.000    0.000 validation.py:153(<genexpr>)
+        2    0.000    0.000    0.000    0.000 {numpy.core.multiarray.empty}
+        1    0.000    0.000    0.000    0.000 base.py:203(_warn_from_fit_status)
+        1    0.000    0.000    0.000    0.000 {sklearn.svm.libsvm.set_verbosity_wrap}
+        1    0.000    0.000    0.000    0.000 {numpy.core.multiarray.copyto}
+        2    0.000    0.000    0.000    0.000 numeric.py:462(asanyarray)
+        1    0.000    0.000    0.000    0.000 validation.py:105(_num_samples)
+        2    0.000    0.000    0.000    0.000 base.py:702(isspmatrix)
+        3    0.000    0.000    0.000    0.000 {hasattr}
+        3    0.000    0.000    0.000    0.000 {isinstance}
+        1    0.000    0.000    0.000    0.000 getlimits.py:269(max)
+        1    0.000    0.000    0.000    0.000 validation.py:503(check_random_state)
+        6    0.000    0.000    0.000    0.000 {len}
+        1    0.000    0.000    0.000    0.000 {method 'index' of 'list' objects}
+        2    0.000    0.000    0.000    0.000 {callable}
+        1    0.000    0.000    0.000    0.000 {method 'append' of 'list' objects}
+        1    0.000    0.000    0.000    0.000 {method 'disable' of '_lsprof.Profiler' objects}
+        0    0.000             0.000          profile:0(profiler)
+
+
+
+Process finished with exit code 0

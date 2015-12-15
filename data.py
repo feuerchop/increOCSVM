@@ -2,6 +2,7 @@ __author__ = 'LT'
 import numpy as np
 import sys
 class Data(object):
+
     _X = None
     _alpha = None
     _C = None
@@ -12,6 +13,7 @@ class Data(object):
         self._X = None
         self._alpha = None
         self._K_X = None
+
 
     def set_X(self, X):
         self._X = X
@@ -29,13 +31,16 @@ class Data(object):
     def Xs(self):
         return self._X[self.get_sv()]
 
+    def set_e(self, e):
+        self._e = e
+
     # returns support vector
     def alpha_s(self):
         return self._alpha[self.get_sv()]
-
+    # sets regularization value
     def set_C(self, C):
         self._C = C
-
+    # returns regularization value
     def C(self):
         return self._C
 
@@ -50,13 +55,20 @@ class Data(object):
         self._alpha = alpha
         #self._X = np.vstack((self._X, x_c))
         #self._alpha = np.hstack((self._alpha, alpha_c))
-
+    # get indecis of support vector
     def get_sv(self):
-        return np.all([self._alpha > self._e, self._alpha < self._C - self._e], axis=0)
 
+        if len(self.alpha()[np.all([self._alpha > self._e, self._alpha < self._C - self._e], axis=0)]) < 1:
+            e = self._e
+            while len(self.alpha()[np.all([self._alpha > e, self._alpha < self._C - e], axis=0)]) < 1:
+                e /= 10
+            return np.all([self._alpha > e, self._alpha < self._C - e], axis=0)
+        else:
+            return np.all([self._alpha > self._e, self._alpha < self._C - self._e], axis=0)
+    # return gram matrix
     def set_K_X(self, K_X):
         self._K_X = K_X
-
+    # sets gram matrix
     def K_X(self):
         return self._K_X
 

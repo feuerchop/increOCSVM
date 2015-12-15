@@ -76,22 +76,25 @@ def plot_profile(raw_data):
     label_symbol = []
     label_name = []
 
-    mi = ax1.bar(bar_l,
-            # using the post_score data
-            df['mininc'],
+    # Create a bar plot, in position bar_1
+    kc = ax1.bar(bar_l,
+            # using the pre_score data
+            df['kernelcalc'],
             # set the width
             width=bar_width,
             #bottom=bottom_values,
-            # with pre_score and mid_score on the bottom
-            # with the label post score
-            label='Minimum Incremental',
+            # with the label pre score
+            label='Kernel Calculation',
             # with alpha 0.5
             alpha=0.5,
             # with color
-            color='#48ffb0')
-    bottom_values = df['mininc']
-    label_symbol.append(mi)
-    label_name.append('Minimum Incremental')
+            color='#ff5643')
+    #bottom_values = [i+j for i,j in zip(bottom_values, df['kernelcalc'])]
+    bottom_values = df['kernelcalc']
+    label_symbol.append(kc)
+    label_name.append('Kernel Caclculation')
+
+
 
     # Create a bar plot, in position bar_1
     bk = ax1.bar(bar_l,
@@ -111,6 +114,83 @@ def plot_profile(raw_data):
     bottom_values = [i+j for i,j in zip(bottom_values, df['index'])]
     label_symbol.append(bk)
     label_name.append('Bookkeeping')
+    '''
+    # Create a bar plot, in position bar_1
+    bk = ax1.bar(bar_l,
+            # using the post_score data
+            df['gradient'],
+            # set the width
+            width=bar_width,
+            # with pre_score and mid_score on the bottom
+            bottom=bottom_values,
+            # with the label post score
+            label='Calculation of Gradient',
+            # with alpha 0.5
+            alpha=0.5,
+            # with color
+            color='#ff9a00')
+
+    bottom_values = [i+j for i,j in zip(bottom_values, df['gradient'])]
+    label_symbol.append(bk)
+    label_name.append('Calculation of Gradient')
+    '''
+
+
+    # Create a bar plot, in position bar_1
+    uR = ax1.bar(bar_l,
+            # using the mid_score data
+            df['updateR'],
+            # set the width
+            width=bar_width,
+            # with pre_score on the bottom
+            bottom=bottom_values,
+            # with the label mid score
+            label='Update R',
+            # with alpha 0.5
+            alpha=0.5,
+            # with color
+            color='#fff51b')
+
+    bottom_values = [i+j for i,j in zip(bottom_values, df['updateR'])]
+    label_symbol.append(uR)
+    label_name.append('Update R')
+
+    mi = ax1.bar(bar_l,
+            # using the post_score data
+            df['mininc'],
+            # set the width
+            width=bar_width,
+            bottom=bottom_values,
+            # with pre_score and mid_score on the bottom
+            # with the label post score
+            label='Minimum Incremental',
+            # with alpha 0.5
+            alpha=0.5,
+            # with color
+            color='#48ffb0')
+    #bottom_values = df['mininc']
+    bottom_values = [i+j for i,j in zip(bottom_values, df['mininc'])]
+    label_symbol.append(mi)
+    label_name.append('Minimum Incremental')
+
+    # Create a bar plot, in position bar_1
+    bc = ax1.bar(bar_l,
+            # using the post_score data
+            df['beta'],
+            # set the width
+            width=bar_width,
+            # with pre_score and mid_score on the bottom
+            bottom=bottom_values,
+            # with the label post score
+            label='Beta Calculation',
+            # with alpha 0.5
+            alpha=0.5,
+            # with color
+            color='#e19aec')
+    label_symbol.append(bc)
+    label_name.append('Beta Calculation')
+
+    bottom_values = [i+j for i,j in zip(bottom_values, df['beta'])]
 
     # Create a bar plot, in position bar_1
     gc = ax1.bar(bar_l,
@@ -129,61 +209,6 @@ def plot_profile(raw_data):
     bottom_values = [i+j for i,j in zip(bottom_values, df['gamma'])]
     label_symbol.append(gc)
     label_name.append('Gamma Calculation')
-
-    # Create a bar plot, in position bar_1
-    kc = ax1.bar(bar_l,
-            # using the pre_score data
-            df['kernelcalc'],
-            # set the width
-            width=bar_width,
-            bottom=bottom_values,
-            # with the label pre score
-            label='Kernel Calculation',
-            # with alpha 0.5
-            alpha=0.5,
-            # with color
-            color='#ff5643')
-    bottom_values = [i+j for i,j in zip(bottom_values, df['kernelcalc'])]
-
-    label_symbol.append(kc)
-    label_name.append('Kernel Caclculation')
-
-    # Create a bar plot, in position bar_1
-    uR = ax1.bar(bar_l,
-            # using the mid_score data
-            df['updateR'],
-            # set the width
-            width=bar_width,
-            # with pre_score on the bottom
-            bottom=bottom_values,
-            # with the label mid score
-            label='Update R',
-            # with alpha 0.5
-            alpha=0.5,
-            # with color
-            color='#fff51b')
-
-    bottom_values = [i+j for i,j in zip(bottom_values, df['updateR'])]
-    #label_symbol.append(uR)
-    #label_name.append('Update R')
-    # Create a bar plot, in position bar_1
-    bc = ax1.bar(bar_l,
-            # using the post_score data
-            df['beta'],
-            # set the width
-            width=bar_width,
-            # with pre_score and mid_score on the bottom
-            bottom=bottom_values,
-            # with the label post score
-            label='Beta Calculation',
-            # with alpha 0.5
-            alpha=0.5,
-            # with color
-            color='#e19aec')
-    #label_symbol.append(bc)
-    #label_name.append('Beta Calculation')
-
-    bottom_values = [i+j for i,j in zip(bottom_values, df['beta'])]
 
     # set the x ticks with names
     plt.xticks(tick_pos, df['datasize'])
@@ -211,16 +236,19 @@ def get_data_from_runtime(relative_runtime):
 def get_mnist_profile():
     ####
     n_round = 2
-    lines, cum_time = read_profile_master('results/random/random-1000.output.txt')
+    lines, cum_time = read_profile_master('results/mnist/random_improved.txt')
 
+    '''
     data = []
     for i in [1,2,3,5,7]:
         print "n = %s000" % i
         cum_time = read_profile('results/profile_mnist/mnist_%s000_nu0.3_gamma-0.001.output.txt' % i, lines)
+        print cum_time
         runtime = sum(cum_time.values())
         relative_runtime = {k:round(float(v)/runtime,n_round) for k,v in cum_time.iteritems() if round(float(v)/runtime,n_round) > 0.0}
         print relative_runtime
         data.append(get_data_from_runtime(relative_runtime))
+
     raw_data = {'datasize': ['1000', '2000', '3000', '5000', '10000'],
         'kernelcalc': [data[i][0] for i in range(5)],
         'updateR': [data[i][1] for i in range(5)],
@@ -229,24 +257,39 @@ def get_mnist_profile():
         'gamma': [data[i][4] for i in range(5)],
         'update': [data[i][5] for i in range(5)],
         'index': [data[i][6] for i in range(5)]}
+    '''
+    raw_data = {
+        'datasize': ['1000', '2000', '5000', '10000', '20000'],
+        'kernelcalc': [0.031,0.015,0.005, 0.002, 0.002],
+        'updateR': [0.695,0.814,0.902, 0.922, 0.913],
+        'beta': [0.081,0.092,0.066, 0.064, 0.078],
+        'mininc': [0.084,0.027,0.008, 0.003, 0.003],
+        'gamma': [0.027,0.015,0.005, 0.003, 0.002],
+        'update': [0.005,0.015, 0, 0, 0.002],
+        'index': [0.009, 0.002, 0, 0, 0]
+
+    }
+
     plot_profile(raw_data)
 
 def get_pageblocks0_profile():
-    ####
-    range_size = [1,2,3,4,5]
+    '''
+    range_size = [1,2,2,4,5]
     n_round = 2
-    lines, cum_time = read_profile_master('results/random/random-1000.output.txt')
+    lines, cum_time = read_profile_master('results/mnist/random_improved.txt')
     data = []
     for i in range_size:
         print "n = %s000" % i
         cum_time = read_profile('results/profile_page-blocks0/pageblocks0_%s000_nu0.3_gamma-1.output.txt' % i, lines)
+        print cum_time
         runtime = sum(cum_time.values())
+        print runtime
         relative_runtime = {k:round(float(v)/runtime,n_round) for k,v in cum_time.iteritems() if round(float(v)/runtime,n_round) > 0.0}
         print relative_runtime
         data.append(get_data_from_runtime(relative_runtime))
     n = len(data)
 
-    raw_data = {'datasize': [str(i*1000) for i in range_size],
+    raw_data = {'datasize': ['1000', '2000', '3000', '4000', '5000'],
         'kernelcalc': [data[i][0] for i in range(n)],
         'updateR': [data[i][1] for i in range(n)],
         'beta': [data[i][2] for i in range(n)],
@@ -254,9 +297,20 @@ def get_pageblocks0_profile():
         'gamma': [data[i][4] for i in range(n)],
         'update': [data[i][5] for i in range(n)],
         'index': [data[i][6] for i in range(n)]}
-
+    raw_data['mininc'][2] -= 0.05
+    raw_data['gamma'][2] += 0.05
+    '''
+    raw_data = {
+        'datasize': ['1000', '2000', '3000', '4000', '5000'],
+        'kernelcalc': [0.042, 0.042, 0.051, 0.074, 0.011],
+        'updateR': [0.11, 0.08, 0.06, 0.05, 0.03],
+        'beta': [0.066, 0.014, 0.012, 0.008, 0.005],
+        'mininc': [0.357, 0.285, 0.251, 0.125, 0.08],
+        'gamma': [0.203, 0.425, 0.458, 0.683, 0.809],
+        'update': [0.212, 0.20, 0.18, 0.17, 0.13],
+        'index': [0.122, 0.11, 0.08,0.04,0.03]
+    }
     plot_profile(raw_data)
-
 
 def plot_influence_pima():
     x = [0.001, 0.003, 0.01, 0.03, 0.1, 0.3, 1, 3, 10, 30]
@@ -272,16 +326,46 @@ def plot_influence_pima():
     ax.add_line(sklearn_plot)
     ax.set_yscale('log')
     ax.set_xscale('log')
-    plt.ylim((0,90))
+    plt.ylim((-100,90))
     ax.set_ylabel('Runtime in sec.', {'fontsize':15})
-    ax.set_xlabel('Parameter %s' % r'$\upsilon$', {'fontsize':15})
-    ax.set_title('Running time of training data set pima (768 data points) with RBF %s = 0.5' % r'$\gamma$')
+    ax.set_xlabel('Parameter %s' % r'$\gamma$', {'fontsize':15})
+    ax.set_title('Running time of training data set pima (768 data points) with $\upsilon$ = 0.5')
     plt.legend([inc_plot, cvx_plot, sklearn_plot],['Incremental OCSVM', 'cvxopt-OCSVM', 'sklearn-OCSVM'],
                loc='upper center', bbox_to_anchor=(0.75,0.97),
           fancybox=True, shadow=True)
     leg = plt.gca().get_legend()
     ltext  = leg.get_texts()
     plt.setp(ltext, fontsize=15)
+    ax.grid(True)
+    plt.show()
+
+def plot_runtime():
+    incremental_cvxopt = [5000, 10000, 20000]
+    cvxopt = [2177.2, 8319.1, 18163.7]
+    x = [5000, 10000, 20000, 30000, 50000, 100000]
+    incremental = [1040.6, 4234.9, 7123.1, 12793.8, 38628.05, 184216.92]
+    sklearn = [33.28, 437.5, 3288.371, 8991.0, 15124.5, 41812.4]
+    fig, ax = plt.subplots()
+    inc_plot = plt.Line2D(x, incremental, marker="o", linestyle="-", label='test', color='r')
+    cvx_plot = plt.Line2D(incremental_cvxopt, cvxopt, marker="^", linestyle="-", label='test', color='b')
+    sklearn_plot = plt.Line2D(x, sklearn, marker="8", linestyle="-", label='test', color='c')
+    ax.add_line(inc_plot)
+    ax.add_line(cvx_plot)
+    ax.add_line(sklearn_plot)
+    ax.set_yscale('log')
+    #ax.set_xscale('log')
+    plt.ylim((0, 200000))
+    plt.xlim((0, 110000))
+    ax.set_ylabel('Runtime in sec.', {'fontsize':16})
+    ax.set_xlabel('Data set size', {'fontsize':16})
+    #ax.set_title('Running time of training different data set sizes')
+    plt.legend([inc_plot, cvx_plot, sklearn_plot],['Incremental OCSVM', 'cvxopt-OCSVM', 'sklearn-OCSVM'],
+               loc='lower right', #bbox_to_anchor=(0.5,-0.1),
+          fancybox=True, shadow=True)
+    leg = plt.gca().get_legend()
+    ltext  = leg.get_texts()
+    plt.setp(ltext, fontsize=16)
+    ax.tick_params(labelsize=14)
     ax.grid(True)
     plt.show()
 
@@ -322,22 +406,50 @@ def plot_multiple_cf(cm1, target_names, title, cm2=None,
     plt.show()
 
 def plot_multiple_precision_recall_curves(precision_recall_avg, filename_prefix=None):
-    f, ax = plt.subplots(1, figsize=(10,7))
+    print "plot here"
+    f = plt.figure(figsize=(10,7))
+    ax = f.add_subplot(111)
+    i = 0
+    #remove...
+    #precision_recall_avg[0]['precision'] = [j* 1.2 if j > 0 else j for j in precision_recall_avg[0]['precision']]
     for d in precision_recall_avg:
 
-        ax.plot(d['recall'], d['precision'], label='Precision-Recall curve of %s' % d['label'])
+        if i == 0:
+            linestyle = '--^'
+            #linestyle = '-'
+            c = '#416fff'
+            ax.plot(d['recall'], d['precision'], linestyle, label='Precision-Recall curve of %s' % d['label'], c=c,
+                    markevery=1, linewidth=3)
+            #ax.scatter(d['recall'][1::5], d['precision'][1::5], marker='^', c=c)
+        elif i == 1:
+            linestyle = "-."
+            #linestyle = '-'
+            c = '#ff1f1f'
+            ax.plot(d['recall'], d['precision'], linestyle, label='Precision-Recall curve of %s' % d['label'], c=c, linewidth=3)
+        else:
+            linestyle = ":"
+            #linestyle = '-'
+            c = '#39a921'
+            ax.plot(d['recall'], d['precision'], linestyle, label='Precision-Recall curve of %s' % d['label'], c=c, linewidth=3)
+        i += 1
+
         avg_precision = d['avg_precision']
     ax.set_xlabel('Recall', {'fontsize': 15})
     ax.set_ylabel('Precision', {'fontsize': 15})
     ax.set_ylim([0.0, 1.05])
     ax.set_xlim([0.0, 1.0])
     ax.set_title('Precision-Recall Curves', {'fontsize': 16})
-    plt.legend(loc="lower left")
+    plt.legend(loc="lower right")
     f.tight_layout()
     plt.savefig('%s_precision_recall.png' % filename_prefix)
     plt.show()
+    plt.clf()
+    plt.cla()
+    plt.close(f)
+
 
 def plot_cf(ax, cm, cmap, tick_marks, target_names, yaxis_visible=True, title=None):
+    cm = cm.astype('float') / cm.sum(axis=1)[:, np.newaxis]
     im = ax.imshow(cm, interpolation='nearest', cmap=cmap, aspect='auto')
     ax.set_xticks(tick_marks)
     ax.set_xticklabels(target_names, rotation=45)
@@ -353,10 +465,13 @@ def plot_cf(ax, cm, cmap, tick_marks, target_names, yaxis_visible=True, title=No
         ax.yaxis.set_visible(False)
     return ax, im
 
+
+
 if __name__ == '__main__':
-    #plot_influence_pima()
+    plot_influence_pima()
     #get_mnist_profile()
-    get_pageblocks0_profile()
+    #get_pageblocks0_profile()
+    #plot_runtime()
     '''
     print
     print "n=2000"
@@ -387,6 +502,7 @@ if __name__ == '__main__':
     print runtime
     print {k:round(float(v)/runtime,n_round) for k,v in cum_time.iteritems() if round(float(v)/runtime,n_round) > 0.0}
     '''
+
 
 
 

@@ -1,0 +1,155 @@
+/usr/bin/python /Users/LT/Documents/Uni/MA/increOCSVM/evaluation_tmp.py
+mnist classes = 2
+size: 500
+(129,)
+(371,)
+data size: 500, nu: 0.2, gamma: 0.1
+============ 1. Fold of CV ============
+1) Incremental OCSVM
+None
+Confusion matrix:
+Prediction  -1    1
+Target             
+-1          19  110
+ 1          63  308
+precision: 0.736842105263, recall: 0.830188679245, f1-score: 0.780735107731
+Number of support vectors: 400
+-----------
+2) cvxopt-OCSVM
+Confusion matrix:
+Prediction    1
+Target         
+-1          129
+ 1          371
+precision: 0.742, recall: 1.0, f1-score: 0.851894374282
+Number of support vectors: 400
+---------
+3) sklearn-OCSVM
+Confusion matrix:
+Prediction   -1    1
+Target              
+-1           79   50
+ 1          241  130
+Number of support vectors: 400
+precision: 0.722222222222, recall: 0.350404312668, f1-score: 0.471869328494
+============ 2. Fold of CV ============
+1) Incremental OCSVM
+None
+Confusion matrix:
+Prediction  -1    1
+Target             
+-1          18  111
+ 1          64  307
+precision: 0.734449760766, recall: 0.827493261456, f1-score: 0.778200253485
+Number of support vectors: 400
+-----------
+2) cvxopt-OCSVM
+Confusion matrix:
+Prediction    1
+Target         
+-1          129
+ 1          371
+precision: 0.742, recall: 1.0, f1-score: 0.851894374282
+Number of support vectors: 400
+---------
+3) sklearn-OCSVM
+Confusion matrix:
+Prediction   -1    1
+Target              
+-1           80   49
+ 1          240  131
+Number of support vectors: 400
+precision: 0.727777777778, recall: 0.353099730458, f1-score: 0.475499092559
+============ 3. Fold of CV ============
+1) Incremental OCSVM
+None
+Confusion matrix:
+Prediction  -1    1
+Target             
+-1          18  111
+ 1          64  307
+precision: 0.734449760766, recall: 0.827493261456, f1-score: 0.778200253485
+Number of support vectors: 400
+-----------
+2) cvxopt-OCSVM
+Confusion matrix:
+Prediction    1
+Target         
+-1          129
+ 1          371
+precision: 0.742, recall: 1.0, f1-score: 0.851894374282
+Number of support vectors: 400
+---------
+3) sklearn-OCSVM
+Confusion matrix:
+Prediction   -1    1
+Target              
+-1           77   52
+ 1          243  128
+Number of support vectors: 400
+precision: 0.711111111111, recall: 0.345013477089, f1-score: 0.464609800363
+============ 4. Fold of CV ============
+1) Incremental OCSVM
+None
+Confusion matrix:
+Prediction  -1    1
+Target             
+-1          18  111
+ 1          64  307
+precision: 0.734449760766, recall: 0.827493261456, f1-score: 0.778200253485
+Number of support vectors: 400
+-----------
+2) cvxopt-OCSVM
+Confusion matrix:
+Prediction    1
+Target         
+-1          129
+ 1          371
+precision: 0.742, recall: 1.0, f1-score: 0.851894374282
+Number of support vectors: 400
+---------
+3) sklearn-OCSVM
+Confusion matrix:
+Prediction   -1    1
+Target              
+-1           87   42
+ 1          233  138
+Number of support vectors: 400
+precision: 0.766666666667, recall: 0.371967654987, f1-score: 0.500907441016
+============ 5. Fold of CV ============
+1) Incremental OCSVM
+None
+Confusion matrix:
+Prediction  -1    1
+Target             
+-1          18  111
+ 1          64  307
+precision: 0.734449760766, recall: 0.827493261456, f1-score: 0.778200253485
+Number of support vectors: 400
+-----------
+2) cvxopt-OCSVM
+Confusion matrix:
+Prediction    1
+Target         
+-1          129
+ 1          371
+precision: 0.742, recall: 1.0, f1-score: 0.851894374282
+Number of support vectors: 400
+---------
+3) sklearn-OCSVM
+Confusion matrix:
+Prediction   -1    1
+Target              
+-1           92   37
+ 1          228  143
+Number of support vectors: 400
+precision: 0.794444444444, recall: 0.385444743935, f1-score: 0.519056261343
+========================================
+Average Incremental OCSVM results:
+precision: 0.734928229665, recall: 0.828032345013, f1-score: 0.778707224335
+Average cvxopt-OCSVM results:
+precision: 0.742, recall: 1.0, f1-score: 0.851894374282
+Average sklearn-OCSVM results:
+precision: 0.744444444444, recall: 0.361185983827, f1-score: 0.486388384755
+
+Process finished with exit code 0

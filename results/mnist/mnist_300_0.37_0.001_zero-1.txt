@@ -1,0 +1,152 @@
+/usr/bin/python /Users/LT/Documents/Arbeit/Siemens/increOCSVM/evaluation_2.py
+mnist classes = 2
+size: 300
+(78,)
+(222,)
+data size: 300, nu: 0.37, gamma: 0.001
+============ 1. Fold of CV ============
+1) Incremental OCSVM
+Confusion matrix:
+Prediction  -1    1
+Target             
+-1          29   49
+ 1          75  147
+precision: 0.75, recall: 0.662162162162, f1-score: 0.703349282297
+Number of support vectors: 240
+-----------
+2) cvxopt-OCSVM
+Confusion matrix:
+Prediction    1
+Target         
+-1           78
+ 1          222
+precision: 0.74, recall: 1.0, f1-score: 0.850574712644
+Number of support vectors: 240
+---------
+3) sklearn-OCSVM
+Confusion matrix:
+Prediction   -1    1
+Target              
+-1           53   25
+ 1          107  115
+Number of support vectors: 240
+precision: 0.821428571429, recall: 0.518018018018, f1-score: 0.635359116022
+plot here
+0
+1
+2
+============ 2. Fold of CV ============
+1) Incremental OCSVM
+Confusion matrix:
+Prediction  -1    1
+Target             
+-1          28   50
+ 1          76  146
+precision: 0.744897959184, recall: 0.657657657658, f1-score: 0.698564593301
+Number of support vectors: 240
+-----------
+2) cvxopt-OCSVM
+Confusion matrix:
+Prediction    1
+Target         
+-1           78
+ 1          222
+precision: 0.74, recall: 1.0, f1-score: 0.850574712644
+Number of support vectors: 240
+---------
+3) sklearn-OCSVM
+Confusion matrix:
+Prediction   -1    1
+Target              
+-1           40   38
+ 1          120  102
+Number of support vectors: 240
+precision: 0.728571428571, recall: 0.459459459459, f1-score: 0.563535911602
+============ 3. Fold of CV ============
+1) Incremental OCSVM
+Confusion matrix:
+Prediction  -1    1
+Target             
+-1          31   47
+ 1          73  149
+precision: 0.760204081633, recall: 0.671171171171, f1-score: 0.712918660287
+Number of support vectors: 240
+-----------
+2) cvxopt-OCSVM
+Confusion matrix:
+Prediction    1
+Target         
+-1           78
+ 1          222
+precision: 0.74, recall: 1.0, f1-score: 0.850574712644
+Number of support vectors: 240
+---------
+3) sklearn-OCSVM
+Confusion matrix:
+Prediction   -1    1
+Target              
+-1           45   33
+ 1          115  107
+Number of support vectors: 240
+precision: 0.764285714286, recall: 0.481981981982, f1-score: 0.591160220994
+============ 4. Fold of CV ============
+1) Incremental OCSVM
+Confusion matrix:
+Prediction  -1    1
+Target             
+-1          25   53
+ 1          79  143
+precision: 0.729591836735, recall: 0.644144144144, f1-score: 0.684210526316
+Number of support vectors: 240
+-----------
+2) cvxopt-OCSVM
+Confusion matrix:
+Prediction    1
+Target         
+-1           78
+ 1          222
+precision: 0.74, recall: 1.0, f1-score: 0.850574712644
+Number of support vectors: 240
+---------
+3) sklearn-OCSVM
+Confusion matrix:
+Prediction   -1    1
+Target              
+-1           43   35
+ 1          117  105
+Number of support vectors: 240
+precision: 0.75, recall: 0.472972972973, f1-score: 0.580110497238
+============ 5. Fold of CV ============
+1) Incremental OCSVM
+Confusion matrix:
+Prediction  -1    1
+Target             
+-1          24   54
+ 1          80  142
+precision: 0.724489795918, recall: 0.63963963964, f1-score: 0.679425837321
+Number of support vectors: 240
+-----------
+2) cvxopt-OCSVM
+Confusion matrix:
+Prediction    1
+Target         
+-1           78
+ 1          222
+precision: 0.74, recall: 1.0, f1-score: 0.850574712644
+Number of support vectors: 240
+---------
+3) sklearn-OCSVM
+Confusion matrix:
+Prediction   -1   1
+Target             
+-1           35  43
+ 1          125  97
+Number of support vectors: 240
+precision: 0.692857142857, recall: 0.436936936937, f1-score: 0.53591160221
+========================================
+Average Incremental OCSVM results:
+precision: 0.741836734694, recall: 0.654954954955, f1-score: 0.695693779904
+Average cvxopt-OCSVM results:
+precision: 0.74, recall: 1.0, f1-score: 0.850574712644
+Average sklearn-OCSVM results:
+precision: 0.751428571429, recall: 0.473873873874, f1-score: 0.581215469613

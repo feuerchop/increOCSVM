@@ -1,0 +1,148 @@
+data size: 2308, nu: 0.75, gamma: 10
+============ 1. Fold of CV ============
+1) Incremental OCSVM
+None
+Confusion matrix:
+Prediction    -1    1
+Target               
+-1          1053  926
+ 1           224  105
+precision: 0.101842870999, recall: 0.31914893617, f1-score: 0.154411764706
+Number of support vectors: 994
+-----------
+2) cvxopt-OCSVM
+Confusion matrix:
+Prediction   -1     1
+Target               
+-1          458  1521
+ 1          114   215
+precision: 0.123847926267, recall: 0.653495440729, f1-score: 0.208232445521
+Number of support vectors: 12
+---------
+3) sklearn-OCSVM
+Confusion matrix:
+Prediction   -1     1
+Target               
+-1          455  1524
+ 1          112   217
+Number of support vectors: 1388
+precision: 0.124641010913, recall: 0.659574468085, f1-score: 0.209661835749
+============ 2. Fold of CV ============
+1) Incremental OCSVM
+None
+Confusion matrix:
+Prediction    -1    1
+Target               
+-1          1021  958
+ 1           222  107
+precision: 0.100469483568, recall: 0.325227963526, f1-score: 0.153515064562
+Number of support vectors: 1185
+-----------
+2) cvxopt-OCSVM
+Confusion matrix:
+Prediction   -1     1
+Target               
+-1          444  1535
+ 1          116   213
+precision: 0.121853546911, recall: 0.647416413374, f1-score: 0.205103514685
+Number of support vectors: 12
+---------
+3) sklearn-OCSVM
+Confusion matrix:
+Prediction   -1     1
+Target               
+-1          448  1531
+ 1          117   212
+Number of support vectors: 1388
+precision: 0.121629374641, recall: 0.644376899696, f1-score: 0.204633204633
+============ 3. Fold of CV ============
+1) Incremental OCSVM
+None
+Confusion matrix:
+Prediction    -1    1
+Target               
+-1          1029  950
+ 1           224  105
+precision: 0.0995260663507, recall: 0.31914893617, f1-score: 0.151734104046
+Number of support vectors: 1187
+-----------
+2) cvxopt-OCSVM
+Confusion matrix:
+Prediction   -1     1
+Target               
+-1          464  1515
+ 1          122   207
+precision: 0.120209059233, recall: 0.629179331307, f1-score: 0.201852754754
+Number of support vectors: 23
+---------
+3) sklearn-OCSVM
+Confusion matrix:
+Prediction   -1     1
+Target               
+-1          469  1510
+ 1          123   206
+Number of support vectors: 1387
+precision: 0.120046620047, recall: 0.626139817629, f1-score: 0.201466992665
+============ 4. Fold of CV ============
+1) Incremental OCSVM
+None
+Confusion matrix:
+Prediction    -1    1
+Target               
+-1          1030  949
+ 1           225  104
+precision: 0.0987654320988, recall: 0.316109422492, f1-score: 0.150506512301
+Number of support vectors: 1214
+-----------
+2) cvxopt-OCSVM
+Confusion matrix:
+Prediction   -1     1
+Target               
+-1          474  1505
+ 1          118   211
+precision: 0.12296037296, recall: 0.641337386018, f1-score: 0.206356968215
+Number of support vectors: 12
+---------
+3) sklearn-OCSVM
+Confusion matrix:
+Prediction   -1     1
+Target               
+-1          473  1506
+ 1          116   213
+Number of support vectors: 1389
+precision: 0.123909249564, recall: 0.647416413374, f1-score: 0.2080078125
+============ 5. Fold of CV ============
+1) Incremental OCSVM
+None
+Confusion matrix:
+Prediction    -1    1
+Target               
+-1          1006  973
+ 1           220  109
+precision: 0.100739371534, recall: 0.331306990881, f1-score: 0.154500354359
+Number of support vectors: 1201
+-----------
+2) cvxopt-OCSVM
+Confusion matrix:
+Prediction   -1     1
+Target               
+-1          443  1536
+ 1          120   209
+precision: 0.119770773639, recall: 0.635258358663, f1-score: 0.201542912247
+Number of support vectors: 33
+---------
+3) sklearn-OCSVM
+Confusion matrix:
+Prediction   -1     1
+Target               
+-1          440  1539
+ 1          118   211
+Number of support vectors: 1390
+precision: 0.120571428571, recall: 0.641337386018, f1-score: 0.202982202982
+========================================
+Average Incremental OCSVM results:
+precision: 0.10026864491, recall: 0.322188449848, f1-score: 0.152940498208
+Average cvxopt-OCSVM results:
+precision: 0.121728335802, recall: 0.641337386018, f1-score: 0.20461915784
+Average sklearn-OCSVM results:
+precision: 0.122159536747, recall: 0.64376899696, f1-score: 0.205352115713
